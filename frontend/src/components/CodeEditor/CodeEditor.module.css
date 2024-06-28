@@ -1,0 +1,5 @@
+.codeEditor {
+  overflow: hidden;
+  overflow-wrap: break-word;
+  tab-size: 4;
+}
