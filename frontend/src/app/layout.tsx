@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     'Empowering secure data sharing through advanced encryption and blockchain technology, ensuring unparalleled privacy and reliability for your confidential information.',
   viewport: 'width=device-width, initial-scale=1.0',
   themeColor: '#000000',
-  creator: 'Ratul Hasan, ratul.hasan.bd@outlook.com',
+  creator: 'Ratul Hasan, ratul.hasan.rahat.bd@gmail.com',
   generator: 'Ratul Hasan',
   authors: {
     name: 'Ratul Hasan',

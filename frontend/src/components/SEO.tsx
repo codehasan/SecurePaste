@@ -5,7 +5,7 @@ export type Props = {
 };
 
 export const SEO = ({ description, title, keywords }: Props) => {
-  const logoUrl = `https://res.cloudinary.com/dfsp1qelk/image/upload/logo_qw3i62.png`;
+  const logoUrl = `https://securepaste.vercel.app/opengraph-image.png`;
 
   const openGraphSeo = [
     {
