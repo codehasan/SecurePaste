@@ -43,6 +43,10 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
         <link rel="language" href="en-US" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="shortcut icon" href="/icon.png" />
+        <meta
+          name="google-site-verification"
+          content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
+        />
         <SEO
           title={metadata.title as string}
           description={metadata.description as string}
