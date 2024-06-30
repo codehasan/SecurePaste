@@ -77,38 +77,21 @@ export const CommentSchema = z
 
 export const UserSchema = z
   .object({
-    uid: z.string().min(1, { message: 'UID is required' }),
-    wallet: z
+    username: z
       .string()
-      .length(42, { message: 'Invalid Ethereum wallet address' })
-      .optional(),
-    email: z.string().email().optional(),
-    oauthProvider: z.string().min(1, { message: 'OAuth provider is required' }),
-    jwt: z
-      .string()
-      .min(1, { message: 'Json Web Token is required' })
-      .optional(),
-    name: z
-      .string()
-      .min(4, { message: 'Name must be at least 4 characters long' })
-      .max(50, { message: 'Name must not exceed 50 characters' }),
+      .min(4, { message: 'Username must be at least 4 characters long' })
+      .max(15, { message: 'Username must not exceed 15 characters' }),
+    createdAt: date(),
+    email: z.string().email(),
+    verified: z.boolean(),
     profileUrl: z
       .string()
       .url({
         message: 'Profile URL must be a valid URL',
       })
       .optional(),
-    createdAt: date(),
   })
-  .strict()
-  .refine(
-    (val) => {
-      return val.email || val.wallet;
-    },
-    {
-      message: 'Either wallet or OAuth information is required',
-    }
-  );
+  .strict();
 
 export const PasteLikeSchema = z
   .object({

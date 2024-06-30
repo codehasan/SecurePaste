@@ -1,41 +1,22 @@
-import {
-  MongoClient,
-  Db,
-  Collection,
-  Document,
-  ServerApiVersion,
-} from 'mongodb';
+import { getClient } from '@/lib/mongodb';
+import { Paste } from '@/schema/ZodSchema';
+import { Db, Collection, Document } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-const uri = process.env.MONGO_URI;
-
-if (!uri) {
-  throw new Error('Missing environment variable MONGO_URI');
-}
-
-const client: MongoClient = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: false,
-  },
-});
-
 export async function POST(request: NextRequest) {
-  await client.connect();
+  const body: Paste = await request.json();
 
   try {
-    const database: Db = client.db('sample_mflix');
-    const collection: Collection<Document> = database.collection('movies');
+    const client = await getClient();
+    const database: Db = client.db('securepaste');
+    const collection: Collection<Document> = database.collection('pastes');
 
     return NextResponse.json({ message: 'Finally it worked' }, { status: 200 });
-  } catch (error) {
-    console.error('Error inserting data:', error);
+  } catch (e) {
+    console.error('Error while running operations', e);
     return NextResponse.json(
       { error: 'Failed to insert data' },
       { status: 500 }
     );
-  } finally {
-    await client.close();
   }
 }

@@ -11,25 +11,54 @@
   scroll-behavior: smooth;
 }
 
-:root {
-  --background: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 0, 0, 0;
-  }
-}
-
-ul,
-ol {
-  list-style: none;
+html,
+body {
+  width: 100%;
+  height: 100%;
 }
 
 input,
 select,
 textarea {
   font-family: inherit;
+}
+
+@layer components {
+  .input-secondary {
+    @apply focus-within:outline-transparent;
+    @apply focus:outline-transparent;
+    @apply focus-within:border-2;
+  }
+
+  .input {
+    @apply cursor-text;
+    @apply input-bordered;
+    @apply focus-within:input-secondary;
+  }
+
+  .select-secondary {
+    @apply focus-within:outline-transparent;
+    @apply focus:outline-transparent;
+    @apply focus-within:border-2;
+  }
+
+  .select {
+    @apply cursor-text;
+    @apply select-bordered;
+    @apply focus-within:select-secondary;
+  }
+
+  .textarea-secondary {
+    @apply focus-within:outline-transparent;
+    @apply focus:outline-transparent;
+    @apply focus-within:border-2;
+  }
+
+  .textarea {
+    @apply cursor-text;
+    @apply textarea-bordered;
+    @apply focus-within:textarea-secondary;
+  }
 }
 
 @layer base {
@@ -41,10 +70,5 @@ textarea {
   p,
   pre {
     @apply font-normal;
-  }
-
-  button,
-  .btn {
-    @apply font-medium;
   }
 }

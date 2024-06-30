@@ -48,7 +48,7 @@ const TagInput: React.FC = () => {
   return (
     <>
       <div
-        className="input input-bordered flex items-center flex-wrap text-base h-auto min-h-12 cursor-text"
+        className="input flex items-center flex-wrap text-base h-auto min-h-12 cursor-text"
         onClick={handleDivClick}
       >
         {tags.map((tag) => (
