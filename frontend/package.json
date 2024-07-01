@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "classnames": "^2.5.1",
     "firebase": "^10.12.2",
     "fs-extra": "^11.2.0",

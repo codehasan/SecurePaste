@@ -1,6 +1,6 @@
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { getFirebaseApp } from '../config';
-import { User as Document } from '@/schema/ZodSchema';
+import { NewUser as Document } from '@/schema/ZodSchema';
 import { User } from 'firebase/auth';
 
 const app = getFirebaseApp();

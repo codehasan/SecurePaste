@@ -1,12 +1,12 @@
 import { getClient } from '@/lib/mongodb';
-import { User, UserSchema } from '@/schema/ZodSchema';
+import { NewUser, NewUserSchema } from '@/schema/ZodSchema';
 import { Collection, Db, MongoClient } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const validation = UserSchema.safeParse(body);
+  const validation = NewUserSchema.safeParse(body);
 
   if (!validation.success) {
     const error: ZodError = validation.error;
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   const client: MongoClient = await getClient();
   const securepaste: Db = client.db('securepaste');
   const users: Collection = securepaste.collection('users');
-  const user: User = validation.data;
+  const user: NewUser = validation.data;
 
   const duplicate = await users.findOne(
     { uid: user.uid },

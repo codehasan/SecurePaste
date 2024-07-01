@@ -17,3 +17,7 @@
 .logo {
   color: #10151b;
 }
+
+.userAgreement {
+  list-style: decimal;
+}

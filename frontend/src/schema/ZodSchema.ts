@@ -75,6 +75,27 @@ export const CommentSchema = z
   })
   .strict();
 
+export const NewUserSchema = z
+  .object({
+    username: z
+      .string()
+      .min(4, { message: 'Username must be at least 4 characters long' })
+      .max(15, { message: 'Username must not exceed 15 characters' }),
+    email: z.string().email(),
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters long' })
+      .max(32, { message: 'Password must not exceed 32 characters' })
+      .optional(),
+    profileUrl: z
+      .string()
+      .url({
+        message: 'Profile URL must be a valid URL',
+      })
+      .optional(),
+  })
+  .strict();
+
 export const UserSchema = z
   .object({
     username: z
@@ -84,6 +105,11 @@ export const UserSchema = z
     createdAt: date(),
     email: z.string().email(),
     verified: z.boolean(),
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters long' })
+      .max(32, { message: 'Password must not exceed 32 characters' })
+      .optional(),
     profileUrl: z
       .string()
       .url({
@@ -117,6 +143,7 @@ export const CommentLikeSchema = z
 
 export type Paste = z.infer<typeof PasteSchema>;
 export type Comment = z.infer<typeof CommentSchema>;
+export type NewUser = z.infer<typeof NewUserSchema>;
 export type User = z.infer<typeof UserSchema>;
 
 export type PasteLike = z.infer<typeof PasteLikeSchema>;
