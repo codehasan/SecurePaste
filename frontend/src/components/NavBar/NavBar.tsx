@@ -38,10 +38,10 @@ const NavBar = () => {
         </div>
         <div className="flex grow justify-end">
           <ThemeToggle />
-          <Link href="/account/signin">
+          <Link href="/signin">
             <button className="btn btn-outline px-5 mr-2">Login</button>
           </Link>
-          <Link href="/account/signup">
+          <Link href="/signup">
             <button className="btn btn-primary px-5">Create account</button>
           </Link>
         </div>

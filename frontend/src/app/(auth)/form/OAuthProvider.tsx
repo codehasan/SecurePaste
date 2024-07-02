@@ -24,4 +24,4 @@ const OAuthProvider = () => {
   );
 };
 
-export default OAuthProvider;
+export const MemoizedOAuth = React.memo(OAuthProvider);

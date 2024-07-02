@@ -2,15 +2,16 @@
 import classNames from 'classnames';
 import React, { ForwardedRef, forwardRef } from 'react';
 
-import styles from './page.module.css';
+import styles from '../signup/page.module.css';
 
 interface UserAgreementProps {
-  onClose: () => void;
-  onAgree: () => void;
+  onClose?: () => void;
+  onAgree?: () => void;
+  singleButton?: boolean;
 }
 
-const UserAgreementComponent = forwardRef(function UserAgreementComponent(
-  { onAgree, onClose }: UserAgreementProps,
+const UserAgreement = forwardRef(function UserAgreement(
+  { onAgree, onClose, singleButton }: UserAgreementProps,
   reference: ForwardedRef<HTMLDialogElement>
 ) {
   return (
@@ -58,12 +59,20 @@ const UserAgreementComponent = forwardRef(function UserAgreementComponent(
         </div>
         <div className="modal-action">
           <form method="dialog">
-            <button className="btn btn-error mr-2" onClick={onClose}>
-              Close
-            </button>
-            <button className="btn btn-primary" onClick={onAgree}>
-              Agree
-            </button>
+            {singleButton ? (
+              <button className="btn mr-2" onClick={onClose}>
+                Close
+              </button>
+            ) : (
+              <>
+                <button className="btn btn-error mr-2" onClick={onClose}>
+                  Close
+                </button>
+                <button className="btn btn-primary" onClick={onAgree}>
+                  Agree
+                </button>
+              </>
+            )}
           </form>
         </div>
       </div>
@@ -71,4 +80,4 @@ const UserAgreementComponent = forwardRef(function UserAgreementComponent(
   );
 });
 
-export const UserAgreement = React.memo(UserAgreementComponent);
+export const MemoizedUserAgreement = React.memo(UserAgreement);

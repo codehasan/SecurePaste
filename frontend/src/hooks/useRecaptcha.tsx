@@ -2,16 +2,16 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 const useRecaptcha = () => {
-  const [capchaToken, setCapchaToken] = useState<string>('');
-  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
+  const [captchaToken, setCapchaToken] = useState<string>('');
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const handleRecaptcha = useCallback((token: string | null) => {
-    setCapchaToken(token || '');
+    setCapchaToken(token ?? '');
   }, []);
 
   useEffect(() => {
     const refreshCaptcha = () => {
-      if (recaptchaRef.current && capchaToken) {
+      if (recaptchaRef.current && captchaToken) {
         recaptchaRef.current.reset();
         setCapchaToken('');
       }
@@ -19,7 +19,7 @@ const useRecaptcha = () => {
 
     let tokenRefreshTimeout: NodeJS.Timeout | null = null;
 
-    if (capchaToken) {
+    if (captchaToken) {
       tokenRefreshTimeout = setTimeout(refreshCaptcha, 110000); // 110 seconds
     }
 
@@ -28,9 +28,9 @@ const useRecaptcha = () => {
         clearTimeout(tokenRefreshTimeout);
       }
     };
-  }, [capchaToken]);
+  }, [captchaToken]);
 
-  return { capchaToken, setCapchaToken, recaptchaRef, handleRecaptcha };
+  return { captchaToken, recaptchaRef, handleRecaptcha };
 };
 
 export default useRecaptcha;

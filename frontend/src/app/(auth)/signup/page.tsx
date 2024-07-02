@@ -1,83 +1,98 @@
 'use client';
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { FormEvent, useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useRecaptcha from '@/hooks/useRecaptcha';
-import ReCAPTCHA from 'react-google-recaptcha';
 import classNames from 'classnames';
 import Link from 'next/link';
 import axios from 'axios';
 import Logo from '@/icons/Logo';
-import { UserAgreement } from './UserAgreement';
-import OAuthProvider from '../form/OAuthProvider';
+import { MemoizedUserAgreement } from '../form/UserAgreement';
+import { MemoizedOAuth } from '../form/OAuthProvider';
+import { MemoizedCaptcha } from '../form/Captcha';
+import Alert, { Icon } from '@/components/Alert';
+import { MemoizedLabel } from '@/components/Label';
 
 import styles from './page.module.css';
-import Alert, { Icon } from '@/components/Alert';
 
 const SignUp = () => {
-  const { capchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [formValues, setFormValues] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [error, setError] = useState('');
   const dialogRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
 
-  const onSubmit = async (data: {}) => {
-    if (capchaToken && termsAccepted) {
-      const result = await axios.post('https://your-login-endpoint', {
-        ...data,
-        capchaToken,
-      });
+  const validateForm = (formValues: {
+    name: string;
+    email: string;
+    password: string;
+    terms: boolean;
+  }) => {
+    const result: { filled: boolean; error: string } = {
+      filled: false,
+      error: '',
+    };
 
-      if (result.data.recaptchaValid === false) {
-        alert('ReCAPTCHA validation failed. Please try again.');
-        handleRecaptcha('');
-        recaptchaRef.current?.reset();
-        return;
-      }
+    if (!formValues.name) {
+      result.error = 'Please enter your full name.';
+    } else if (!formValues.email) {
+      result.error = 'Please enter your email address.';
+    } else if (!formValues.password) {
+      result.error = 'Please enter a password for your account.';
+    } else if (!formValues.terms) {
+      result.error = 'Please accept the terms of service.';
+    } else if (!captchaToken) {
+      result.error = 'Please complete the captcha.';
+    } else {
+      result.filled = true;
+    }
+
+    return result;
+  };
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const formValues = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      password: formData.get('password') as string,
+      terms: formData.get('terms') === 'on',
+    };
+
+    const { filled, error } = validateForm(formValues);
+
+    if (filled) {
+      const result = await axios.post('/api/account', {
+        name: formValues.name,
+        email: formValues.email,
+        password: formValues.password,
+        captchaToken,
+      });
 
       recaptchaRef.current?.reset();
 
-      if (result.data.success) {
-        console.log('Login successful');
-      } else {
-        alert('Login failed. Please check your credentials and try again.');
+      if (result.status === 200 || result.status === 201) {
+        router.push('/');
+      } else if (result.data.error) {
+        if (result.data.invalidCaptcha) handleRecaptcha('');
+
+        setError(result.data.error);
       }
     } else {
-      alert('Please fill in all fields and complete the captcha.');
-    }
-    router.push('/');
-  };
-
-  const handleTerms = (event: ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-
-    if (event.target.checked) {
-      dialogRef.current?.showModal();
+      setError(error);
     }
   };
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = event.target;
-
-    setFormValues((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  };
+  const showTerms = useCallback(() => {
+    dialogRef.current?.showModal();
+  }, []);
 
   return (
     <div
       className={classNames(styles.base, 'flex flex-col items-center w-full')}
     >
-      <UserAgreement
-        ref={dialogRef}
-        onClose={() => setTermsAccepted(false)}
-        onAgree={() => setTermsAccepted(true)}
-      />
+      <MemoizedUserAgreement ref={dialogRef} singleButton />
       <div id="logo-container" className="mt-16 mb-8">
         <Link href="/" rel="noopener noreferrer">
           <Logo className={styles.logo} width={50} height={50} />
@@ -87,7 +102,7 @@ const SignUp = () => {
         <h1 className="text-xl mt-16 mb-6 p-1 pl-0 font-medium">
           Sign up for an account
         </h1>
-        <OAuthProvider />
+        <MemoizedOAuth />
         <div className="divider text-gray-500 text-sm mt-6 mb-6">OR</div>
         {error && (
           <Alert
@@ -98,95 +113,76 @@ const SignUp = () => {
           />
         )}
         <form onSubmit={onSubmit} className="mt-2">
-          <label className="label" htmlFor="name">
-            <span className="label-text text-sm">
-              <span className="mr-1">Full name</span>
-              <span className="text-red-900">*</span>
-            </span>
-            <span className="label-text-alt">4 character minimum</span>
-          </label>
-          <input
-            type="text"
-            id="name"
-            placeholder="John Doe"
-            className="input shadow-md w-full"
-            value={formValues.name}
-            onChange={handleChange}
-            min={4}
-            max={50}
+          <MemoizedLabel
+            primaryText="Full name"
+            topRight="4 character minimum"
             required
-          />
-
-          <label className="label mt-3" htmlFor="email">
-            <span className="label-text text-sm">
-              <span className="mr-1">Email address</span>
-              <span className="text-red-900">*</span>
-            </span>
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="your@email.com"
-            className="input shadow-md w-full"
-            value={formValues.email}
-            onChange={handleChange}
-            required
-          />
-
-          <label className="label mt-3" htmlFor="password">
-            <span className="label-text text-sm">
-              <span className="mr-1">Password</span>
-              <span className="text-red-900">*</span>
-            </span>
-            <span className="label-text-alt">8-32 characters</span>
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="●●●●●●●●"
-            className="input shadow-md w-full"
-            value={formValues.password}
-            onChange={handleChange}
-            min={8}
-            max={32}
-            required
-          />
-
-          <label
-            className="label justify-start w-fit cursor-pointer my-3"
-            htmlFor="terms"
           >
             <input
-              type="checkbox"
-              id="terms"
-              checked={termsAccepted}
-              onChange={handleTerms}
+              className="input shadow-md w-full"
+              type="text"
+              name="name"
+              placeholder="John Doe"
+              min={4}
+              max={50}
+              required
+            />
+          </MemoizedLabel>
+
+          <MemoizedLabel className="mt-3" primaryText="Email address" required>
+            <input
+              className="input shadow-md w-full"
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              required
+            />
+          </MemoizedLabel>
+
+          <MemoizedLabel
+            className="mt-3"
+            primaryText="Password"
+            topRight="8-32 characters"
+            required
+          >
+            <input
+              className="input shadow-md w-full"
+              type="password"
+              name="password"
+              placeholder="●●●●●●●●"
+              min={8}
+              max={32}
+              required
+            />
+          </MemoizedLabel>
+
+          <div className="label justify-start my-3">
+            <input
               className="checkbox text-gray-700 mr-2"
+              type="checkbox"
+              name="terms"
               required
             />
             <span className="label-text">
-              By creating an account, I agree to SecurePaste&apos;s{' '}
-              <u className="ml-1">Terms of Service</u>.
+              By creating an account, I agree to SecurePaste&apos;s&nbsp;
+              <button className="ml-1 underline" onClick={showTerms}>
+                Terms of Service
+              </button>
+              .
             </span>
-          </label>
+          </div>
 
           <div className="flex justify-center items-center mb-4">
-            <ReCAPTCHA
+            <MemoizedCaptcha
               ref={recaptchaRef}
-              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITEKEY!}
-              onChange={handleRecaptcha}
+              handleRecaptcha={handleRecaptcha}
             />
           </div>
 
           <button
             className={classNames(
               {
-                'btn-disabled':
-                  !formValues.name ||
-                  !formValues.email ||
-                  !formValues.password ||
-                  !termsAccepted ||
-                  !capchaToken,
+                'btn-disabled': !captchaToken,
               },
               'btn btn-primary w-full shadow-md mb-3'
             )}

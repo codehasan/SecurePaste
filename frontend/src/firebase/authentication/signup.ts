@@ -1,20 +1,25 @@
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  UserCredential,
+} from 'firebase/auth';
 import { getFirebaseApp } from '../config';
+import { FirebaseError } from 'firebase/app';
 
 const app = getFirebaseApp();
 const auth = getAuth(app);
 
 const signUpWithEmail = async (email: string, password: string) => {
-  let result = null,
-    error = null;
+  let credentials: UserCredential | null = null,
+    error: FirebaseError | null = null;
 
   try {
-    result = await createUserWithEmailAndPassword(auth, email, password);
-  } catch (e) {
-    error = e;
+    credentials = await createUserWithEmailAndPassword(auth, email, password);
+  } catch (firebaseError) {
+    error = firebaseError as FirebaseError;
   }
 
-  return { result, error };
+  return { credentials, error };
 };
 
 export { signUpWithEmail };

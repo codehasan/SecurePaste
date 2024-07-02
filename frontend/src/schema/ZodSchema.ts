@@ -77,20 +77,21 @@ export const CommentSchema = z
 
 export const NewUserSchema = z
   .object({
-    username: z
+    name: z
       .string()
-      .min(4, { message: 'Username must be at least 4 characters long' })
-      .max(15, { message: 'Username must not exceed 15 characters' }),
-    email: z.string().email(),
+      .min(4, { message: 'Name must be at least 4 characters long.' })
+      .max(50, { message: 'Name must not exceed 50 characters.' }),
+    email: z.string().email({ message: 'A valid email address is required.' }),
     password: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters long' })
-      .max(32, { message: 'Password must not exceed 32 characters' })
+      .min(8, { message: 'Password must be at least 8 characters long.' })
+      .max(32, { message: 'Password must not exceed 32 characters.' })
       .optional(),
+    captchaToken: z.string().min(0, { message: 'Captcha token is required.' }),
     profileUrl: z
       .string()
       .url({
-        message: 'Profile URL must be a valid URL',
+        message: 'Profile URL must be a valid URL.',
       })
       .optional(),
   })
@@ -98,22 +99,22 @@ export const NewUserSchema = z
 
 export const UserSchema = z
   .object({
-    username: z
+    name: z
       .string()
-      .min(4, { message: 'Username must be at least 4 characters long' })
-      .max(15, { message: 'Username must not exceed 15 characters' }),
-    createdAt: date(),
-    email: z.string().email(),
-    verified: z.boolean(),
+      .min(4, { message: 'Name must be at least 4 characters long.' })
+      .max(50, { message: 'Name must not exceed 50 characters.' }),
+    email: z.string().email({ message: 'A valid email address is required.' }),
     password: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters long' })
-      .max(32, { message: 'Password must not exceed 32 characters' })
+      .min(8, { message: 'Password must be at least 8 characters long.' })
+      .max(32, { message: 'Password must not exceed 32 characters.' })
       .optional(),
+    createdAt: date(),
+    verified: z.boolean(),
     profileUrl: z
       .string()
       .url({
-        message: 'Profile URL must be a valid URL',
+        message: 'Profile URL must be a valid URL.',
       })
       .optional(),
   })
