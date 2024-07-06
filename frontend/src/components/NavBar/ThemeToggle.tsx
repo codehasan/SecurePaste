@@ -1,5 +1,5 @@
 'use client';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme } from '@/lib/context/ThemeContext';
 import classNames from 'classnames';
 import React from 'react';
 import { FaMoon } from 'react-icons/fa';
@@ -10,7 +10,7 @@ const ThemeToggle = () => {
   const classes = 'h-6 w-6';
 
   return (
-    <label htmlFor="input" className="mx-4 cursor-pointer swap swap-rotate">
+    <label className="mx-4 cursor-pointer swap swap-rotate">
       <input type="checkbox" onChange={toggleTheme} />
       <FaMoon className={classNames('swap-off', classes)} />
       <IoSunny className={classNames('swap-on', classes)} />

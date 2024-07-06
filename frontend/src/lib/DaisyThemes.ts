@@ -1,4 +1,4 @@
 export const Theme = {
-  light: 'emerald',
-  dark: 'night',
+  light: 'light',
+  dark: 'dark',
 };

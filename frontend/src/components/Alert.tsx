@@ -8,7 +8,7 @@ import {
   MdOutlineWarningAmber,
 } from 'react-icons/md';
 
-export enum Icon {
+export enum Type {
   INFO,
   ERROR,
   WARNING,
@@ -19,31 +19,67 @@ interface AlertProps {
   title?: string;
   message: string;
   className?: string;
-  iconClassName?: string;
-  icon: Icon;
+  type: Type;
   closeText?: string;
   onClose?: () => void;
   acceptText?: string;
   onAccept?: () => void;
 }
 
-const getSvgFromIcon = (icon: Icon, iconClasses?: string) => {
-  const classes = classNames(iconClasses, 'h-6 w-6 shrink-0 fill-current');
+const getIconFromType = (type: Type) => {
+  const classes = 'h-6 w-6 shrink-0';
 
-  if (icon === Icon.ERROR) return <MdOutlineErrorOutline className={classes} />;
+  if (type === Type.ERROR) {
+    return (
+      <MdOutlineErrorOutline
+        className={classNames(classes, 'fill-error-content')}
+      />
+    );
+  }
+  if (type === Type.INFO) {
+    return (
+      <MdInfoOutline className={classNames(classes, 'fill-info-content')} />
+    );
+  }
+  if (type === Type.WARNING) {
+    return (
+      <MdOutlineWarningAmber
+        className={classNames(classes, 'fill-warning-content')}
+      />
+    );
+  }
+  return (
+    <IoCheckmarkCircleOutline
+      className={classNames(classes, 'fill-positive-content')}
+    />
+  );
+};
 
-  if (icon === Icon.INFO) return <MdInfoOutline className={classes} />;
+const getAlertClassNameFromType = (type: Type) => {
+  const classes = 'alert';
 
-  if (icon === Icon.WARNING)
-    return <MdOutlineWarningAmber className={classes} />;
-
-  return <IoCheckmarkCircleOutline className={classes} />;
+  if (type === Type.ERROR) {
+    return classNames(classes, 'alert-error');
+  }
+  if (type === Type.INFO) {
+    return classNames(classes, 'alert-info');
+  }
+  if (type === Type.WARNING) {
+    return classNames(classes, 'alert-warning');
+  }
+  return classNames(classes, 'alert-success');
 };
 
 const Alert: React.FC<AlertProps> = ({ ...props }) => {
   return (
-    <div role="alert" className={classNames('alert', props.className)}>
-      {getSvgFromIcon(props.icon, props.iconClassName)}
+    <div
+      role="alert"
+      className={classNames(
+        getAlertClassNameFromType(props.type),
+        props.className
+      )}
+    >
+      {getIconFromType(props.type)}
       <div>
         {props.title && <h3 className="font-bold">{props.title}</h3>}
         <div className={classNames({ 'text-xs': props.title })}>

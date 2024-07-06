@@ -18,7 +18,7 @@ const NavBar = () => {
             <Image
               className="mr-2"
               alt="Logo"
-              src="/icon.png"
+              src="/icon.svg"
               width={40}
               height={40}
             />
@@ -37,7 +37,6 @@ const NavBar = () => {
           </label>
         </div>
         <div className="flex grow justify-end">
-          <ThemeToggle />
           <Link href="/signin">
             <button className="btn btn-outline px-5 mr-2">Login</button>
           </Link>

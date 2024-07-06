@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 
 import styles from './signup/page.module.css';
@@ -6,19 +5,11 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import Logo from '@/icons/Logo';
 
-interface UnexpectedErrorProps {
-  error: Error;
-  statusCode: number;
-  reset: () => void;
+interface ErrorProps {
+  searchParams: { message: string };
 }
 
-const UnexpectedError: React.FC<UnexpectedErrorProps> = ({
-  error,
-  reset,
-  statusCode,
-}) => {
-  console.log(error);
-
+const Error = ({ searchParams }: ErrorProps) => {
   return (
     <div
       className={classNames(styles.base, 'flex flex-col items-center w-full')}
@@ -32,18 +23,12 @@ const UnexpectedError: React.FC<UnexpectedErrorProps> = ({
         className={classNames(styles.container, 'flex flex-col items-center')}
       >
         <h1 className="text-xl mt-10 mb-6 p-1 pl-0 text-gray-500">
-          Oops, something went wrong.
+          {searchParams?.message || 'Oops, something went wrong.'}
         </h1>
 
-        {statusCode ? (
-          <button onClick={reset} className="text-sky-600 mt-6">
-            Retry
-          </button>
-        ) : (
-          <Link href={'/'} className="text-sky-600 mt-6">
-            Back to App
-          </Link>
-        )}
+        <Link href={'/'} className="text-sky-600 mt-6">
+          Back to App
+        </Link>
       </div>
       <div className="text-gray-500 text-sm">
         <span>©&nbsp;</span>
@@ -54,4 +39,4 @@ const UnexpectedError: React.FC<UnexpectedErrorProps> = ({
   );
 };
 
-export default UnexpectedError;
+export default Error;

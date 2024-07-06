@@ -1,52 +1,76 @@
 'use client';
-import React, { FormEvent, useCallback, useRef, useState } from 'react';
+import React, {
+  FormEvent,
+  startTransition,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import useRecaptcha from '@/hooks/useRecaptcha';
 import classNames from 'classnames';
 import Link from 'next/link';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Logo from '@/icons/Logo';
-import { MemoizedUserAgreement } from '../form/UserAgreement';
-import { MemoizedOAuth } from '../form/OAuthProvider';
-import { MemoizedCaptcha } from '../form/Captcha';
-import Alert, { Icon } from '@/components/Alert';
+import { MemoizedUserAgreement } from './UserAgreement';
+import { MemoizedOAuth } from './OAuthProvider';
+import { MemoizedCaptcha } from './Captcha';
+import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
+import { MemoizedLoadingModal } from '@/components/LoadingModal';
 
 import styles from './page.module.css';
 
-const SignUp = () => {
+const validateForm = (formValues: {
+  name: string;
+  email: string;
+  password: string;
+  terms: boolean;
+  captchaToken: string;
+}) => {
+  const result = {
+    filled: true,
+    error: '',
+  };
+  const checks = [
+    {
+      condition: !formValues.name.trim(),
+      error: 'Please enter your full name.',
+    },
+    {
+      condition: !formValues.email.trim(),
+      error: 'Please enter your email address.',
+    },
+    {
+      condition: !formValues.password.trim(),
+      error: 'Please enter a password for your account.',
+    },
+    {
+      condition: !formValues.terms,
+      error: 'Please accept the terms of service.',
+    },
+    {
+      condition: !formValues.captchaToken.trim(),
+      error: 'Please complete the captcha.',
+    },
+  ];
+
+  for (let check of checks) {
+    if (check.condition) {
+      result.filled = false;
+      result.error = check.error;
+      break;
+    }
+  }
+
+  return result;
+};
+
+const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [error, setError] = useState('');
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const userAgreementRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
-
-  const validateForm = (formValues: {
-    name: string;
-    email: string;
-    password: string;
-    terms: boolean;
-  }) => {
-    const result: { filled: boolean; error: string } = {
-      filled: false,
-      error: '',
-    };
-
-    if (!formValues.name) {
-      result.error = 'Please enter your full name.';
-    } else if (!formValues.email) {
-      result.error = 'Please enter your email address.';
-    } else if (!formValues.password) {
-      result.error = 'Please enter a password for your account.';
-    } else if (!formValues.terms) {
-      result.error = 'Please accept the terms of service.';
-    } else if (!captchaToken) {
-      result.error = 'Please complete the captcha.';
-    } else {
-      result.filled = true;
-    }
-
-    return result;
-  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,41 +82,59 @@ const SignUp = () => {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
       terms: formData.get('terms') === 'on',
+      captchaToken,
     };
+    const { error } = validateForm(formValues);
 
-    const { filled, error } = validateForm(formValues);
+    if (error) {
+      setError(error);
+    }
 
-    if (filled) {
-      const result = await axios.post('/api/account', {
-        name: formValues.name,
-        email: formValues.email,
-        password: formValues.password,
-        captchaToken,
-      });
+    let runtimeError = '';
 
+    try {
+      const result = await axios.post(
+        'api/auth/signup',
+        {
+          name: formValues.name,
+          email: formValues.email,
+          password: formValues.password,
+          captchaToken,
+        },
+        { timeout: 5000 }
+      );
+
+      alert(JSON.stringify(result.data));
+    } catch (error) {
+      console.error(error);
+
+      const data = (error as AxiosError).response?.data as {
+        error: string;
+      };
+      runtimeError = data
+        ? data.error
+        : 'An unexpected error occured. Please try again later.';
+    } finally {
       recaptchaRef.current?.reset();
 
-      if (result.status === 200 || result.status === 201) {
-        router.push('/');
-      } else if (result.data.error) {
-        if (result.data.invalidCaptcha) handleRecaptcha('');
-
-        setError(result.data.error);
-      }
-    } else {
-      setError(error);
+      startTransition(() => {
+        if (runtimeError) {
+          setError(runtimeError);
+        }
+        handleRecaptcha(null);
+      });
     }
   };
 
   const showTerms = useCallback(() => {
-    dialogRef.current?.showModal();
+    userAgreementRef.current?.showModal();
   }, []);
 
   return (
     <div
       className={classNames(styles.base, 'flex flex-col items-center w-full')}
     >
-      <MemoizedUserAgreement ref={dialogRef} singleButton />
+      <MemoizedUserAgreement ref={userAgreementRef} singleButton />
       <div id="logo-container" className="mt-16 mb-8">
         <Link href="/" rel="noopener noreferrer">
           <Logo className={styles.logo} width={50} height={50} />
@@ -104,14 +146,12 @@ const SignUp = () => {
         </h1>
         <MemoizedOAuth />
         <div className="divider text-gray-500 text-sm mt-6 mb-6">OR</div>
-        {error && (
-          <Alert
-            message={error}
-            className="alert-error"
-            iconClassName="text-error-content"
-            icon={Icon.ERROR}
-          />
+
+        {searchParams?.message && (
+          <Alert message={searchParams.message} type={Type.SUCCESS} />
         )}
+        {error && <Alert message={error} type={Type.ERROR} />}
+
         <form onSubmit={onSubmit} className="mt-2">
           <MemoizedLabel
             primaryText="Full name"

@@ -1,6 +1,5 @@
 'use client';
 
-import { AuthProvider } from './AuthContext';
 import { ThemeProvider } from './ThemeContext';
 
 interface ClientWrapperProps {
@@ -8,11 +7,7 @@ interface ClientWrapperProps {
 }
 
 const ClientWrapper: React.FC<ClientWrapperProps> = ({ children }) => {
-  return (
-    <AuthProvider>
-      <ThemeProvider>{children}</ThemeProvider>
-    </AuthProvider>
-  );
+  return <ThemeProvider>{children}</ThemeProvider>;
 };
 
 export default ClientWrapper;
