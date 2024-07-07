@@ -1,10 +1,10 @@
 import ClientWrapper from '@/lib/context/ClientWrapper';
 import { Metadata, Viewport } from 'next';
-import { Inter, Manrope } from 'next/font/google';
+import { Manrope, Outfit } from 'next/font/google';
 
 import './globals.css';
 
-const inter = Manrope({
+const globalFont = Outfit({
   weight: ['400', '500', '600', '700'],
   style: ['normal'],
   subsets: ['latin'],
@@ -49,22 +49,12 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <html lang="en" className={inter.className}>
+    <html lang="en" className={globalFont.className} data-theme="emerald">
       <head>
         <link rel="language" href="en-US" />
         <meta
           name="google-site-verification"
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-                (function() {
-                  const savedTheme = localStorage.getItem('theme') || 'light';
-                  document.documentElement.setAttribute('data-theme', savedTheme);
-                })();
-              `,
-          }}
         />
       </head>
       <body>{children}</body>
