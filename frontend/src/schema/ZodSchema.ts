@@ -1,4 +1,12 @@
+import { ObjectId } from 'mongodb';
 import { z } from 'zod';
+
+const objectId = ({ message }: { message: string }) => {
+  return z
+    .string()
+    .refine((val) => ObjectId.isValid(val), message)
+    .transform((val) => new ObjectId(val));
+};
 
 const date = () => {
   return z
@@ -18,7 +26,9 @@ export const PasteSchema = z
       .string()
       .min(4, { message: 'Paste name must be at least 4 characters long' })
       .max(100, { message: 'Paste name must not exceed 100 characters' }),
-    userId: z.string().min(1, { message: 'User ID is required' }),
+    userId: objectId({
+      message: 'Invalid user ID',
+    }),
     createdAt: date(),
     syntax: z.string().min(1, { message: 'Syntax is required' }),
     bodyUrl: z.string().url({
@@ -43,9 +53,15 @@ export const PasteSchema = z
 
 export const CommentSchema = z
   .object({
-    userId: z.string().min(1, { message: 'User ID is required' }),
-    pasteId: z.string().min(1, { message: 'Paste ID is required' }),
-    parentId: z.string().optional(),
+    userId: objectId({
+      message: 'Invalid user ID',
+    }),
+    pasteId: objectId({
+      message: 'Invalid paste ID',
+    }),
+    parentId: objectId({
+      message: 'Invalid comment ID',
+    }).optional(),
     message: z
       .string()
       .min(4, { message: 'Message must be at least 4 characters long' })
@@ -59,38 +75,66 @@ export const CommentSchema = z
   })
   .strict();
 
-export const NewUserSchema = z
+export const UserSchema = z
   .object({
+    uid: z.string().min(1, { message: 'UID is required' }),
+    wallet: z
+      .string()
+      .length(42, { message: 'Invalid Ethereum wallet address' })
+      .optional(),
+    email: z.string().email().optional(),
+    oauthProvider: z.string().min(1, { message: 'OAuth provider is required' }),
+    jwt: z
+      .string()
+      .min(1, { message: 'Json Web Token is required' })
+      .optional(),
     name: z
       .string()
-      .min(4, { message: 'Name must be at least 4 characters long.' })
-      .max(50, { message: 'Name must not exceed 50 characters.' }),
-    email: z.string().email({ message: 'A valid email address is required.' }),
-    password: z
+      .min(4, { message: 'Name must be at least 4 characters long' })
+      .max(50, { message: 'Name must not exceed 50 characters' }),
+    profileUrl: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters long.' })
-      .max(32, { message: 'Password must not exceed 32 characters.' }),
-    captchaToken: z.string().min(0, { message: 'Captcha token is required.' }),
+      .url({
+        message: 'Profile URL must be a valid URL',
+      })
+      .optional(),
+    createdAt: date(),
   })
-  .strict();
+  .strict()
+  .refine(
+    (val) => {
+      return val.email || val.wallet;
+    },
+    {
+      message: 'Either wallet or OAuth information is required',
+    }
+  );
 
 export const PasteLikeSchema = z
   .object({
-    userId: z.string().min(1, { message: 'User ID is required' }),
-    pasteId: z.string().min(1, { message: 'Paste ID is required' }),
+    userId: objectId({
+      message: 'Invalid user ID',
+    }),
+    pasteId: objectId({
+      message: 'Invalid paste ID',
+    }),
   })
   .strict();
 
 export const CommentLikeSchema = z
   .object({
-    userId: z.string().min(1, { message: 'User ID is required' }),
-    pasteId: z.string().min(1, { message: 'Paste ID is required' }),
+    userId: objectId({
+      message: 'Invalid user ID',
+    }),
+    commentId: objectId({
+      message: 'Invalid comment ID',
+    }),
   })
   .strict();
 
 export type Paste = z.infer<typeof PasteSchema>;
 export type Comment = z.infer<typeof CommentSchema>;
-export type NewUser = z.infer<typeof NewUserSchema>;
+export type User = z.infer<typeof UserSchema>;
 
 export type PasteLike = z.infer<typeof PasteLikeSchema>;
 export type CommentLike = z.infer<typeof CommentLikeSchema>;

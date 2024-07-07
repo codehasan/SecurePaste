@@ -1,10 +1,11 @@
-import ClientWrapper from '@/lib/context/ClientWrapper';
-import { Metadata, Viewport } from 'next';
-import { Manrope, Outfit } from 'next/font/google';
+import type { Metadata } from 'next';
+import { Poppins } from 'next/font/google';
+import { SEO } from '@/components/SEO';
+import NavBar from '@/components/NavBar/NavBar';
 
 import './globals.css';
 
-const globalFont = Outfit({
+const poppins = Poppins({
   weight: ['400', '500', '600', '700'],
   style: ['normal'],
   subsets: ['latin'],
@@ -13,16 +14,13 @@ const globalFont = Outfit({
   adjustFontFallback: true,
 });
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000';
-
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
   applicationName: 'SecurePaste',
   title: 'SecurePaste',
   description:
     'Empowering secure data sharing through advanced encryption and blockchain technology, ensuring unparalleled privacy and reliability for your confidential information.',
+  viewport: 'width=device-width, initial-scale=1.0',
+  themeColor: '#000000',
   creator: 'Ratul Hasan, ratul.hasan.rahat.bd@gmail.com',
   generator: 'Ratul Hasan',
   authors: {
@@ -32,15 +30,6 @@ export const metadata: Metadata = {
   robots: 'ALL',
   category:
     'Security, Data Protection, Encryption, Blockchain, Privacy, Secure Sharing',
-  keywords: 'secure, paste, safe, pastebin',
-};
-
-export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: '#000000',
-  userScalable: true,
-  width: 'device-width',
-  initialScale: 1.0,
 };
 
 interface LayoutProps {
@@ -49,15 +38,21 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <html lang="en" className={globalFont.className} data-theme="emerald">
+    <html lang="en">
       <head>
         <link rel="language" href="en-US" />
-        <meta
-          name="google-site-verification"
-          content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
-        />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="/icon.png" />
+        <SEO
+          title={metadata.title as string}
+          description={metadata.description as string}
+          keywords={['secure', 'paste', 'safe', 'pastebin']}
+        ></SEO>
       </head>
-      <body>{children}</body>
+      <body className={poppins.className}>
+        <NavBar />
+        <main>{children}</main>
+      </body>
     </html>
   );
 }

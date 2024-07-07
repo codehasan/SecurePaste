@@ -32,7 +32,11 @@ const CodeEditor: React.FC<
 
   return (
     <textarea
-      className={classNames('textarea', styles.codeEditor, className)}
+      className={classNames(
+        'textarea textarea-bordered',
+        styles.codeEditor,
+        className
+      )}
       autoCorrect="off"
       autoCapitalize="off"
       autoComplete="off"

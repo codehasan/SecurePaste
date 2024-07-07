@@ -1,12 +1,12 @@
 import React from 'react';
-
-import styles from './signup/page.module.css';
 import classNames from 'classnames';
 import Link from 'next/link';
 import Logo from '@/icons/Logo';
 
+import styles from '../signup/page.module.css';
+
 interface ErrorProps {
-  searchParams: { message: string };
+  searchParams: { message: string; next: string; retry: boolean };
 }
 
 const Error = ({ searchParams }: ErrorProps) => {
@@ -26,8 +26,8 @@ const Error = ({ searchParams }: ErrorProps) => {
           {searchParams?.message || 'Oops, something went wrong.'}
         </h1>
 
-        <Link href={'/'} className="text-sky-600 mt-6">
-          Back to App
+        <Link href={searchParams?.next || '/'} className="text-sky-600 mt-6">
+          {searchParams?.retry ? 'Try again' : 'Back to App'}
         </Link>
       </div>
       <div className="text-gray-500 text-sm">

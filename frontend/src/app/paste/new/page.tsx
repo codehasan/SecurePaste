@@ -18,7 +18,7 @@ const NewPaste = () => {
         <input
           type="text"
           placeholder="Untitled"
-          className="input w-full mb-3"
+          className="input input-bordered w-full mb-3"
           minLength={4}
           maxLength={100}
         />
@@ -35,7 +35,7 @@ const NewPaste = () => {
         <div className="label">
           <span className="label-text text-base">Syntax Highlight</span>
         </div>
-        <select className="select w-full mb-3">
+        <select className="select select-bordered w-full mb-3">
           <option value="plaintext" selected>
             Text
           </option>
@@ -72,7 +72,7 @@ const NewPaste = () => {
         <div className="label">
           <span className="label-text text-base">Encryption</span>
         </div>
-        <select className="select w-full mb-3">
+        <select className="select select-bordered w-full mb-3">
           <option selected>Public / No Encryption</option>
           <option>Private / Encrypted</option>
         </select>

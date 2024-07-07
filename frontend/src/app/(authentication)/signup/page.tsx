@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useRouter } from 'next/navigation';
 import useRecaptcha from '@/hooks/useRecaptcha';
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -17,7 +16,6 @@ import { MemoizedOAuth } from './OAuthProvider';
 import { MemoizedCaptcha } from './Captcha';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
-import { MemoizedLoadingModal } from '@/components/LoadingModal';
 
 import styles from './page.module.css';
 
@@ -70,7 +68,6 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [error, setError] = useState('');
   const userAgreementRef = useRef<HTMLDialogElement>(null);
-  const router = useRouter();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,16 +81,15 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
       terms: formData.get('terms') === 'on',
       captchaToken,
     };
+    let runtimeError = '';
     const { error } = validateForm(formValues);
 
     if (error) {
-      setError(error);
+      return setError(error);
     }
 
-    let runtimeError = '';
-
     try {
-      const result = await axios.post(
+      await axios.post(
         'api/auth/signup',
         {
           name: formValues.name,
@@ -101,10 +97,9 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
           password: formValues.password,
           captchaToken,
         },
-        { timeout: 5000 }
+        { timeout: 5_000 }
       );
-
-      alert(JSON.stringify(result.data));
+      await axios.get('auth/revalidate', { timeout: 5000 });
     } catch (error) {
       console.error(error);
 

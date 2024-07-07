@@ -4,6 +4,8 @@ import { ZodError } from 'zod';
 import { NewUser, NewUserSchema } from '@/lib/schema/ZodSchema';
 import axios from 'axios';
 import logger from '@/lib/logger';
+import getErrorMessage from '@/utils/supabase/errors';
+import { revalidatePath } from 'next/cache';
 
 const validateCaptcha = async (token: string) => {
   try {
@@ -52,6 +54,8 @@ export async function POST(request: NextRequest) {
   }
 
   const inputData: NewUser = validation.data;
+  const first_name = inputData.name.slice(0, inputData.name.indexOf(' '));
+  const last_name = inputData.name.slice(inputData.name.indexOf(' ') + 1);
   // Validate the captcha token
   const captchaValidated: boolean = await validateCaptcha(
     inputData.captchaToken
@@ -67,26 +71,32 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { error } = await supabase.auth.signUp({
     email: inputData.email,
     password: inputData.password,
+    options: {
+      data: {
+        first_name: '',
+        last_name: '',
+      },
+    },
   });
 
-  if (!error) {
-    return NextResponse.json(
-      {
-        message: `Account has been created.`,
-      },
-      { status: 201 }
-    );
-  } else {
+  if (error) {
     logger.error(`Auth error: ${JSON.stringify(error)}`);
 
     return NextResponse.json(
       {
-        error: error.message,
+        error: getErrorMessage(error),
       },
-      { status: error.status }
+      { status: 500 }
     );
   }
+
+  return NextResponse.json(
+    {
+      message: `Account has been created.`,
+    },
+    { status: 201 }
+  );
 }
