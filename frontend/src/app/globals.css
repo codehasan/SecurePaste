@@ -49,6 +49,20 @@ input,
 select,
 textarea {
   font-family: inherit;
+  border: none;
+  outline: none;
+  appearance: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border: none;
+  outline: none;
+  appearance: none;
 }
 
 @layer components {

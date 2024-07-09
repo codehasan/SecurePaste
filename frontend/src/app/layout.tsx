@@ -1,10 +1,9 @@
-import ClientWrapper from '@/lib/context/ClientWrapper';
 import { Metadata, Viewport } from 'next';
-import { Manrope, Outfit } from 'next/font/google';
+import { Inter } from 'next/font/google';
 
 import './globals.css';
 
-const globalFont = Outfit({
+const globalFont = Inter({
   weight: ['400', '500', '600', '700'],
   style: ['normal'],
   subsets: ['latin'],
@@ -57,7 +56,7 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body>{children}</body>
+      <body className="bg-gray-100">{children}</body>
     </html>
   );
 }
