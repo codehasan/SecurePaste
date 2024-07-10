@@ -15,24 +15,24 @@ const NavBar = async () => {
   } = await supabase.auth.getUser();
 
   return (
-    <nav className="bg-gray-800 w-full">
+    <nav className="bg-white shadow-md w-full">
       <div className="mx-auto px-2 sm:px-4 lg:px-8">
-        <div className="navbar justify-between relative">
-          <div className="flex items-center px-2 lg:px-0">
+        <div className="navbar justify-between py-0">
+          <div className="flex items-center h-16 px-2 lg:px-0">
             <Link
-              className="flex items-center w-auto h-8"
+              className="flex items-center h-full"
               href="/"
               rel="noopener noreferrer"
             >
               <Image
-                className="max-w-full w-auto h-full"
+                className="max-w-full w-auto h-8"
                 alt="Logo"
                 src="/icon.svg"
                 width={40}
                 height={40}
               />
               <Image
-                className="max-w-full w-auto h-full ml-2 hidden lg:block"
+                className="max-w-full w-auto h-8 ml-2 hidden lg:block"
                 alt="Logo"
                 src="/logo-text.svg"
                 width={40}
@@ -40,27 +40,25 @@ const NavBar = async () => {
               />
             </Link>
 
-            <div className="hidden lg:ml-6 lg:block">
-              <div className="flex space-x-4 ">
-                <Link
-                  className="font-medium text-sm py-2 px-3 rounded-md bg-gray-900 text-white"
-                  href="/"
-                >
-                  Home
-                </Link>
-                <Link
-                  className="font-medium text-sm py-2 px-3 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
-                  href="/"
-                >
-                  Pastes
-                </Link>
-                <Link
-                  className="font-medium text-sm py-2 px-3 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
-                  href="/"
-                >
-                  Comments
-                </Link>
-              </div>
+            <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
+              <Link
+                className="inline-flex items-center font-medium text-sm px-1 pt-1 border-b-2 border-indigo-500 text-gray-900"
+                href="/"
+              >
+                Home
+              </Link>
+              <Link
+                className="inline-flex items-center font-medium text-sm px-1 pt-1 text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                href="/"
+              >
+                Pastes
+              </Link>
+              <Link
+                className="inline-flex items-center font-medium text-sm px-1 pt-1 text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
+                href="/"
+              >
+                Comments
+              </Link>
             </div>
           </div>
 
@@ -77,7 +75,7 @@ const NavBar = async () => {
                   id="search"
                   name="search"
                   type="search"
-                  className="bg-gray-700 text-gray-300 rounded-md w-full pr-3 pl-10 py-1.5 focus:text-gray-900 focus:bg-white focus:ring sm:text-sm sm:leading-6"
+                  className="text-gray-900 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   placeholder="Search"
                   autoComplete="off"
                   autoCapitalize="off"
@@ -93,13 +91,14 @@ const NavBar = async () => {
               {user ? (
                 <>
                   <Link href="/paste" className="ml-2">
-                    <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-medium">
+                    <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-semibold">
                       New Paste
                     </button>
                   </Link>
+
                   <Link
                     href="/notifications"
-                    className="ml-3 bg-gray-800 text-gray-400 border border-gray-600 border-solid rounded-md relative p-1.5 hover:bg-gray-700"
+                    className="ml-3 text-gray-400 border border-gray-300 border-solid rounded-md relative p-1.5 hover:bg-gray-50"
                   >
                     <span className="absolute -inset-1.5"></span>
                     <span className="sr-only">View notifications</span>
@@ -107,7 +106,7 @@ const NavBar = async () => {
                   </Link>
 
                   <div className="ml-3 relative">
-                    <button className="bg-gray-800 text-white text-sm rounded-full flex relative cursor-pointer">
+                    <button className="rounded-full flex items-center relative cursor-pointer">
                       <span className="absolute -inset-1.5"></span>
                       <span className="sr-only">Open user menu</span>
                       <Image
@@ -123,7 +122,7 @@ const NavBar = async () => {
               ) : (
                 <>
                   <Link href="/signin" className="ml-2">
-                    <button className="font-medium text-sm py-1.5 px-2 rounded-md border border-gray-500 border-solid text-gray-300 hover:text-white hover:bg-gray-700">
+                    <button className="font-medium text-sm py-1.5 px-2 rounded-md border border-gray-400 border-solid text-gray-500 hover:bg-gray-50">
                       Login
                     </button>
                   </Link>

@@ -18,7 +18,7 @@ const config: Config = {
   },
   plugins: [daisyui],
   daisyui: {
-    themes: ['emerald'],
+    themes: ['light'],
     logs: false,
   },
 };
