@@ -45,28 +45,8 @@
   --bs-dark: #212529;
 }
 
-input,
-select,
-textarea {
-  font-family: inherit;
-  border: none;
-  outline: none;
-  appearance: none;
-}
-
-input:focus,
-select:focus,
-textarea:focus,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  border: none;
-  outline: none;
-  appearance: none;
-}
-
 @layer components {
-  .input-secondary {
+  .input-primary {
     @apply focus-within:outline-transparent;
     @apply focus:outline-transparent;
     @apply focus-within:border-2;
@@ -75,10 +55,10 @@ textarea:focus-visible {
   .input {
     @apply cursor-text;
     @apply input-bordered;
-    @apply focus-within:input-secondary;
+    @apply focus-within:input-primary;
   }
 
-  .select-secondary {
+  .select-primary {
     @apply focus-within:outline-transparent;
     @apply focus:outline-transparent;
     @apply focus-within:border-2;
@@ -87,10 +67,10 @@ textarea:focus-visible {
   .select {
     @apply cursor-text;
     @apply select-bordered;
-    @apply focus-within:select-secondary;
+    @apply focus-within:select-primary;
   }
 
-  .textarea-secondary {
+  .textarea-primary {
     @apply focus-within:outline-transparent;
     @apply focus:outline-transparent;
     @apply focus-within:border-2;
@@ -99,7 +79,7 @@ textarea:focus-visible {
   .textarea {
     @apply cursor-text;
     @apply textarea-bordered;
-    @apply focus-within:textarea-secondary;
+    @apply focus-within:textarea-primary;
   }
 }
 
