@@ -11,6 +11,12 @@
   scroll-behavior: smooth;
 }
 
+input,
+input:focus,
+input:focus-within {
+  outline: none;
+}
+
 :root {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;
@@ -96,7 +102,6 @@
 
   html,
   body {
-    @apply min-h-screen;
-    @apply min-w-full;
+    @apply size-full;
   }
 }

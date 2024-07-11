@@ -8,7 +8,7 @@ export default function ClientLayout({ children }: Readonly<LayoutProps>) {
   return (
     <>
       <NavBar />
-      <main className="w-full h-full">{children}</main>
+      <main className="size-full">{children}</main>
     </>
   );
 }
