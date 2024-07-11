@@ -78,7 +78,7 @@ const SignIn = async ({
 
           <div className="flex justify-center text-sm">
             <span className="mr-1">Don&apos;t have an account?</span>
-            <Link href="/signup" className="text-sky-600">
+            <Link href="/auth/signup" className="text-sky-600">
               Sign up
             </Link>
           </div>

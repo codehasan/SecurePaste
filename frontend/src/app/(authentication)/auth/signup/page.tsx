@@ -112,7 +112,7 @@ const SignUp = ({
       );
 
       router.push(
-        "/signup?message=Please check your inbox and follow the instructions to verify your account. If you don't see it, be sure to check your spam or junk folder."
+        "/auth/signup?message=Please check your inbox and follow the instructions to verify your account. If you don't see it, be sure to check your spam or junk folder."
       );
     } catch (error) {
       console.error(error);
@@ -243,7 +243,7 @@ const SignUp = ({
 
           <div className="flex justify-center text-sm">
             <span className="mr-1">Already have an account?</span>
-            <Link href="/signin" className="text-sky-600">
+            <Link href="/auth/signin" className="text-sky-600">
               Sign in
             </Link>
           </div>

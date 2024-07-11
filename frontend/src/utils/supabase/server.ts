@@ -34,7 +34,7 @@ export async function createProtectedClient() {
   const { data, error } = await supabase.auth.getUser();
 
   if (error || !data?.user) {
-    redirect('/signin');
+    redirect('/auth/signin');
   }
 
   return { supabase, user: data.user };

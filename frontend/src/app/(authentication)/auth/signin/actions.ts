@@ -17,13 +17,13 @@ export async function login(formData: FormData) {
   const { error: validationError } = validateForm(data);
 
   if (validationError) {
-    redirect(`/signin?error=${validationError}`);
+    redirect(`/auth/signin?error=${validationError}`);
   }
 
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    redirect(`/signin?error=${getErrorMessage(error)}`);
+    redirect(`/auth/signin?error=${getErrorMessage(error)}`);
   }
 
   revalidatePath('/', 'layout');

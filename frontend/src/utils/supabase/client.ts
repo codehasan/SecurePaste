@@ -13,7 +13,7 @@ export const useProtectedClient = async () => {
   const { data, error } = await supabase.auth.getUser();
 
   if (error || !data?.user) {
-    router.push('/signin');
+    router.push('/auth/signin');
   }
 
   return { supabase, user: data.user };
