@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useRouter } from 'next/navigation';
 import useRecaptcha from '@/hooks/useRecaptcha';
 import classNames from 'classnames';
 import Link from 'next/link';
@@ -17,7 +16,8 @@ import { MemoizedOAuth } from './OAuthProvider';
 import { MemoizedCaptcha } from './Captcha';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
-import { MemoizedLoadingModal } from '@/components/LoadingModal';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
 import styles from './page.module.css';
 
@@ -66,7 +66,15 @@ const validateForm = (formValues: {
   return result;
 };
 
-const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
+const SignUp = ({
+  searchParams,
+}: {
+  searchParams: {
+    message: string;
+    name: string;
+    email: string;
+  };
+}) => {
   const { captchaToken, recaptchaRef, handleRecaptcha } = useRecaptcha();
   const [error, setError] = useState('');
   const userAgreementRef = useRef<HTMLDialogElement>(null);
@@ -84,16 +92,15 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
       terms: formData.get('terms') === 'on',
       captchaToken,
     };
+    let runtimeError = '';
     const { error } = validateForm(formValues);
 
     if (error) {
-      setError(error);
+      return setError(error);
     }
 
-    let runtimeError = '';
-
     try {
-      const result = await axios.post(
+      await axios.post(
         'api/auth/signup',
         {
           name: formValues.name,
@@ -101,19 +108,21 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
           password: formValues.password,
           captchaToken,
         },
-        { timeout: 5000 }
+        { timeout: 10_000 }
       );
 
-      alert(JSON.stringify(result.data));
+      router.push(
+        "/signup?message=Please check your inbox and follow the instructions to verify your account. If you don't see it, be sure to check your spam or junk folder."
+      );
     } catch (error) {
       console.error(error);
 
       const data = (error as AxiosError).response?.data as {
         error: string;
       };
-      runtimeError = data
-        ? data.error
-        : 'An unexpected error occured. Please try again later.';
+
+      runtimeError =
+        data?.error || 'An unexpected error occured. Please try again later.';
     } finally {
       recaptchaRef.current?.reset();
 
@@ -163,6 +172,7 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
               type="text"
               name="name"
               placeholder="John Doe"
+              defaultValue={searchParams.name ?? ''}
               min={4}
               max={50}
               required
@@ -175,6 +185,7 @@ const SignUp = ({ searchParams }: { searchParams: { message: string } }) => {
               type="email"
               name="email"
               placeholder="your@email.com"
+              defaultValue={searchParams.email ?? ''}
               required
             />
           </MemoizedLabel>
