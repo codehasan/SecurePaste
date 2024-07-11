@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+  const url = new URL(request.url);
+  const origin = url.origin;
+  const pathname = url.pathname;
+  request.headers.set('x-url', request.url);
+  request.headers.set('x-origin', origin);
+  request.headers.set('x-pathname', pathname);
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -33,7 +40,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && !request.nextUrl.pathname.startsWith('/auth')) {
+  if (
+    !user &&
+    !request.nextUrl.pathname.startsWith('/auth') &&
+    request.nextUrl.pathname !== '/'
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = '/auth/signin';
     return NextResponse.redirect(url);

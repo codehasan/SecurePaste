@@ -4,20 +4,50 @@ import Link from 'next/link';
 import React from 'react';
 import { IoSearch } from 'react-icons/io5';
 import { RiInbox2Line } from 'react-icons/ri';
+import { FiMenu, FiPlus } from 'react-icons/fi';
 import classNames from 'classnames';
+import { IoMdClose } from 'react-icons/io';
+import { headers } from 'next/headers';
 
 import styles from './NavBar.module.css';
 
 const NavBar = async () => {
+  const nextHeaders = headers();
+  const pathname = nextHeaders.get('x-pathname');
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pageNavigations = [
+    { name: 'Home', path: '/', active: false },
+    { name: 'Pastes', path: '/pastes', active: false },
+    { name: 'Comments', path: '/comments', active: false },
+  ];
+
+  const profileNavigations = [
+    { name: 'Your profile', path: `/user/${user?.id}` },
+    { name: 'Change password', path: `/user/${user?.id}/password` },
+    { name: 'Sign out', path: '/auth/signout' },
+  ];
+
+  if (pathname) {
+    if (pathname === '/') {
+      pageNavigations[0].active = true;
+    } else {
+      for (let i = 1; i < pageNavigations.length; i++) {
+        if (pageNavigations[i].path.startsWith(pathname)) {
+          pageNavigations[i].active = true;
+          break;
+        }
+      }
+    }
+  }
+
   return (
     <nav className="bg-white shadow-md w-full">
       <div className="mx-auto px-2 sm:px-4 lg:px-8">
-        <div className="navbar justify-between py-0">
+        <div className="navbar justify-between p-0">
           <div className="flex items-center h-16 px-2 lg:px-0">
             <Link
               className="flex items-center h-full"
@@ -33,32 +63,31 @@ const NavBar = async () => {
               />
               <Image
                 className="max-w-full w-auto h-8 ml-2 hidden lg:block"
-                alt="Logo"
+                alt="Logo Text"
                 src="/logo-text.svg"
+                priority={false}
+                loading="lazy"
                 width={40}
                 height={40}
               />
             </Link>
 
             <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
-              <Link
-                className="inline-flex items-center font-medium text-sm px-1 pt-1 border-b-2 border-indigo-500 text-gray-900"
-                href="/"
-              >
-                Home
-              </Link>
-              <Link
-                className="inline-flex items-center font-medium text-sm px-1 pt-1 text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
-                href="/"
-              >
-                Pastes
-              </Link>
-              <Link
-                className="inline-flex items-center font-medium text-sm px-1 pt-1 text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700"
-                href="/"
-              >
-                Comments
-              </Link>
+              {pageNavigations.map((navigation, index) => {
+                return (
+                  <Link
+                    key={index}
+                    className={
+                      navigation.active
+                        ? 'inline-flex items-center font-medium text-sm px-1 pt-1 border-b-2 border-indigo-500 text-gray-900'
+                        : 'inline-flex items-center font-medium text-sm px-1 pt-1 text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700'
+                    }
+                    href={navigation.path}
+                  >
+                    {navigation.name}
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
@@ -78,10 +107,36 @@ const NavBar = async () => {
                   className="text-gray-900 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   placeholder="Search"
                   autoComplete="off"
-                  autoCapitalize="off"
                 />
               </div>
             </div>
+          </div>
+
+          <div className="flex items-center lg:hidden">
+            {user ? (
+              <button
+                type="button"
+                className="text-gray-500 p-2 rounded-md inline-flex justify-center relative cursor-pointer hover:text-gray-600 hover:bg-gray-100"
+              >
+                <span className="absolute -inset-1.5"></span>
+                <span className="sr-only">Open main menu</span>
+                <FiMenu
+                  className={classNames('size-6 text-inherit', styles.menuOpen)}
+                />
+                <IoMdClose
+                  className={classNames(
+                    'size-6 text-inherit',
+                    styles.menuClose
+                  )}
+                />
+              </button>
+            ) : (
+              <Link href="/auth/signin" className="ml-2">
+                <button className="font-medium text-sm py-1.5 px-2 rounded-md border border-gray-400 border-solid text-gray-500 hover:bg-gray-50">
+                  Login
+                </button>
+              </Link>
+            )}
           </div>
 
           <div className="hidden lg:block">
@@ -92,21 +147,26 @@ const NavBar = async () => {
                 <>
                   <Link href="/paste" className="ml-2">
                     <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-semibold">
+                      <FiPlus className="size-5 text-inherit" />
                       New Paste
                     </button>
                   </Link>
 
                   <Link
                     href="/notifications"
-                    className="ml-3 text-gray-400 border border-gray-300 border-solid rounded-md relative p-1.5 hover:bg-gray-50"
+                    className="ml-3 text-gray-500 border border-gray-400 border-solid rounded-md relative p-1 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-500"
                   >
                     <span className="absolute -inset-1.5"></span>
                     <span className="sr-only">View notifications</span>
                     <RiInbox2Line className="size-5" />
                   </Link>
 
-                  <div className="ml-3 relative">
-                    <button className="rounded-full flex items-center relative cursor-pointer">
+                  <div className="ml-3 dropdown dropdown-end">
+                    <div
+                      tabIndex={0}
+                      role="button"
+                      className="rounded-full flex items-center relative cursor-pointer"
+                    >
                       <span className="absolute -inset-1.5"></span>
                       <span className="sr-only">Open user menu</span>
                       <Image
@@ -116,17 +176,34 @@ const NavBar = async () => {
                         width={40}
                         height={40}
                       />
-                    </button>
+                    </div>
+                    <ul
+                      tabIndex={0}
+                      className="dropdown-content border border-solid border-opacity-10 border-black  text-gray-700 bg-white rounded-md z-[10] w-48 py-1 px-0 mt-2 shadow-lg"
+                    >
+                      {profileNavigations.map((navigation, index) => {
+                        return (
+                          <li key={index} className="text-sm hover:bg-gray-100">
+                            <Link
+                              className="block px-4 py-2"
+                              href={navigation.path}
+                            >
+                              {navigation.name}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
                 </>
               ) : (
                 <>
-                  <Link href="/signin" className="ml-2">
+                  <Link href="/auth/signin" className="ml-2">
                     <button className="font-medium text-sm py-1.5 px-2 rounded-md border border-gray-400 border-solid text-gray-500 hover:bg-gray-50">
                       Login
                     </button>
                   </Link>
-                  <Link href="/signin" className="ml-3">
+                  <Link href="/auth/signin" className="ml-3">
                     <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-medium">
                       Create account
                     </button>
@@ -137,6 +214,69 @@ const NavBar = async () => {
           </div>
         </div>
       </div>
+
+      {user && (
+        <div className={classNames('lg:hidden', styles.menu)}>
+          <div className="pt-2 pb-3 space-x-1">
+            {pageNavigations.map((navigation, index) => {
+              return (
+                <Link
+                  key={index}
+                  className={
+                    navigation.active
+                      ? 'text-indigo-700 bg-indigo-50 border-l-4 border-indigo-500 font-medium text-base pr-4 pl-3 py-2 block'
+                      : 'text-gray-600 border-l-4 border-transparent font-medium text-base pr-4 pl-3 py-2 block'
+                  }
+                  href={navigation.path}
+                >
+                  {navigation.name}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="pt-4 pb-3 border-gray-200 border-y border-b-0">
+            <div className="flex items-center px-4">
+              <Image
+                className="size-10 max-w-full rounded-full"
+                alt="Profile"
+                src="/img/avatar.svg"
+                width={40}
+                height={40}
+              />
+              <div className="ml-3">
+                <div className="text-gray-800 font-medium text-base">
+                  {user.user_metadata.first_name}&nbsp;
+                  {user.user_metadata.last_name}
+                </div>
+                <div className="text-gray-500 font-medium text-sm">
+                  {user.email || 'Email not set'}
+                </div>
+              </div>
+              <Link
+                href="/notifications"
+                className="ml-auto text-gray-500 border border-gray-400 border-solid rounded-md relative p-1 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-500"
+              >
+                <span className="absolute -inset-1.5"></span>
+                <span className="sr-only">View notifications</span>
+                <RiInbox2Line className="size-5" />
+              </Link>
+            </div>
+            <div className="mt-3">
+              {profileNavigations.map((navigation, index) => {
+                return (
+                  <Link
+                    key={index}
+                    className="text-gray-500 font-medium text-base px-4 py-2 block"
+                    href={navigation.path}
+                  >
+                    {navigation.name}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

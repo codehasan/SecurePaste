@@ -8,3 +8,24 @@
   font-size: 0.875rem;
   line-height: 1.5;
 }
+
+.menu {
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+.menuOpen {
+  display: block;
+}
+
+.menuClose {
+  display: none;
+}
+
+.menu[data-open] .menuOpen {
+  display: none;
+}
+
+.menu[data-open] .menuClose {
+  display: block;
+}
