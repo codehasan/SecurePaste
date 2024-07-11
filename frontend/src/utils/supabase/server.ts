@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export function createClient() {
   const cookieStore = cookies();
@@ -26,4 +27,15 @@ export function createClient() {
       },
     }
   );
+}
+
+export async function createProtectedClient() {
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error || !data?.user) {
+    redirect('/signin');
+  }
+
+  return { supabase, user: data.user };
 }
