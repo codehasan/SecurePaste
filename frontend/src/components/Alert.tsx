@@ -1,4 +1,3 @@
-'use client';
 import classNames from 'classnames';
 import React from 'react';
 import { IoCheckmarkCircleOutline } from 'react-icons/io5';

@@ -34,7 +34,6 @@ const CodeEditor: React.FC<
     <textarea
       className={classNames('textarea', styles.codeEditor, className)}
       autoCorrect="off"
-      autoCapitalize="off"
       autoComplete="off"
       spellCheck="false"
       onKeyDown={handleKeyDown}

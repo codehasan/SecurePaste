@@ -7,7 +7,7 @@ const globalFont = Inter({
   weight: ['400', '500', '600', '700'],
   style: ['normal'],
   subsets: ['latin'],
-  preload: true,
+  preload: false,
   fallback: ['Arial', 'sans-serif'],
   adjustFontFallback: true,
 });
