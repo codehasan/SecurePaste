@@ -65,6 +65,6 @@ export const config = {
      * - styles (CSS files)
      * - scripts (JavaScript files)
      */
-    '/((?!_next/static|_next/image|favicon.ico|api|public|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|public|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js|txt|json)$).*)',
   ],
 };
