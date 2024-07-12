@@ -9,9 +9,13 @@
   border: 1px solid #d3d6dc;
 }
 
+.header {
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+}
+
 .base {
   background: #f8f8fa;
-  min-height: 100vh;
 }
 
 .logo {
@@ -20,4 +24,45 @@
 
 .userAgreement {
   list-style: decimal;
+}
+
+@media screen and (max-width: 900px) {
+  .container {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .container {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  .container {
+    width: 90%;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+
+  .header {
+    margin-top: 3rem;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .container {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 399px) {
+  .container {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .header {
+    margin-top: 2rem;
+  }
 }

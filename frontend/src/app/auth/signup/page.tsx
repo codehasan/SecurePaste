@@ -1,5 +1,11 @@
 'use client';
-import React, { FormEvent, useCallback, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import classNames from 'classnames';
 import Link from 'next/link';
 import axios, { AxiosError } from 'axios';
@@ -9,6 +15,7 @@ import { MemoizedOAuth } from './OAuthProvider';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
 import { useRouter } from 'next/navigation';
+import { PasswordRequirement } from './PasswordRequirement';
 import Script from 'next/script';
 
 import styles from './page.module.css';
@@ -68,6 +75,15 @@ const SignUp = ({
   };
 }) => {
   const [error, setError] = useState('');
+  const [passwordStatus, setPasswordStatus] = useState({
+    value: '',
+    lowercase: false,
+    uppercase: false,
+    number: false,
+    symbols: false,
+    minimumChars: false,
+    noTrailingSpace: false,
+  });
   const userAgreementRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
 
@@ -121,25 +137,55 @@ const SignUp = ({
     userAgreementRef.current?.showModal();
   }, []);
 
+  const handlePassword = (event: ChangeEvent<HTMLInputElement>) => {
+    const pass = event.target.value;
+
+    const maxLength = Number(event.target.max || '32');
+    if (maxLength && pass.length > maxLength) {
+      return;
+    }
+
+    const passStats = {
+      value: pass,
+      lowercase: /[a-z]/.test(pass),
+      uppercase: /[A-Z]/.test(pass),
+      number: /\d/.test(pass),
+      symbols: /[^A-Za-z0-9\s]/.test(pass),
+      minimumChars: pass.length >= 8,
+      noTrailingSpace: pass.length > 0 && pass.trim() === pass,
+    };
+
+    setPasswordStatus(passStats);
+  };
+
   return (
     <>
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="lazyOnload"
       />
-      <div
-        className={classNames(styles.base, 'flex flex-col items-center w-full')}
-      >
+      <div className={classNames(styles.base, 'flex flex-col items-center')}>
         <MemoizedUserAgreement ref={userAgreementRef} singleButton />
+
+        {/* Logo */}
         <div id="logo-container" className="mt-16 mb-8">
           <Link href="/" rel="noopener noreferrer">
             <Logo className={styles.logo} width={50} height={50} />
           </Link>
         </div>
+
         <div id="signup-form" className={styles.container}>
-          <h1 className="text-xl mt-16 mb-6 p-1 pl-0 font-medium">
+          {/* Form Header */}
+          <h1
+            className={classNames(
+              styles.header,
+              'text-xl p-1 pl-0 font-medium'
+            )}
+          >
             Sign up for an account
           </h1>
+
+          {/* OAuth Providers */}
           <MemoizedOAuth />
           <div className="divider text-gray-500 text-sm mt-6 mb-6">OR</div>
 
@@ -182,7 +228,7 @@ const SignUp = ({
             </MemoizedLabel>
 
             <MemoizedLabel
-              className="mt-3"
+              className="mt-3 mb-1"
               primaryText="Password"
               topRight="8-32 characters"
               required
@@ -192,12 +238,42 @@ const SignUp = ({
                 type="password"
                 name="password"
                 placeholder="●●●●●●●●"
+                value={passwordStatus.value}
+                onChange={handlePassword}
                 min={8}
                 max={32}
                 required
               />
             </MemoizedLabel>
 
+            <div className="text-sm text-gray-500 grid grid-cols-1 sm:grid-cols-2">
+              <PasswordRequirement
+                condition={passwordStatus.lowercase}
+                text="One lowercase character"
+              />
+              <PasswordRequirement
+                condition={passwordStatus.uppercase}
+                text="One uppercase character"
+              />
+              <PasswordRequirement
+                condition={passwordStatus.number}
+                text="One number"
+              />
+              <PasswordRequirement
+                condition={passwordStatus.symbols}
+                text="One special character"
+              />
+              <PasswordRequirement
+                condition={passwordStatus.noTrailingSpace}
+                text="No trailing space"
+              />
+              <PasswordRequirement
+                condition={passwordStatus.minimumChars}
+                text="8 characters minimum"
+              />
+            </div>
+
+            {/* Accept Terms */}
             <div className="label justify-start my-3">
               <input
                 className="checkbox text-gray-700 mr-2"
@@ -214,15 +290,28 @@ const SignUp = ({
               </span>
             </div>
 
-            {/* Turstile captcha */}
-            <div
-              className="cf-turnstile mb-4"
-              data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
-            />
+            {/* Turnstile captcha */}
+            <div className="label justify-start mb-4">
+              <div
+                className="cf-turnstile"
+                data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
+              />
+            </div>
 
             <button
               type="submit"
-              className="btn btn-primary w-full shadow-md mb-3"
+              className={classNames(
+                {
+                  'btn-disabled':
+                    !passwordStatus.lowercase ||
+                    !passwordStatus.uppercase ||
+                    !passwordStatus.minimumChars ||
+                    !passwordStatus.noTrailingSpace ||
+                    !passwordStatus.number ||
+                    !passwordStatus.symbols,
+                },
+                'btn btn-primary w-full shadow-md mb-3'
+              )}
             >
               Create an account
             </button>

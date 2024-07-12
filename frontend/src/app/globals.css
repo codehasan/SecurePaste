@@ -99,9 +99,4 @@ input:focus-within {
   pre {
     @apply font-normal;
   }
-
-  html,
-  body {
-    @apply size-full;
-  }
 }
