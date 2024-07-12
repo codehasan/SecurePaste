@@ -9,9 +9,29 @@
   line-height: 1.5;
 }
 
+.dropdownActive {
+  outline: node;
+  user-select: none;
+  cursor: none;
+  appearance: none;
+}
+
+.dropdownActive:checked ~ .menu {
+  visibility: visible;
+  height: auto;
+}
+
+.dropdownActive:checked ~ .menuOpen {
+  display: none;
+}
+
+.dropdownActive:checked ~ .menuClose {
+  display: block;
+}
+
 .menu {
-  opacity: 1;
-  transition: opacity 1s ease-out;
+  height: 0;
+  visibility: hidden;
 }
 
 .menuOpen {
@@ -20,12 +40,4 @@
 
 .menuClose {
   display: none;
-}
-
-.menu[data-open] .menuOpen {
-  display: none;
-}
-
-.menu[data-open] .menuClose {
-  display: block;
 }
