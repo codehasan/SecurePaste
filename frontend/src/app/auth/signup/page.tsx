@@ -228,7 +228,7 @@ const SignUp = ({
             </MemoizedLabel>
 
             <MemoizedLabel
-              className="mt-3 mb-1"
+              className="mt-3"
               primaryText="Password"
               topRight="8-32 characters"
               required
@@ -246,32 +246,34 @@ const SignUp = ({
               />
             </MemoizedLabel>
 
-            <div className="text-sm text-gray-500 grid grid-cols-1 sm:grid-cols-2">
-              <PasswordRequirement
-                condition={passwordStatus.lowercase}
-                text="One lowercase character"
-              />
-              <PasswordRequirement
-                condition={passwordStatus.uppercase}
-                text="One uppercase character"
-              />
-              <PasswordRequirement
-                condition={passwordStatus.number}
-                text="One number"
-              />
-              <PasswordRequirement
-                condition={passwordStatus.symbols}
-                text="One special character"
-              />
-              <PasswordRequirement
-                condition={passwordStatus.noTrailingSpace}
-                text="No trailing space"
-              />
-              <PasswordRequirement
-                condition={passwordStatus.minimumChars}
-                text="8 characters minimum"
-              />
-            </div>
+            {passwordStatus.value && (
+              <div className="text-sm mt-1 text-gray-500 grid grid-cols-1 sm:grid-cols-2">
+                <PasswordRequirement
+                  condition={passwordStatus.lowercase}
+                  text="One lowercase character"
+                />
+                <PasswordRequirement
+                  condition={passwordStatus.uppercase}
+                  text="One uppercase character"
+                />
+                <PasswordRequirement
+                  condition={passwordStatus.number}
+                  text="One number"
+                />
+                <PasswordRequirement
+                  condition={passwordStatus.symbols}
+                  text="One special character"
+                />
+                <PasswordRequirement
+                  condition={passwordStatus.noTrailingSpace}
+                  text="No trailing space"
+                />
+                <PasswordRequirement
+                  condition={passwordStatus.minimumChars}
+                  text="8 characters minimum"
+                />
+              </div>
+            )}
 
             {/* Accept Terms */}
             <div className="label justify-start my-3">
