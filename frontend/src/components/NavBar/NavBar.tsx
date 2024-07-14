@@ -101,7 +101,7 @@ const NavBar = async () => {
                 id="search"
                 name="search"
                 type="search"
-                className="text-gray-900 placeholder-gray-400 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="text-gray-900 placeholder-gray-400 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white"
                 placeholder="Search"
                 autoComplete="off"
               />
@@ -184,7 +184,7 @@ const NavBar = async () => {
                       </div>
                       <Link
                         href="/notifications"
-                        className="ml-auto text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-500"
+                        className="ml-auto text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50"
                       >
                         <RiInbox2Line className="size-5" />
                       </Link>
@@ -229,7 +229,7 @@ const NavBar = async () => {
 
                   <Link
                     href="/notifications"
-                    className="ml-3 text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50 hover:text-gray-600 hover:border-gray-500"
+                    className="ml-3 text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50"
                   >
                     <RiInbox2Line className="size-5" />
                   </Link>
