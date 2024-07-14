@@ -18,7 +18,32 @@ const config: Config = {
   },
   plugins: [daisyui],
   daisyui: {
-    themes: ['light'],
+    themes: [
+      {
+        mytheme: {
+          primary: '#0d6efd',
+          'primary-content': '#ffffff',
+          secondary: '#6610f2',
+          'secondary-content': '#ffffff',
+          accent: '#24b744',
+          'accent-content': '#ffffff',
+          neutral: '#000000',
+          'neutral-content': '#ffffff',
+          'base-100': '#f8f8fa',
+          'base-200': '#e5e7eb',
+          'base-300': '#e5e7eb',
+          'base-content': '#000000',
+          info: '#0dcaf0',
+          'info-content': '#000111',
+          success: '#198754',
+          'success-content': '#ffffff',
+          warning: '#ffc107',
+          'warning-content': '#000000',
+          error: '#dc3545',
+          'error-content': '#ffffff',
+        },
+      },
+    ],
     logs: false,
   },
 };
