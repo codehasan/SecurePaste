@@ -49,7 +49,7 @@ const NavBar = async () => {
       pageNavigations[0].active = true;
     } else {
       for (let i = 1; i < pageNavigations.length; i++) {
-        if (pageNavigations[i].path.startsWith(pathname)) {
+        if (pathname.startsWith(pageNavigations[i].path)) {
           pageNavigations[i].active = true;
           break;
         }
