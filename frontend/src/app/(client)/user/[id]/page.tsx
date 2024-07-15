@@ -1,7 +1,11 @@
 import React from 'react';
 
-const User = () => {
-  return <div></div>;
+interface UserProps {
+  params: { id: string };
+}
+
+const User = ({ params }: UserProps) => {
+  return <div>{params.id}</div>;
 };
 
 export default User;

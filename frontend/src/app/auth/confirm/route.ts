@@ -18,6 +18,23 @@ export async function GET(request: NextRequest) {
     });
 
     if (!error) {
+      const {
+        data: { user },
+      } = await supabase.auth.updateUser({
+        data: {
+          email_verified: true,
+        },
+      });
+
+      if (!user) {
+        return NextResponse.redirect(
+          new URL(
+            '/error?message=An unexpected error occurred. Please try again later.',
+            request.url
+          )
+        );
+      }
+
       if (next === '/') {
         revalidatePath('/', 'layout');
       } else {

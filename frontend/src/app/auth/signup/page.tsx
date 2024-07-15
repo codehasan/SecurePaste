@@ -15,55 +15,11 @@ import { MemoizedOAuth } from './OAuthProvider';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
 import { useRouter } from 'next/navigation';
-import { PasswordRequirement } from './PasswordRequirement';
+import { PasswordRequirement } from '../../../components/PasswordRequirement';
 import Script from 'next/script';
+import { validateForm } from '@/lib/SignupFormValidation';
 
 import styles from './page.module.css';
-
-const validateForm = (formValues: {
-  name: string;
-  email: string;
-  password: string;
-  terms: boolean;
-  captchaToken: string;
-}) => {
-  const result = {
-    filled: true,
-    error: '',
-  };
-  const checks = [
-    {
-      condition: !formValues.name.trim(),
-      error: 'Please enter your full name.',
-    },
-    {
-      condition: !formValues.email.trim(),
-      error: 'Please enter your email address.',
-    },
-    {
-      condition: !formValues.password.trim(),
-      error: 'Please enter a password for your account.',
-    },
-    {
-      condition: !formValues.terms,
-      error: 'Please accept the terms of service.',
-    },
-    {
-      condition: !formValues.captchaToken.trim(),
-      error: 'Please complete the captcha.',
-    },
-  ];
-
-  for (let check of checks) {
-    if (check.condition) {
-      result.filled = false;
-      result.error = check.error;
-      break;
-    }
-  }
-
-  return result;
-};
 
 const SignUp = ({
   searchParams,
@@ -99,7 +55,7 @@ const SignUp = ({
       terms: formData.get('terms') === 'on',
       captchaToken: formData.get('cf-turnstile-response') as string,
     };
-    const { error } = validateForm(formValues);
+    const { error } = validateForm(formValues, passwordStatus);
 
     if (error) {
       return setError(error);
@@ -107,7 +63,7 @@ const SignUp = ({
 
     try {
       await axios.post(
-        'api/auth/signup',
+        '/api/auth/signup',
         {
           name: formValues.name,
           email: formValues.email,
@@ -120,6 +76,7 @@ const SignUp = ({
       router.push(
         "/auth/signup?message=Please check your inbox and follow the instructions to verify your account. If you don't see it, be sure to check your spam or junk folder."
       );
+      router.refresh();
     } catch (error) {
       console.error(error);
 
@@ -204,6 +161,7 @@ const SignUp = ({
                 className="input shadow-md w-full"
                 type="text"
                 name="name"
+                inputMode="text"
                 placeholder="John Doe"
                 defaultValue={searchParams.name ?? ''}
                 min={4}
@@ -221,6 +179,7 @@ const SignUp = ({
                 className="input shadow-md w-full"
                 type="email"
                 name="email"
+                inputMode="email"
                 placeholder="your@email.com"
                 defaultValue={searchParams.email ?? ''}
                 required
@@ -247,7 +206,7 @@ const SignUp = ({
             </MemoizedLabel>
 
             {passwordStatus.value && (
-              <div className="text-sm mt-1 text-gray-500 grid grid-cols-1 sm:grid-cols-2">
+              <div className="text-sm mt-2 text-gray-500 grid grid-cols-1 sm:grid-cols-2">
                 <PasswordRequirement
                   condition={passwordStatus.lowercase}
                   text="One lowercase character"
@@ -285,9 +244,12 @@ const SignUp = ({
               />
               <span className="label-text">
                 By creating an account, I agree to SecurePaste&apos;s&nbsp;
-                <button className="ml-1 underline" onClick={showTerms}>
+                <div
+                  className="ml-1 underline cursor-pointer"
+                  onClick={showTerms}
+                >
                   Terms of Service
-                </button>
+                </div>
                 .
               </span>
             </div>
@@ -295,34 +257,24 @@ const SignUp = ({
             {/* Turnstile captcha */}
             <div className="label justify-start mb-4">
               <div
-                className="cf-turnstile"
+                className="cf-turnstile bg-transparent"
+                data-theme="light"
                 data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITEKEY}
               />
             </div>
 
             <button
               type="submit"
-              className={classNames(
-                {
-                  'btn-disabled':
-                    !passwordStatus.lowercase ||
-                    !passwordStatus.uppercase ||
-                    !passwordStatus.minimumChars ||
-                    !passwordStatus.noTrailingSpace ||
-                    !passwordStatus.number ||
-                    !passwordStatus.symbols,
-                },
-                'btn btn-primary w-full shadow-md mb-3'
-              )}
+              className="btn btn-primary w-full shadow-md mb-3"
             >
               Create an account
             </button>
 
             <div className="flex justify-center text-sm">
               <span className="mr-1">Already have an account?</span>
-              <Link href="/auth/signin" className="text-sky-600">
+              <a href="/auth/signin" className="text-sky-600">
                 Sign in
-              </Link>
+              </a>
             </div>
           </form>
         </div>

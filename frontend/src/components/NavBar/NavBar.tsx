@@ -37,7 +37,7 @@ const NavBar = async () => {
 
   const profileNavigations = [
     { name: 'Your profile', path: `/user/${user?.id}` },
-    { name: 'Change password', path: `/user/${user?.id}/password` },
+    { name: 'Change password', path: `/auth/update_password` },
     { name: 'Sign out', path: '/auth/signout' },
   ];
 

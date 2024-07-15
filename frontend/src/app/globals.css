@@ -27,6 +27,7 @@ input:focus-within {
   .input {
     @apply cursor-text;
     @apply input-bordered;
+    @apply bg-transparent;
     @apply focus-within:input-primary;
   }
 

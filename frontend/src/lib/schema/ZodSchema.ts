@@ -59,7 +59,7 @@ export const CommentSchema = z
   })
   .strict();
 
-export const NewUserSchema = z
+export const SignUpShcema = z
   .object({
     name: z
       .string()
@@ -74,23 +74,51 @@ export const NewUserSchema = z
   })
   .strict();
 
-export const PasteLikeSchema = z
+export const SignInSchema = z
   .object({
-    userId: z.string().min(1, { message: 'User ID is required' }),
-    pasteId: z.string().min(1, { message: 'Paste ID is required' }),
+    email: z.string().email({ message: 'A valid email address is required.' }),
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters long.' })
+      .max(32, { message: 'Password must not exceed 32 characters.' }),
+    options: z.object({
+      captchaToken: z
+        .string()
+        .min(0, { message: 'Captcha token is required.' }),
+    }),
   })
   .strict();
 
-export const CommentLikeSchema = z
+export const ForgotPasswordSchema = z
   .object({
-    userId: z.string().min(1, { message: 'User ID is required' }),
-    pasteId: z.string().min(1, { message: 'Paste ID is required' }),
+    email: z.string().email({ message: 'A valid email address is required.' }),
+    captchaToken: z.string().min(0, { message: 'Captcha token is required.' }),
+  })
+  .strict();
+
+export const PasswordResetSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters long.' })
+      .max(32, { message: 'Password must not exceed 32 characters.' }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters long.' })
+      .max(32, { message: 'Password must not exceed 32 characters.' }),
+  })
+  .strict()
+  .refine(({ password, confirmPassword }) => password === confirmPassword, {
+    message: 'Both passwords should match.',
+  });
+
+export const TokenVerificationShcema = z
+  .object({
+    email: z.string().email({ message: 'A valid email address is required.' }),
+    token: z.string().min(0, { message: 'OTP is required.' }),
   })
   .strict();
 
 export type Paste = z.infer<typeof PasteSchema>;
 export type Comment = z.infer<typeof CommentSchema>;
-export type NewUser = z.infer<typeof NewUserSchema>;
-
-export type PasteLike = z.infer<typeof PasteLikeSchema>;
-export type CommentLike = z.infer<typeof CommentLikeSchema>;
+export type NewUser = z.infer<typeof SignUpShcema>;

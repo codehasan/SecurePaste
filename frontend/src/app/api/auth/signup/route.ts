@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { ZodError } from 'zod';
-import { NewUser, NewUserSchema } from '@/lib/schema/ZodSchema';
+import { NewUser, SignUpShcema } from '@/lib/schema/ZodSchema';
 import getErrorMessage from '@/utils/supabase/errors';
 import logger from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const validation = NewUserSchema.safeParse(body);
+  const validation = SignUpShcema.safeParse(body);
 
   // Valildate the request body
   if (!validation.success) {
