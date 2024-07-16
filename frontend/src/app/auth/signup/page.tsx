@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { PasswordRequirement } from '../../../components/PasswordRequirement';
 import Script from 'next/script';
 import { validateForm } from '@/lib/SignupFormValidation';
+import { logError } from '@/lib/logging/client';
 
 import styles from '../auth.module.css';
 
@@ -40,11 +41,13 @@ const SignUp = ({
     minimumChars: false,
     noTrailingSpace: false,
   });
+  const [loading, setLoading] = useState(false);
   const userAgreementRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
 
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
@@ -78,7 +81,7 @@ const SignUp = ({
       );
       router.refresh();
     } catch (error) {
-      console.error(error);
+      logError(JSON.stringify(error));
 
       const data = (error as AxiosError).response?.data as {
         error: string;
@@ -87,6 +90,8 @@ const SignUp = ({
       setError(
         data?.error || 'An unexpected error occured. Please try again later.'
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,7 +250,7 @@ const SignUp = ({
               <span className="label-text">
                 By creating an account, I agree to SecurePaste&apos;s&nbsp;
                 <div
-                  className="ml-1 underline cursor-pointer"
+                  className="ml-1 underline cursor-pointer inline"
                   onClick={showTerms}
                 >
                   Terms of Service
@@ -265,9 +270,16 @@ const SignUp = ({
 
             <button
               type="submit"
-              className="btn btn-primary w-full shadow-md mb-3"
+              className={classNames(
+                { 'btn-disabled': loading },
+                'btn btn-primary w-full shadow-md mb-3'
+              )}
             >
-              Create an account
+              {loading ? (
+                <span className="loading loading-spinner loading-sm" />
+              ) : (
+                <span>Create an account</span>
+              )}
             </button>
 
             <div className="flex justify-center text-sm">
