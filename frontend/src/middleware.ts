@@ -5,7 +5,6 @@ import { pathStartsWith } from './lib/PathHelper';
 
 const handleRedirection = (user: User | null, request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  const restrictedAuthUrls = ['/auth/signout', '/auth/update_password'];
 
   // Redirect logged-in users away from auth routes, except signout and update_password
   if (
@@ -84,13 +83,13 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - api (API routes)
      * - public (public directory files)
-     * - auth (Authentication routes)
+     * - api (API routes)
      * - error (Error routes)
+     * - user view route
      * - styles (CSS files)
      * - scripts (JavaScript files)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public|error|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|error|user/:id|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js)$).*)',
   ],
 };
