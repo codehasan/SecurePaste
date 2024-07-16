@@ -72,6 +72,7 @@ const ForgotPassword = async ({
                 type="text"
                 name="otp"
                 placeholder="●●●●●●"
+                autoFocus
                 required
               />
             </MemoizedLabel>
