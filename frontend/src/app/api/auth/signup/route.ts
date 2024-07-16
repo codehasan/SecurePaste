@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { ZodError } from 'zod';
 import { NewUser, SignUpShcema } from '@/lib/schema/ZodSchema';
 import getErrorMessage from '@/utils/supabase/errors';
-import logger from '@/lib/logger';
+import logger from '@/lib/logging/server';
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -27,9 +27,6 @@ export async function POST(request: NextRequest) {
     email: inputData.email,
     password: inputData.password,
     options: {
-      data: {
-        ...getDisplayName(inputData.name),
-      },
       captchaToken: inputData.captchaToken,
     },
   });
@@ -52,20 +49,3 @@ export async function POST(request: NextRequest) {
     { status: 201 }
   );
 }
-
-const getDisplayName = (fullName: string) => {
-  const trimmedName = fullName.trim();
-  const nameParts = trimmedName.split(/\s+/);
-
-  let first_name = '';
-  let last_name = '';
-
-  if (nameParts.length > 1) {
-    first_name = nameParts[0];
-    last_name = nameParts.slice(1).join(' ');
-  } else {
-    first_name = trimmedName;
-  }
-
-  return { first_name, last_name };
-};

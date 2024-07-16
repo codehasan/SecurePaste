@@ -10,7 +10,7 @@ import {
   SignInSchema,
   TokenVerificationShcema,
 } from '@/lib/schema/ZodSchema';
-import logger from '@/lib/logger';
+import logger from '@/lib/logging/server';
 
 export async function signIn(formData: FormData) {
   const data = {
