@@ -141,7 +141,7 @@ const SignUp = ({
           <h1
             className={classNames(
               styles.header,
-              'text-xl p-1 pl-0 font-medium'
+              'text-xl p-1 pl-0 font-normal'
             )}
           >
             Sign up for an account

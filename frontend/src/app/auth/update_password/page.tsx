@@ -65,7 +65,7 @@ const UpdatePassword = ({
       </div>
       <div id="signup-form" className={styles.container}>
         <h1
-          className={classNames(styles.header, 'text-xl p-1 pl-0 font-medium')}
+          className={classNames(styles.header, 'text-xl p-1 pl-0 font-normal')}
         >
           Update your password
         </h1>

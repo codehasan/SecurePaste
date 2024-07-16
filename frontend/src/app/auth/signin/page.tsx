@@ -33,7 +33,7 @@ const SignIn = async ({
       </div>
       <div id="signup-form" className={styles.container}>
         <h1
-          className={classNames(styles.header, 'text-xl p-1 pl-0 font-medium')}
+          className={classNames(styles.header, 'text-xl p-1 pl-0 font-normal')}
         >
           Sign in to your account
         </h1>
