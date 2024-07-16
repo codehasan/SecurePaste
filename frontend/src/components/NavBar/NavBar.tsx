@@ -250,8 +250,28 @@ const NavBar = async () => {
                     </div>
                     <ul
                       tabIndex={0}
-                      className="dropdown-content border border-solid border-opacity-10 border-black  text-gray-700 bg-white rounded-md z-[10] w-48 py-1 px-0 mt-2 shadow-lg"
+                      className="dropdown-content border border-solid border-opacity-10 border-black  text-gray-700 bg-white rounded-md w-80 z-[10] py-1 px-0 mt-2 shadow-lg"
                     >
+                      <li key={99}>
+                        <div className="flex items-center px-4 py-2">
+                          <Image
+                            className="size-10 max-w-full rounded-full"
+                            alt="Profile"
+                            src={user.user_metadata.avatar || '/img/avatar.svg'}
+                            width={40}
+                            height={40}
+                          />
+                          <div className="ml-3">
+                            <div className="text-gray-800 font-medium text-base">
+                              {user.user_metadata.first_name}&nbsp;
+                              {user.user_metadata.last_name}
+                            </div>
+                            <div className="text-gray-500 font-medium text-sm">
+                              {user.email || 'Email not set'}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
                       {profileNavigations.map((navigation, index) => {
                         return (
                           <li key={index} className="text-sm hover:bg-gray-100">
