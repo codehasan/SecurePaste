@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Logo from '@/icons/Logo';
 import Alert, { Type } from '@/components/Alert';
 
-import styles from '../signup/page.module.css';
+import styles from '../auth.module.css';
 import {
   signOutGlobal,
   signOutLocal,

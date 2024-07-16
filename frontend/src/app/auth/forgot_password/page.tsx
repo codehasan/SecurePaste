@@ -7,7 +7,7 @@ import { MemoizedLabel } from '@/components/Label';
 import { sendPasswordReset, verifyRecoveryOtp } from '@/utils/supabase/actions';
 import Script from 'next/script';
 
-import styles from '../signup/page.module.css';
+import styles from '../auth.module.css';
 
 const ForgotPassword = async ({
   searchParams,

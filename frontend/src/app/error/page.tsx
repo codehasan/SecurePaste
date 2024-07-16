@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import Link from 'next/link';
 import Logo from '@/icons/Logo';
 
-import styles from '../auth/signup/page.module.css';
+import styles from '../auth/auth.module.css';
 
 interface ErrorProps {
   searchParams: { message: string; next: string; retry: boolean };

@@ -19,7 +19,7 @@ import { PasswordRequirement } from '../../../components/PasswordRequirement';
 import Script from 'next/script';
 import { validateForm } from '@/lib/SignupFormValidation';
 
-import styles from './page.module.css';
+import styles from '../auth.module.css';
 
 const SignUp = ({
   searchParams,

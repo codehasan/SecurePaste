@@ -11,7 +11,7 @@ import { updatePassword } from '@/utils/supabase/actions';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 
-import styles from '../signup/page.module.css';
+import styles from '../auth.module.css';
 
 const UpdatePassword = ({
   searchParams,

@@ -2,7 +2,7 @@
 import classNames from 'classnames';
 import React, { ForwardedRef, forwardRef } from 'react';
 
-import styles from '../signup/page.module.css';
+import styles from '../auth.module.css';
 
 interface UserAgreementProps {
   onClose?: () => void;
