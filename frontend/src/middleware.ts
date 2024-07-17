@@ -6,23 +6,31 @@ import { pathStartsWith } from './lib/PathHelper';
 const handleRedirection = (user: User | null, request: NextRequest) => {
   const { pathname } = request.nextUrl;
 
-  // Redirect logged-in users away from auth routes, except signout and update_password
-  if (
-    user &&
-    pathStartsWith(pathname, '/auth') &&
-    !pathStartsWith(pathname, '/auth/signout', '/auth/update_password')
-  ) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  // Handle routes for logged-in users
+  if (user) {
+    // Redirect verified users away from verify_account route
+    if (pathStartsWith('/auth/verify_account')) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
 
-  // Redirect non-logged-in users away from update_password and signout routes
-  // and from any route except home and auth routes
-  if (
-    !user &&
-    (pathStartsWith(pathname, '/auth/update_password', '/auth/signout') ||
-      (pathname !== '/' && !pathStartsWith(pathname, '/auth')))
-  ) {
-    return NextResponse.redirect(new URL('/auth/signin', request.url));
+    // Redirect users away from auth routes, except signout and update_password
+    if (
+      pathStartsWith(pathname, '/auth') &&
+      !pathStartsWith(pathname, '/auth/signout', '/auth/update_password')
+    ) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+  }
+  // Handle routes for non-logged-in users
+  else {
+    // Redirect users away from update_password and signout routes
+    // and from any route except home and auth routes
+    if (
+      pathStartsWith(pathname, '/auth/update_password', '/auth/signout') ||
+      (pathname !== '/' && !pathStartsWith(pathname, '/auth'))
+    ) {
+      return NextResponse.redirect(new URL('/auth/signin', request.url));
+    }
   }
 
   return null;
