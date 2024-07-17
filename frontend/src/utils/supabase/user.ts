@@ -24,11 +24,11 @@ export default async function getUser(supabase: SupabaseClient) {
   }
 }
 
-export async function getUserInfoById(user: User) {
+export async function getUserInfoById(id: string) {
   try {
     return await prisma.user.findUnique({
       where: {
-        id: user.id,
+        id,
       },
     });
   } catch (error) {
