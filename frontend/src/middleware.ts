@@ -1,19 +1,17 @@
 import { createServerClient } from '@supabase/ssr';
-import { SupabaseClient, User } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 import { pathStartsWith } from './lib/PathHelper';
-import getUser from './utils/supabase/user';
 
-const handleRedirection = async (
-  supabase: SupabaseClient,
-  request: NextRequest
-) => {
+const handleRedirection = async (user: User | null, request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  const { authUser, dbUser } = await getUser(supabase);
 
-  if (authUser && dbUser) {
+  if (user) {
     // Redirect logged-in verified users away from verify_account route
-    if (pathStartsWith('/auth/verify_account') && dbUser.verified) {
+    if (
+      pathStartsWith('/auth/verify_account') &&
+      !user.user_metadata.email_verified
+    ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
@@ -72,7 +70,12 @@ export async function middleware(request: NextRequest) {
       },
     }
   );
-  const redirection = await handleRedirection(supabase, request);
+
+  const {
+    data: { user: user },
+  } = await supabase.auth.getUser();
+
+  const redirection = await handleRedirection(user, request);
   return redirection ? redirection : supabaseResponse;
 }
 
