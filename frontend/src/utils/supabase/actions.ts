@@ -9,7 +9,7 @@ import {
   PasswordResetSchema,
   ResendVerificationSchema,
   SignInSchema,
-  TokenVerificationShcema,
+  TokenVerificationSchema,
 } from '@/lib/schema/ZodSchema';
 import logger from '@/lib/logging/server';
 
@@ -126,7 +126,7 @@ export async function verifyRecoveryOtp(formData: FormData) {
     email: formData.get('email') as string,
     token: formData.get('otp') as string,
   };
-  const validation = TokenVerificationShcema.safeParse(data);
+  const validation = TokenVerificationSchema.safeParse(data);
 
   if (!validation.success) {
     redirect(
