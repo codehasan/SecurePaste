@@ -12,31 +12,31 @@ import Logo from '@/icons/Logo';
 import TextLogo from '@/icons/TextLogo';
 
 import styles from './NavBar.module.css';
+import getUser from '@/utils/supabase/user';
 
 const NavBar = async () => {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { authUser, dbUser } = await getUser(supabase);
+  const isValidUser = Boolean(authUser && dbUser);
 
   const pageNavigations = [
     { name: 'Home', path: '/', active: false, requiresUser: false },
     {
       name: 'Pastes',
-      path: `/user/${user?.id}/pastes`,
+      path: `/user/${authUser?.id}/pastes`,
       active: false,
       requiresUser: true,
     },
     {
       name: 'Comments',
-      path: `/user/${user?.id}/comments`,
+      path: `/user/${authUser?.id}/comments`,
       active: false,
       requiresUser: true,
     },
   ];
 
   const profileNavigations = [
-    { name: 'Your profile', path: `/user/${user?.id}` },
+    { name: 'Your profile', path: `/user/${authUser?.id}` },
     { name: 'Change password', path: `/auth/update_password` },
     { name: 'Sign out', path: '/auth/signout' },
   ];
@@ -73,7 +73,7 @@ const NavBar = async () => {
 
             <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
               {pageNavigations.map((navigation, index) => {
-                if (!user && navigation.requiresUser) return <></>;
+                if (!isValidUser && navigation.requiresUser) return <></>;
 
                 return (
                   <Link
@@ -109,7 +109,7 @@ const NavBar = async () => {
           </div>
 
           <div className="flex items-center lg:hidden">
-            {user ? (
+            {isValidUser ? (
               <>
                 <input
                   type="checkbox"
@@ -147,7 +147,7 @@ const NavBar = async () => {
                 >
                   <div className="pt-2 pb-3 space-y-1">
                     {pageNavigations.map((navigation, index) => {
-                      if (!user && navigation.requiresUser) return <></>;
+                      if (!isValidUser && navigation.requiresUser) return <></>;
 
                       return (
                         <Link
@@ -169,17 +169,16 @@ const NavBar = async () => {
                       <Image
                         className="size-10 max-w-full rounded-full"
                         alt="Profile"
-                        src={user.user_metadata.avatar || '/img/avatar.svg'}
+                        src={dbUser!.avatar || '/img/avatar.svg'}
                         width={40}
                         height={40}
                       />
                       <div className="ml-3">
                         <div className="text-gray-800 font-medium text-base">
-                          {user.user_metadata.first_name}&nbsp;
-                          {user.user_metadata.last_name}
+                          {dbUser!.name}
                         </div>
                         <div className="text-gray-500 font-medium text-sm">
-                          {user.email || 'Email not set'}
+                          {authUser!.email || 'Email not set'}
                         </div>
                       </div>
                       <Link
@@ -218,7 +217,7 @@ const NavBar = async () => {
             <div
               className={classNames('flex items-center', styles.dividerBefore)}
             >
-              {user ? (
+              {isValidUser ? (
                 <>
                   <Link href="/paste" className="ml-2">
                     <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-semibold">
@@ -243,7 +242,7 @@ const NavBar = async () => {
                       <Image
                         className="size-8 max-w-full rounded-full"
                         alt="Profile"
-                        src={user.user_metadata.avatar || '/img/avatar.svg'}
+                        src={dbUser!.avatar || '/img/avatar.svg'}
                         width={40}
                         height={40}
                       />
@@ -257,17 +256,16 @@ const NavBar = async () => {
                           <Image
                             className="size-10 max-w-full rounded-full"
                             alt="Profile"
-                            src={user.user_metadata.avatar || '/img/avatar.svg'}
+                            src={dbUser!.avatar || '/img/avatar.svg'}
                             width={40}
                             height={40}
                           />
                           <div className="ml-3">
                             <div className="text-gray-800 font-medium text-base">
-                              {user.user_metadata.first_name}&nbsp;
-                              {user.user_metadata.last_name}
+                              {dbUser!.name}
                             </div>
                             <div className="text-gray-500 font-medium text-sm">
-                              {user.email || 'Email not set'}
+                              {authUser!.email || 'Email not set'}
                             </div>
                           </div>
                         </div>
