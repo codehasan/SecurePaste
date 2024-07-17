@@ -1,29 +1,31 @@
 import { createServerClient } from '@supabase/ssr';
-import { User } from '@supabase/supabase-js';
+import { SupabaseClient, User } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 import { pathStartsWith } from './lib/PathHelper';
+import getUser from './utils/supabase/user';
 
-const handleRedirection = (user: User | null, request: NextRequest) => {
+const handleRedirection = async (
+  supabase: SupabaseClient,
+  request: NextRequest
+) => {
   const { pathname } = request.nextUrl;
+  const { authUser, dbUser } = await getUser(supabase);
 
-  // Handle routes for logged-in users
-  if (user) {
-    // Redirect verified users away from verify_account route
-    if (pathStartsWith('/auth/verify_account')) {
+  if (authUser && dbUser) {
+    // Redirect logged-in verified users away from verify_account route
+    if (pathStartsWith('/auth/verify_account') && dbUser.verified) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Redirect users away from auth routes, except signout and update_password
+    // Redirect logged-in users away from auth routes, except signout and update_password
     if (
       pathStartsWith(pathname, '/auth') &&
       !pathStartsWith(pathname, '/auth/signout', '/auth/update_password')
     ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
-  }
-  // Handle routes for non-logged-in users
-  else {
-    // Redirect users away from update_password and signout routes
+  } else {
+    // Redirect non logged-in users away from update_password and signout routes
     // and from any route except home and auth routes
     if (
       pathStartsWith(pathname, '/auth/update_password', '/auth/signout') ||
@@ -70,18 +72,8 @@ export async function middleware(request: NextRequest) {
       },
     }
   );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const redirection = handleRedirection(user, request);
-
-  if (redirection) {
-    return redirection;
-  }
-
-  return supabaseResponse;
+  const redirection = await handleRedirection(supabase, request);
+  return redirection ? redirection : supabaseResponse;
 }
 
 export const config = {
@@ -98,6 +90,6 @@ export const config = {
      * - styles (CSS files)
      * - scripts (JavaScript files)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public|error|user/:id|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|error|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js)$).*)',
   ],
 };
