@@ -59,7 +59,18 @@ export const CommentSchema = z
   })
   .strict();
 
-export const SignUpShcema = z
+export const ResendVerificationSchema = z
+  .object({
+    email: z.string().email({ message: 'A valid email address is required.' }),
+    options: z.object({
+      captchaToken: z
+        .string()
+        .min(0, { message: 'Captcha token is required.' }),
+    }),
+  })
+  .strict();
+
+export const SignUpSchema = z
   .object({
     name: z
       .string()
@@ -112,7 +123,7 @@ export const PasswordResetSchema = z
     message: 'Both passwords should match.',
   });
 
-export const TokenVerificationShcema = z
+export const TokenVerificationSchema = z
   .object({
     email: z.string().email({ message: 'A valid email address is required.' }),
     token: z.string().min(0, { message: 'OTP is required.' }),
@@ -121,4 +132,4 @@ export const TokenVerificationShcema = z
 
 export type Paste = z.infer<typeof PasteSchema>;
 export type Comment = z.infer<typeof CommentSchema>;
-export type NewUser = z.infer<typeof SignUpShcema>;
+export type NewUser = z.infer<typeof SignUpSchema>;
