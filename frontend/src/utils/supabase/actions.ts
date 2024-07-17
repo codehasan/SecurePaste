@@ -7,10 +7,43 @@ import getErrorMessage from '@/utils/supabase/errors';
 import {
   ForgotPasswordSchema,
   PasswordResetSchema,
+  ResendVerificationSchema,
   SignInSchema,
   TokenVerificationShcema,
 } from '@/lib/schema/ZodSchema';
 import logger from '@/lib/logging/server';
+
+export async function resendSignUpConfirmation(formData: FormData) {
+  const data = {
+    email: formData.get('email') as string,
+    options: {
+      captchaToken: formData.get('cf-turnstile-response') as string,
+    },
+  };
+  const validation = ResendVerificationSchema.safeParse(data);
+
+  if (!validation.success) {
+    redirect(
+      `/auth/verify_account?error=${validation.error.issues[0].message}`
+    );
+  }
+
+  const supabase = createClient();
+  const { error } = await supabase.auth.resend({
+    ...data,
+    type: 'signup',
+  });
+
+  if (error) {
+    logger.error(JSON.stringify(error));
+    redirect(`/auth/verify_account?error=${getErrorMessage(error)}`);
+  }
+
+  revalidatePath('/auth/verify_account', 'page');
+  redirect(
+    "/auth/verify_account?message=Check your inbox for confirmation email. If you can't find it, check the spam or junk folder."
+  );
+}
 
 export async function signIn(formData: FormData) {
   const data = {
