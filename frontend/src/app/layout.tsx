@@ -48,7 +48,7 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <html lang="en" className={globalFont.className} data-theme="light">
+    <html lang="en" className={globalFont.className}>
       <head>
         <link rel="language" href="en-US" />
         <meta
