@@ -9,29 +9,37 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(uuid())
-  name      String
-  bio       String?
-  avatar    String?
-  pastes    Paste[]
-  comments  Comment[]
-  likes     CommentLike[]
-  PasteLike PasteLike[]
+  id            String        @id
+  name          String
+  bio           String?
+  avatar        String?
+  verified      Boolean       @default(false)
+  pastesCount   Int           @default(0)
+  commentsCount Int           @default(0)
+  pastes        Paste[]
+  comments      Comment[]
+  commentLikes  CommentLike[]
+  pasteLikes    PasteLike[]
+  pasteVisits   PasteVisit[]
 }
 
 model Paste {
-  id           String      @id @default(uuid())
-  title        String
-  bodyOverview String
-  bodyUrl      String
-  syntax       String
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  tags         String[]
-  comments     Comment[]
-  PasteLike    PasteLike[]
+  id            String       @id @default(uuid())
+  title         String
+  bodyOverview  String
+  bodyUrl       String
+  syntax        String
+  likesCount    Int          @default(0)
+  visitsCount   Int          @default(0)
+  commentsCount Int          @default(0)
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  tags          String[]
+  comments      Comment[]
+  PasteLike     PasteLike[]
+  pasteVisits   PasteVisit[]
 }
 
 model PasteLike {
@@ -41,6 +49,16 @@ model PasteLike {
   pasteId String
 
   @@id([userId, pasteId])
+}
+
+model PasteVisit {
+  id        String   @id @default(uuid())
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  paste     Paste    @relation(fields: [pasteId], references: [id], onDelete: Cascade)
+  pasteId   String
 }
 
 model Comment {
