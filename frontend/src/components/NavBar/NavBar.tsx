@@ -1,19 +1,16 @@
-import { createClient } from '@/utils/supabase/server';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
-import { IoSearch } from 'react-icons/io5';
-import { RiInbox2Line } from 'react-icons/ri';
-import { FiMenu, FiPlus } from 'react-icons/fi';
-import classNames from 'classnames';
-import { IoMdClose } from 'react-icons/io';
-import { headers } from 'next/headers';
 import Logo from '@/icons/Logo';
 import TextLogo from '@/icons/TextLogo';
-
-import styles from './NavBar.module.css';
+import { createClient } from '@/utils/supabase/server';
 import getUser from '@/utils/supabase/user';
-import { MdVerified } from 'react-icons/md';
+import classNames from 'classnames';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { FiPlus } from 'react-icons/fi';
+import { IoSearch } from 'react-icons/io5';
+import { RiInbox2Line } from 'react-icons/ri';
+import styles from './NavBar.module.css';
+import ProfileDropdownLg from './ProfileDropdownLg';
+import ProfileDropdownSm from './ProfileDropdownSm';
 
 const NavBar = async () => {
   const supabase = createClient();
@@ -111,111 +108,15 @@ const NavBar = async () => {
 
           <div className="flex items-center lg:hidden">
             {isValidUser ? (
-              <>
-                <input
-                  type="checkbox"
-                  className={styles.dropdownActive}
-                  id="dropdown-active"
-                  hidden
-                  aria-hidden
-                />
-
-                <label
-                  htmlFor="dropdown-active"
-                  className={classNames(
-                    'text-gray-500 p-2 rounded-md inline-flex justify-center cursor-pointer hover:text-gray-600 hover:bg-gray-100',
-                    styles.menuOpen
-                  )}
-                >
-                  <FiMenu className="size-6 text-inherit" />
-                </label>
-
-                <label
-                  htmlFor="dropdown-active"
-                  className={classNames(
-                    'text-gray-500 p-2 rounded-md inline-flex justify-center cursor-pointer hover:text-gray-600 hover:bg-gray-100',
-                    styles.menuClose
-                  )}
-                >
-                  <IoMdClose className="size-6 text-inherit" />
-                </label>
-
-                <div
-                  className={classNames(
-                    'absolute left-0 top-full w-full z-[10] bg-white shadow-md',
-                    styles.menu
-                  )}
-                >
-                  <div className="pt-2 pb-3 space-y-1">
-                    {pageNavigations.map((navigation, index) => {
-                      if (!isValidUser && navigation.requiresUser) return <></>;
-
-                      return (
-                        <Link
-                          key={index}
-                          className={
-                            navigation.active
-                              ? 'text-indigo-700 bg-indigo-50 border-l-4 border-indigo-500 font-medium text-base pr-4 pl-3 py-2 block'
-                              : 'text-gray-600 border-l-4 border-transparent font-medium text-base pr-4 pl-3 py-2 block hover:text-gray-700 hover:bg-gray-50 hover:border-gray-400'
-                          }
-                          href={navigation.path}
-                        >
-                          {navigation.name}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                  <div className="pt-4 pb-3 border-gray-200 border-y border-b-0">
-                    <div className="flex items-center px-4">
-                      <Image
-                        className="size-10 max-w-full rounded-full"
-                        alt="Profile"
-                        src={dbUser!.avatar || '/img/avatar.svg'}
-                        width={40}
-                        height={40}
-                      />
-                      <div className="ml-3">
-                        <div className="flex items-center gap-1 text-gray-800 font-medium text-base">
-                          <span>{dbUser!.name}</span>
-                          {dbUser!.verified && (
-                            <span
-                              className="text-primary tooltip"
-                              data-tip="Verified"
-                            >
-                              <MdVerified aria-label="Verified" />
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-gray-500 font-medium text-sm">
-                          {authUser!.email || 'Email not set'}
-                        </div>
-                      </div>
-                      <Link
-                        href="/notifications"
-                        className="ml-auto text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50"
-                      >
-                        <RiInbox2Line className="size-5" />
-                      </Link>
-                    </div>
-                    <div className="mt-3">
-                      {profileNavigations.map((navigation, index) => {
-                        return (
-                          <Link
-                            key={index}
-                            className="text-gray-500 font-medium text-base px-4 py-2 block hover:text-gray-600 hover:bg-gray-50"
-                            href={navigation.path}
-                          >
-                            {navigation.name}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </>
+              <ProfileDropdownSm
+                authUser={authUser!}
+                dbUser={dbUser!}
+                pageNavigations={pageNavigations}
+                profileNavigations={profileNavigations}
+              />
             ) : (
               <Link href="/auth/signin" className="ml-2">
-                <button className="font-medium text-sm py-1.5 px-2 rounded-md border border-gray-400 border-solid text-gray-500 hover:bg-gray-50">
+                <button className="btn btn-neutral min-h-0 h-auto font-semibold text-sm py-2 px-4 hover:bg-neutral-content hover:border-neutral hover:text-neutral">
                   Login
                 </button>
               </Link>
@@ -242,65 +143,11 @@ const NavBar = async () => {
                     <RiInbox2Line className="size-5" />
                   </Link>
 
-                  <div className="ml-3 dropdown dropdown-end">
-                    <div
-                      tabIndex={0}
-                      role="button"
-                      className="rounded-full flex items-center cursor-pointer"
-                    >
-                      <Image
-                        className="size-8 max-w-full rounded-full"
-                        alt="Profile"
-                        src={dbUser!.avatar || '/img/avatar.svg'}
-                        width={40}
-                        height={40}
-                      />
-                    </div>
-                    <ul
-                      tabIndex={0}
-                      className="dropdown-content border border-solid border-opacity-10 border-black  text-gray-700 bg-white rounded-md w-80 z-[10] py-1 px-0 mt-2 shadow-lg"
-                    >
-                      <li key={99}>
-                        <div className="flex items-center px-4 py-2">
-                          <Image
-                            className="size-10 max-w-full rounded-full"
-                            alt="Profile"
-                            src={dbUser!.avatar || '/img/avatar.svg'}
-                            width={40}
-                            height={40}
-                          />
-                          <div className="ml-3">
-                            <div className="flex items-center gap-1 text-gray-800 font-medium text-base">
-                              <span>{dbUser!.name}</span>
-                              {dbUser!.verified && (
-                                <span
-                                  className="text-primary tooltip"
-                                  data-tip="Verified"
-                                >
-                                  <MdVerified aria-label="Verified" />
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-gray-500 font-medium text-sm">
-                              {authUser!.email || 'Email not set'}
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      {profileNavigations.map((navigation, index) => {
-                        return (
-                          <li key={index} className="text-sm hover:bg-gray-100">
-                            <Link
-                              className="block px-4 py-2"
-                              href={navigation.path}
-                            >
-                              {navigation.name}
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
+                  <ProfileDropdownLg
+                    authUser={authUser!}
+                    dbUser={dbUser!}
+                    profileNavigations={profileNavigations}
+                  />
                 </>
               ) : (
                 <>
