@@ -9,8 +9,8 @@ const handleRedirection = async (user: User | null, request: NextRequest) => {
   if (user) {
     // Redirect logged-in verified users away from verify_account route
     if (
-      pathStartsWith('/auth/verify_account') &&
-      !user.user_metadata.email_verified
+      pathStartsWith(pathname, '/auth/verify_account') &&
+      user.user_metadata.email_verified
     ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
@@ -18,7 +18,12 @@ const handleRedirection = async (user: User | null, request: NextRequest) => {
     // Redirect logged-in users away from auth routes, except signout and update_password
     if (
       pathStartsWith(pathname, '/auth') &&
-      !pathStartsWith(pathname, '/auth/signout', '/auth/update_password')
+      !pathStartsWith(
+        pathname,
+        '/auth/signout',
+        '/auth/update_password',
+        '/auth/verify_account'
+      )
     ) {
       return NextResponse.redirect(new URL('/', request.url));
     }
