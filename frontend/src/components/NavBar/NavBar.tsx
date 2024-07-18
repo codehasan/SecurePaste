@@ -13,6 +13,7 @@ import TextLogo from '@/icons/TextLogo';
 
 import styles from './NavBar.module.css';
 import getUser from '@/utils/supabase/user';
+import { MdVerified } from 'react-icons/md';
 
 const NavBar = async () => {
   const supabase = createClient();
@@ -174,8 +175,16 @@ const NavBar = async () => {
                         height={40}
                       />
                       <div className="ml-3">
-                        <div className="text-gray-800 font-medium text-base">
-                          {dbUser!.name}
+                        <div className="flex items-center gap-1 text-gray-800 font-medium text-base">
+                          <span>{dbUser!.name}</span>
+                          {dbUser!.verified && (
+                            <span
+                              className="text-primary tooltip"
+                              data-tip="Verified"
+                            >
+                              <MdVerified aria-label="Verified" />
+                            </span>
+                          )}
                         </div>
                         <div className="text-gray-500 font-medium text-sm">
                           {authUser!.email || 'Email not set'}
@@ -261,8 +270,16 @@ const NavBar = async () => {
                             height={40}
                           />
                           <div className="ml-3">
-                            <div className="text-gray-800 font-medium text-base">
-                              {dbUser!.name}
+                            <div className="flex items-center gap-1 text-gray-800 font-medium text-base">
+                              <span>{dbUser!.name}</span>
+                              {dbUser!.verified && (
+                                <span
+                                  className="text-primary tooltip"
+                                  data-tip="Verified"
+                                >
+                                  <MdVerified aria-label="Verified" />
+                                </span>
+                              )}
                             </div>
                             <div className="text-gray-500 font-medium text-sm">
                               {authUser!.email || 'Email not set'}
