@@ -54,6 +54,11 @@ input:focus-within {
     @apply textarea-bordered;
     @apply focus-within:textarea-primary;
   }
+
+  .tooltip {
+    --tooltip-color: #e5e7eb;
+    --tooltip-text-color: #000000;
+  }
 }
 
 @layer base {
