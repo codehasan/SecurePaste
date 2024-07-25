@@ -11,7 +11,6 @@ export default interface DropdownProps {
   pageNavigations: {
     name: string;
     path: string;
-    active: boolean;
     requiresUser: boolean;
   }[];
   className?: string;

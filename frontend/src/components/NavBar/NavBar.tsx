@@ -10,7 +10,7 @@ import { IoSearch } from 'react-icons/io5';
 import { RiInbox2Line } from 'react-icons/ri';
 import styles from './NavBar.module.css';
 import ProfileDropdownLg from './ProfileDropdownLg';
-import ProfileDropdownSm from './ProfileDropdownSm';
+import DropdownMenuSm from './DropdownMenuSm';
 
 const NavBar = async () => {
   const supabase = createClient();
@@ -18,17 +18,15 @@ const NavBar = async () => {
   const isValidUser = Boolean(authUser && dbUser);
 
   const pageNavigations = [
-    { name: 'Home', path: '/', active: false, requiresUser: false },
+    { name: 'Home', path: '/', requiresUser: false },
     {
       name: 'Pastes',
       path: `/user/${authUser?.id}/pastes`,
-      active: false,
       requiresUser: true,
     },
     {
       name: 'Comments',
       path: `/user/${authUser?.id}/comments`,
-      active: false,
       requiresUser: true,
     },
   ];
@@ -38,22 +36,6 @@ const NavBar = async () => {
     { name: 'Change password', path: `/auth/update_password` },
     { name: 'Sign out', path: '/auth/signout' },
   ];
-
-  // Setup active page in navigation menu
-  const nextHeaders = headers();
-  const pathname = nextHeaders.get('x-pathname') || '';
-  if (pathname) {
-    if (pathname === '/') {
-      pageNavigations[0].active = true;
-    } else {
-      for (let i = 1; i < pageNavigations.length; i++) {
-        if (pathname.startsWith(pageNavigations[i].path)) {
-          pageNavigations[i].active = true;
-          break;
-        }
-      }
-    }
-  }
 
   return (
     <nav className="bg-white shadow-md max-h-16 w-full relative">
@@ -69,7 +51,7 @@ const NavBar = async () => {
               <TextLogo className="max-w-full w-auto h-7 text-teal-700 ml-2 hidden md:block" />
             </Link>
 
-            <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
+            {/* <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
               {pageNavigations.map((navigation) => {
                 if (!isValidUser && navigation.requiresUser) return <></>;
 
@@ -87,19 +69,19 @@ const NavBar = async () => {
                   </Link>
                 );
               })}
-            </div>
+            </div> */}
           </div>
 
           <div className="flex grow shrink basis-0 justify-center px-2 lg:justify-end lg:ml-6">
-            <div className="relative w-full max-w-lg fill-gray-400 focus-within:fill-primary lg:max-w-80">
+            <div className="relative w-full max-w-lg lg:max-w-80">
               <div className="flex items-center absolute left-0 top-0 bottom-0 pl-3 pointer-events-none">
-                <IoSearch className="size-5 fill-inherit" />
+                <IoSearch className="size-5 fill-gray-500" />
               </div>
               <input
                 id="search"
                 name="search"
                 type="search"
-                className="text-gray-900 placeholder-gray-400 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 bg-transparent"
+                className="text-gray-900 placeholder-gray-500 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 bg-transparent"
                 placeholder="Search"
                 autoComplete="off"
               />
@@ -108,7 +90,7 @@ const NavBar = async () => {
 
           <div className="flex items-center lg:hidden">
             {isValidUser ? (
-              <ProfileDropdownSm
+              <DropdownMenuSm
                 authUser={authUser!}
                 dbUser={dbUser!}
                 pageNavigations={pageNavigations}
@@ -152,7 +134,7 @@ const NavBar = async () => {
                   <Link href="/auth/signin" className="ml-2">
                     <button className="btn btn-custom">Login</button>
                   </Link>
-                  <Link href="/auth/signin" className="ml-3">
+                  <Link href="/auth/signin" className="ml-2">
                     <button className="btn btn-custom btn-primary">
                       Create account
                     </button>
