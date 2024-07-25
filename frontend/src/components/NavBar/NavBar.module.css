@@ -8,36 +8,3 @@
   font-size: 0.875rem;
   line-height: 1.5;
 }
-
-.dropdownActive {
-  outline: node;
-  user-select: none;
-  cursor: none;
-  appearance: none;
-}
-
-.dropdownActive:checked ~ .menu {
-  visibility: visible;
-  height: auto;
-}
-
-.dropdownActive:checked ~ .menuOpen {
-  display: none;
-}
-
-.dropdownActive:checked ~ .menuClose {
-  display: block;
-}
-
-.menu {
-  height: 0;
-  visibility: hidden;
-}
-
-.menuOpen {
-  display: block;
-}
-
-.menuClose {
-  display: none;
-}

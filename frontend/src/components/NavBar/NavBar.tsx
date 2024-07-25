@@ -11,6 +11,7 @@ import { RiInbox2Line } from 'react-icons/ri';
 import styles from './NavBar.module.css';
 import ProfileDropdownLg from './ProfileDropdownLg';
 import DropdownMenuSm from './DropdownMenuSm';
+import NavLinksLg from './NavLinksLg';
 
 const NavBar = async () => {
   const supabase = createClient();
@@ -51,25 +52,11 @@ const NavBar = async () => {
               <TextLogo className="max-w-full w-auto h-7 text-teal-700 ml-2 hidden md:block" />
             </Link>
 
-            {/* <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
-              {pageNavigations.map((navigation) => {
-                if (!isValidUser && navigation.requiresUser) return <></>;
-
-                return (
-                  <Link
-                    key={navigation.name}
-                    className={
-                      navigation.active
-                        ? 'inline-flex items-center font-medium text-sm px-1 pt-1 border-b-2 border-indigo-500 text-gray-900'
-                        : 'inline-flex items-center font-medium text-sm px-1 pt-1 text-gray-500 border-b-2 border-transparent hover:border-gray-300 hover:text-gray-700'
-                    }
-                    href={navigation.path}
-                  >
-                    {navigation.name}
-                  </Link>
-                );
-              })}
-            </div> */}
+            <NavLinksLg
+              authUser={authUser}
+              dbUser={dbUser}
+              pageNavigations={pageNavigations}
+            />
           </div>
 
           <div className="flex grow shrink basis-0 justify-center px-2 lg:justify-end lg:ml-6">
