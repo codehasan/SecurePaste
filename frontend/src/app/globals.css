@@ -72,8 +72,19 @@ input:focus-within {
     @apply font-normal;
   }
 
-  html,
   body {
-    @apply h-full;
+    @apply size-full;
+  }
+}
+
+@layer utilities {
+  .btn-custom {
+    @apply !h-auto;
+    @apply !min-h-0;
+    @apply !py-1.5;
+    @apply !px-2;
+    @apply !rounded-md;
+    @apply !text-sm;
+    @apply !font-semibold;
   }
 }

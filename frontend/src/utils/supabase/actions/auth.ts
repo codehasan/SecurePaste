@@ -1,9 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
-import getErrorMessage from '@/utils/supabase/errors';
+import logger from '@/lib/logging/server';
 import {
   ForgotPasswordSchema,
   PasswordResetSchema,
@@ -11,7 +8,10 @@ import {
   SignInSchema,
   TokenVerificationSchema,
 } from '@/lib/schema/ZodSchema';
-import logger from '@/lib/logging/server';
+import getErrorMessage from '@/utils/supabase/errors';
+import { createClient } from '@/utils/supabase/server';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export async function resendSignUpConfirmation(formData: FormData) {
   const data = {

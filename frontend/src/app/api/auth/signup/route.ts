@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { ZodError } from 'zod';
-import { NewUser, SignUpSchema } from '@/lib/schema/ZodSchema';
+import { z, ZodError } from 'zod';
+import { SignUpSchema } from '@/lib/schema/ZodSchema';
 import getErrorMessage from '@/utils/supabase/errors';
 import logger from '@/lib/logging/server';
 import prisma from '@/utils/prisma/db';
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const inputData: NewUser = validation.data;
+    const inputData: z.infer<typeof SignUpSchema> = validation.data;
     const supabase = createClient();
     const {
       error,

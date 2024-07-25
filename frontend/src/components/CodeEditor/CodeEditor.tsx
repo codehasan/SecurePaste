@@ -32,7 +32,11 @@ const CodeEditor: React.FC<
 
   return (
     <textarea
-      className={classNames('textarea', styles.codeEditor, className)}
+      className={classNames(
+        'textarea px-2 leading-tight',
+        styles.codeEditor,
+        className
+      )}
       autoCorrect="off"
       autoComplete="off"
       spellCheck="false"

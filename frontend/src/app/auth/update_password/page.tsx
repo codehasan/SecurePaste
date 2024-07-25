@@ -7,7 +7,7 @@ import Logo from '@/icons/Logo';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
 import { PasswordRequirement } from '@/components/PasswordRequirement';
-import { updatePassword } from '@/utils/supabase/actions';
+import { updatePassword } from '@/utils/supabase/actions/auth';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import { useRouter } from 'next/navigation';
 

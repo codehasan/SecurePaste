@@ -4,7 +4,10 @@ import Link from 'next/link';
 import Logo from '@/icons/Logo';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
-import { sendPasswordReset, verifyRecoveryOtp } from '@/utils/supabase/actions';
+import {
+  sendPasswordReset,
+  verifyRecoveryOtp,
+} from '@/utils/supabase/actions/auth';
 import Script from 'next/script';
 
 import styles from '../auth.module.css';

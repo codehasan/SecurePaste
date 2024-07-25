@@ -5,7 +5,7 @@ import Logo from '@/icons/Logo';
 import { MemoizedOAuth } from '../signup/OAuthProvider';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
-import { signIn } from '@/utils/supabase/actions';
+import { signIn } from '@/utils/supabase/actions/auth';
 
 import styles from '../auth.module.css';
 import Script from 'next/script';

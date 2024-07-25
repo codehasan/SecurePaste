@@ -41,7 +41,7 @@ const NavBar = async () => {
 
   // Setup active page in navigation menu
   const nextHeaders = headers();
-  const pathname = nextHeaders.get('x-pathname');
+  const pathname = nextHeaders.get('x-pathname') || '';
   if (pathname) {
     if (pathname === '/') {
       pageNavigations[0].active = true;
@@ -56,7 +56,7 @@ const NavBar = async () => {
   }
 
   return (
-    <nav className="bg-white shadow-md w-full relative">
+    <nav className="bg-white shadow-md max-h-16 w-full relative">
       <div className="mx-auto px-2 sm:px-4 lg:px-8">
         <div className="navbar justify-between p-0">
           <div className="flex items-center h-16 px-2 lg:px-0">
@@ -70,12 +70,12 @@ const NavBar = async () => {
             </Link>
 
             <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
-              {pageNavigations.map((navigation, index) => {
+              {pageNavigations.map((navigation) => {
                 if (!isValidUser && navigation.requiresUser) return <></>;
 
                 return (
                   <Link
-                    key={index}
+                    key={navigation.name}
                     className={
                       navigation.active
                         ? 'inline-flex items-center font-medium text-sm px-1 pt-1 border-b-2 border-indigo-500 text-gray-900'
@@ -91,15 +91,15 @@ const NavBar = async () => {
           </div>
 
           <div className="flex grow shrink basis-0 justify-center px-2 lg:justify-end lg:ml-6">
-            <div className="relative w-full max-w-lg lg:max-w-80">
+            <div className="relative w-full max-w-lg fill-gray-400 focus-within:fill-primary lg:max-w-80">
               <div className="flex items-center absolute left-0 top-0 bottom-0 pl-3 pointer-events-none">
-                <IoSearch className="size-5 text-gray-400" />
+                <IoSearch className="size-5 fill-inherit" />
               </div>
               <input
                 id="search"
                 name="search"
                 type="search"
-                className="text-gray-900 placeholder-gray-400 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white"
+                className="text-gray-900 placeholder-gray-400 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 bg-transparent"
                 placeholder="Search"
                 autoComplete="off"
               />
@@ -116,9 +116,7 @@ const NavBar = async () => {
               />
             ) : (
               <Link href="/auth/signin" className="ml-2">
-                <button className="btn btn-neutral min-h-0 h-auto font-semibold text-sm py-2 px-4 hover:bg-neutral-content hover:border-neutral hover:text-neutral">
-                  Login
-                </button>
+                <button className="btn btn-custom btn-neutral">Login</button>
               </Link>
             )}
           </div>
@@ -130,7 +128,7 @@ const NavBar = async () => {
               {isValidUser ? (
                 <>
                   <Link href="/paste" className="ml-2">
-                    <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-semibold">
+                    <button className="btn btn-custom btn-primary">
                       <FiPlus className="size-5 text-inherit" />
                       New Paste
                     </button>
@@ -152,12 +150,10 @@ const NavBar = async () => {
               ) : (
                 <>
                   <Link href="/auth/signin" className="ml-2">
-                    <button className="font-medium text-sm py-1.5 px-2 rounded-md border border-gray-400 border-solid text-gray-500 hover:bg-gray-50">
-                      Login
-                    </button>
+                    <button className="btn btn-custom">Login</button>
                   </Link>
                   <Link href="/auth/signin" className="ml-3">
-                    <button className="btn btn-primary text-sm h-auto min-h-0 py-1.5 px-2 rounded-md font-medium">
+                    <button className="btn btn-custom btn-primary">
                       Create account
                     </button>
                   </Link>

@@ -6,10 +6,11 @@ export const getTimePassed = (date: string | undefined) => {
   if (!date) {
     return 'No data';
   }
+  return getTimePassedFromDate(new Date(date));
+};
 
+export const getTimePassedFromDate = (past: Date) => {
   const now = new Date();
-  const past = new Date(date);
-
   const diffInMilliseconds = now.getTime() - past.getTime();
   const diffInMinutes = Math.floor(diffInMilliseconds / 60000);
   const diffInHours = Math.floor(diffInMinutes / 60);
@@ -17,19 +18,21 @@ export const getTimePassed = (date: string | undefined) => {
   const diffInYears = Math.floor(diffInDays / 365);
 
   if (diffInYears > 0) {
-    return diffInYears === 1 ? '1 year' : `${diffInYears} years`;
-  } else if (diffInDays > 0) {
-    return diffInDays === 1 ? '1 day' : `${diffInDays} days`;
-  } else if (diffInHours > 0) {
-    return diffInHours === 1 ? '1 hour' : `${diffInHours} hours`;
-  } else if (diffInMinutes > 0) {
-    return diffInMinutes === 1 ? '1 minute' : `${diffInMinutes} minutes`;
-  } else {
-    return '0 minute';
+    return `${diffInYears}y`;
   }
+  if (diffInDays > 0) {
+    return `${diffInDays}d`;
+  }
+  if (diffInHours > 0) {
+    return `${diffInHours}h`;
+  }
+  if (diffInMinutes > 0) {
+    return `${diffInMinutes}m`;
+  }
+  return '0m';
 };
 
-export const getTime = (date: string | undefined) => {
+export const getFormattedDate = (date: string | undefined) => {
   if (!date) return 'No data';
   return dateFormat.format(new Date(date));
 };

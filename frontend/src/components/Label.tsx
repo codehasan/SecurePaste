@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { LabelHTMLAttributes, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 interface LabelProps {
   primaryText: string;
@@ -10,9 +10,10 @@ interface LabelProps {
   requiredFancy?: boolean;
   className?: string;
   children?: ReactNode;
+  largeText?: boolean;
 }
 
-const Label: React.FC<LabelProps & LabelHTMLAttributes<HTMLLabelElement>> = ({
+const Label: React.FC<LabelProps> = ({
   primaryText,
   topRight,
   bottomLeft,
@@ -21,11 +22,17 @@ const Label: React.FC<LabelProps & LabelHTMLAttributes<HTMLLabelElement>> = ({
   requiredFancy,
   className,
   children,
-  ...props
+  largeText,
 }) => {
   const getPrimaryText = (className?: string) => {
     return (
-      <span className={classNames('label-text text-sm', className)}>
+      <span
+        className={classNames(
+          { 'text-base': largeText, 'text-sm': !largeText },
+          'label-text',
+          className
+        )}
+      >
         <span className="mr-1">{primaryText}</span>
         {requiredFancy ? (
           <span className="badge badge-info ml-1">Required</span>
@@ -79,11 +86,11 @@ const Label: React.FC<LabelProps & LabelHTMLAttributes<HTMLLabelElement>> = ({
   };
 
   return (
-    <label className={classNames('form-control w-full', className)} {...props}>
+    <div className={classNames('form-control w-full', className)}>
       {topLabel()}
       {children}
       {bottomLabel()}
-    </label>
+    </div>
   );
 };
 

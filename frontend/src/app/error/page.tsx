@@ -6,7 +6,12 @@ import Logo from '@/icons/Logo';
 import styles from '../auth/auth.module.css';
 
 interface ErrorProps {
-  searchParams: { message: string; next: string; retry: boolean };
+  searchParams: {
+    message: string;
+    nextText: string;
+    next: string;
+    retry: boolean;
+  };
 }
 
 const Error = ({ searchParams }: ErrorProps) => {
@@ -26,9 +31,9 @@ const Error = ({ searchParams }: ErrorProps) => {
           {searchParams?.message || 'Oops, something went wrong.'}
         </h1>
 
-        <Link href={searchParams?.next || '/'} className="text-sky-600 mt-6">
+        <a href={searchParams?.next || '/'} className="text-sky-600 mt-6">
           {searchParams?.retry ? 'Try again' : 'Back to App'}
-        </Link>
+        </a>
       </div>
       <div className="text-gray-500 text-sm">
         <span>©&nbsp;</span>

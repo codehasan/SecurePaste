@@ -1,6 +1,6 @@
+import { ToastProvider } from '@/hooks/useToast';
 import { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-
 import './globals.css';
 
 const globalFont = Inter({
@@ -56,7 +56,9 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body className="bg-gray-100">{children}</body>
+      <body className="bg-gray-100">
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
   );
 }

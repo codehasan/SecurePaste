@@ -9,7 +9,7 @@ import {
   signOutGlobal,
   signOutLocal,
   signOutOthers,
-} from '@/utils/supabase/actions';
+} from '@/utils/supabase/actions/auth';
 
 const SignOut = async ({
   searchParams,

@@ -25,7 +25,7 @@ interface AlertProps {
   onAccept?: () => void;
 }
 
-const getIconFromType = (type: Type) => {
+export const getIconFromType = (type: Type) => {
   const classes = 'h-6 w-6 shrink-0';
 
   if (type === Type.ERROR) {
@@ -54,7 +54,7 @@ const getIconFromType = (type: Type) => {
   );
 };
 
-const getAlertClassNameFromType = (type: Type) => {
+export const getAlertClassNameFromType = (type: Type) => {
   const classes = 'alert';
 
   if (type === Type.ERROR) {
@@ -87,12 +87,15 @@ const Alert: React.FC<AlertProps> = ({ ...props }) => {
       </div>
       <div>
         {props.closeText && (
-          <button className="btn btn-sm" onClick={props.onClose}>
+          <button className="btn btn-custom" onClick={props.onClose}>
             {props.closeText}
           </button>
         )}
         {props.acceptText && (
-          <button className="btn btn-sm btn-primary" onClick={props.onAccept}>
+          <button
+            className="btn btn-custom btn-primary"
+            onClick={props.onAccept}
+          >
             {props.acceptText}
           </button>
         )}
