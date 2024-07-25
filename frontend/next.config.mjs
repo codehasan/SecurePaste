@@ -1,6 +1,11 @@
 const nextConfig = {
   images: {
-    domains: ['i.giphy.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
 };
 
