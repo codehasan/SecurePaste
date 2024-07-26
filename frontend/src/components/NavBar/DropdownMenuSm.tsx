@@ -19,7 +19,7 @@ const DropdownMenuSm = ({
   const currentPath = usePathname();
 
   const isActive = (path: string) => {
-    if (currentPath === '/') return currentPath === path;
+    if (path === '/') return currentPath === path;
     return currentPath.startsWith(path);
   };
 

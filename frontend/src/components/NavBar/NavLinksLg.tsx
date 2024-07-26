@@ -14,7 +14,7 @@ const NavLinksLg = ({
   const isValidUser = Boolean(authUser && dbUser);
 
   const isActive = (path: string) => {
-    if (currentPath === '/') return currentPath === path;
+    if (path === '/') return currentPath === path;
     return currentPath.startsWith(path);
   };
 
