@@ -4,6 +4,7 @@ import TagInput from '@/components/TagInput/TagInput';
 import { newComment } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
 import styles from '../client.module.css';
+import { langs } from '@/components/CodeView/languages';
 
 const NewPaste = () => {
   return (
@@ -57,42 +58,23 @@ const NewPaste = () => {
               name="syntax"
               required
             >
-              <option value="plaintext">Text</option>
-              <option value="bash">Bash</option>
-              <option value="c">C</option>
-              <option value="cpp">C++</option>
-              <option value="csharp">C#</option>
-              <option value="css">CSS</option>
-              <option value="dart">Dart</option>
-              <option value="go">Go</option>
-              <option value="java">Java</option>
-              <option value="javascript">Javascript</option>
-              <option value="kotlin">Kotlin</option>
-              <option value="lua">Lua</option>
-              <option value="matlab">MATLAB</option>
-              <option value="objectivec">Objective-C</option>
-              <option value="perl">Perl</option>
-              <option value="php">PHP</option>
-              <option value="powershell">Powershell</option>
-              <option value="python">Python</option>
-              <option value="r">R</option>
-              <option value="ruby">Ruby</option>
-              <option value="rust">Rust</option>
-              <option value="scala">Scala</option>
-              <option value="scss">SCSS</option>
-              <option value="shell">Shell</option>
-              <option value="swift">Swift</option>
-              <option value="typescript">Typescript</option>
-              <option value="vim">Vim</option>
-              <option value="xml">XML</option>
-              <option value="yaml">Yaml</option>
+              {langs.map((language) => (
+                <option key={language.code} value={language.code}>
+                  {language.name}
+                </option>
+              ))}
             </select>
           </MemoizedLabel>
 
-          <MemoizedLabel primaryText="Encryption" className="mt-3" largeText>
+          <MemoizedLabel
+            primaryText="Visibility"
+            bottomLeft="* Private pastes are stored in the blockchain and requires a gas fee to create, edit or delete."
+            className="mt-3"
+            largeText
+          >
             <select
               className="select select-text cursor-pointer bg-white w-full"
-              name="encryption"
+              name="visibility"
               required
             >
               <option>Public</option>
@@ -103,7 +85,7 @@ const NewPaste = () => {
           <MemoizedLabel
             primaryText="Tags"
             topRight="10 tags maximum"
-            className="mt-3"
+            className="mt-2"
             largeText
           >
             <TagInput />

@@ -13,7 +13,7 @@ export const NewPasteSchema = z
       .max(524_288, {
         message: 'Paste name must not exceed 524,288 characters',
       }),
-    encryption: z.string().min(1, { message: 'Encryption is required.' }),
+    visibility: z.string().min(1, { message: 'Encryption is required.' }),
     tags: z
       .array(z.string())
       .max(10, { message: 'At most 10 tags are allowed.' }),
