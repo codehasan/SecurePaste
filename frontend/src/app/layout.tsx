@@ -56,7 +56,7 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body className="bg-gray-100">
+      <body className="bg-gray-100 min-h-screen">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
