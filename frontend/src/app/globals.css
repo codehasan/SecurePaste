@@ -87,4 +87,8 @@ input:focus-within {
     @apply !text-sm;
     @apply !font-semibold;
   }
+
+  .h-fill {
+    min-height: calc(100vh - 4rem);
+  }
 }
