@@ -5,21 +5,24 @@ import { EditCommentSchema, NewCommentSchema } from '@/lib/schema/ZodSchema';
 import { redirect, RedirectType } from 'next/navigation';
 import { v4 } from 'uuid';
 import { z } from 'zod';
+import { createClient } from '../server';
+import logger from '@/lib/logging/server';
+import { getAuthErrorMessage } from '../errors';
+import prisma from '@/utils/prisma/db';
+import { getLines } from '@/lib/ArrayHelper';
 
 const commentDbPath =
   '/home/rahat/Desktop/Programming/Web3/SecurePaste/frontend/src/data/comments.json';
 
 export async function newComment(formData: FormData) {
+  // 1. Validate the form data sent from the app
   const data = {
     title: formData.get('title') as string,
     syntax: formData.get('syntax') as string,
     body: formData.get('body') as string,
-    encryption: formData.get('encryption') as string,
-    tags: (formData.get('tags') as string).split(/[\s,]+/),
+    visibility: formData.get('visibility') as string,
+    tags: ((formData.get('tags') as string) || '').split(/[\s,]+/),
   };
-
-  console.log(JSON.stringify(data));
-
   const validation = NewCommentSchema.safeParse(data);
 
   if (!validation.success) {
@@ -28,6 +31,68 @@ export async function newComment(formData: FormData) {
       RedirectType.replace
     );
   }
+
+  // 2. Verify if user is logged in
+  const supabase = createClient();
+  const userResponse = await supabase.auth.getUser();
+
+  if (userResponse.error) {
+    logger.error(JSON.stringify(userResponse.error));
+    redirect(
+      `/error?message=${getAuthErrorMessage(userResponse.error)}`,
+      RedirectType.replace
+    );
+  }
+
+  if (!userResponse.data.user) {
+    redirect(
+      `/error?message=An unexpected error occurred. Please try again later.`,
+      RedirectType.replace
+    );
+  }
+
+  // Upload file to supabase storage bucket
+  const filePath = `${userResponse.data.user.id}/${v4()}.txt`;
+  const sorageResponse = await supabase.storage
+    .from('pastes')
+    .upload(filePath, data.body, {
+      contentType: 'text/plain;charset=UTF-8',
+    });
+
+  if (sorageResponse.error) {
+    logger.error(JSON.stringify(sorageResponse.error));
+    redirect(
+      `/error?message=Unable to upload your paste data. Please try again later.`,
+      RedirectType.replace
+    );
+  }
+  const bodyUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${sorageResponse.data.fullPath}`;
+
+  // Upload file content in postgresql
+  try {
+    const paste = await prisma.paste.create({
+      data: {
+        title: data.title,
+        bodyOverview: getLines(data.body, 5),
+        bodyUrl,
+        syntax: data.syntax,
+        tags: data.tags,
+        user: {
+          connect: {
+            id: userResponse.data.user.id,
+          },
+        },
+      },
+    });
+  } catch (e) {
+    logger.error(JSON.stringify(e));
+    redirect(
+      `/error?message=Unable to create your paste. Please try again later.`,
+      RedirectType.replace
+    );
+  }
+
+  redirect(`/user/${userResponse.data.user.id}/pastes`, RedirectType.replace);
 }
 
 export async function postComment(formData: FormData) {
