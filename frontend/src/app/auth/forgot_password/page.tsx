@@ -1,15 +1,15 @@
-import React from 'react';
-import classNames from 'classnames';
-import Link from 'next/link';
-import Logo from '@/icons/Logo';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
+import Logo from '@/icons/Logo';
 import {
   sendPasswordReset,
   verifyRecoveryOtp,
 } from '@/utils/supabase/actions/auth';
+import classNames from 'classnames';
+import Link from 'next/link';
 import Script from 'next/script';
 
+import { getCopyrightText } from '@/lib/copyright';
 import styles from '../auth.module.css';
 
 const ForgotPassword = async ({
@@ -135,9 +135,7 @@ const ForgotPassword = async ({
         )}
       </div>
       <div className="text-gray-500 text-sm">
-        <span>©&nbsp;</span>
-        <span>{new Date().getFullYear()}</span>
-        <span>&nbsp;SecurePaste, All rights reserved.</span>
+        <span>{getCopyrightText()}</span>
       </div>
     </div>
   );

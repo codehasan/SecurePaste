@@ -1,16 +1,16 @@
 'use client';
 
-import React, { ChangeEvent, useState } from 'react';
-import classNames from 'classnames';
-import Link from 'next/link';
-import Logo from '@/icons/Logo';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
 import { PasswordRequirement } from '@/components/PasswordRequirement';
+import Logo from '@/icons/Logo';
 import { updatePassword } from '@/utils/supabase/actions/auth';
+import classNames from 'classnames';
+import Link from 'next/link';
+import { ChangeEvent, useState } from 'react';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
-import { useRouter } from 'next/navigation';
 
+import { getCopyrightText } from '@/lib/copyright';
 import styles from '../auth.module.css';
 
 const UpdatePassword = ({
@@ -199,9 +199,7 @@ const UpdatePassword = ({
         </form>
       </div>
       <div className="text-gray-500 text-sm">
-        <span>©&nbsp;</span>
-        <span>{new Date().getFullYear()}</span>
-        <span>&nbsp;SecurePaste, All rights reserved.</span>
+        <span>{getCopyrightText()}</span>
       </div>
     </div>
   );

@@ -1,14 +1,14 @@
-import React from 'react';
-import classNames from 'classnames';
-import Link from 'next/link';
-import Logo from '@/icons/Logo';
-import { MemoizedOAuth } from '../signup/OAuthProvider';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
+import Logo from '@/icons/Logo';
 import { signIn } from '@/utils/supabase/actions/auth';
+import classNames from 'classnames';
+import Link from 'next/link';
+import { MemoizedOAuth } from '../signup/OAuthProvider';
 
-import styles from '../auth.module.css';
+import { getCopyrightText } from '@/lib/copyright';
 import Script from 'next/script';
+import styles from '../auth.module.css';
 
 const SignIn = async ({
   searchParams,
@@ -105,9 +105,7 @@ const SignIn = async ({
         </form>
       </div>
       <div className="text-gray-500 text-sm">
-        <span>©&nbsp;</span>
-        <span>{new Date().getFullYear()}</span>
-        <span>&nbsp;SecurePaste, All rights reserved.</span>
+        <span>{getCopyrightText()}</span>
       </div>
     </div>
   );

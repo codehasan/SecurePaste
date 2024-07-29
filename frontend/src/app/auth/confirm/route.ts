@@ -1,6 +1,6 @@
 import logger from '@/lib/logging/server';
 import prisma from '@/utils/prisma/db';
-import getErrorMessage from '@/utils/supabase/errors';
+import getAuthErrorMessage from '@/utils/supabase/errors';
 import { createClient } from '@/utils/supabase/server';
 import { type EmailOtpType } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       }
 
       const errorUrl = new URL('/error', request.url);
-      errorUrl.searchParams.append('message', getErrorMessage(error));
+      errorUrl.searchParams.append('message', getAuthErrorMessage(error));
 
       return NextResponse.redirect(errorUrl);
     }

@@ -1,15 +1,15 @@
-import React from 'react';
+import Alert, { Type } from '@/components/Alert';
+import Logo from '@/icons/Logo';
 import classNames from 'classnames';
 import Link from 'next/link';
-import Logo from '@/icons/Logo';
-import Alert, { Type } from '@/components/Alert';
 
-import styles from '../auth.module.css';
+import { getCopyrightText } from '@/lib/copyright';
 import {
   signOutGlobal,
   signOutLocal,
   signOutOthers,
 } from '@/utils/supabase/actions/auth';
+import styles from '../auth.module.css';
 
 const SignOut = async ({
   searchParams,
@@ -66,9 +66,7 @@ const SignOut = async ({
         </form>
       </div>
       <div className="text-gray-500 text-sm">
-        <span>©&nbsp;</span>
-        <span>{new Date().getFullYear()}</span>
-        <span>&nbsp;SecurePaste, All rights reserved.</span>
+        <span>{getCopyrightText()}</span>
       </div>
     </div>
   );

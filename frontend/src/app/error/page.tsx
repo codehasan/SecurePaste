@@ -1,8 +1,8 @@
-import React from 'react';
+import Logo from '@/icons/Logo';
 import classNames from 'classnames';
 import Link from 'next/link';
-import Logo from '@/icons/Logo';
 
+import { getCopyrightText } from '@/lib/copyright';
 import styles from '../auth/auth.module.css';
 
 interface ErrorProps {
@@ -36,9 +36,7 @@ const Error = ({ searchParams }: ErrorProps) => {
         </a>
       </div>
       <div className="text-gray-500 text-sm">
-        <span>©&nbsp;</span>
-        <span>{new Date().getFullYear()}</span>
-        <span>&nbsp;SecurePaste, All rights reserved.</span>
+        <span>{getCopyrightText()}</span>
       </div>
     </div>
   );

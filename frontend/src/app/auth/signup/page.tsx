@@ -1,25 +1,20 @@
 'use client';
-import React, {
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-  useRef,
-  useState,
-} from 'react';
-import classNames from 'classnames';
-import Link from 'next/link';
-import axios, { AxiosError } from 'axios';
-import Logo from '@/icons/Logo';
-import { MemoizedUserAgreement } from './UserAgreement';
-import { MemoizedOAuth } from './OAuthProvider';
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
-import { useRouter } from 'next/navigation';
-import { PasswordRequirement } from '../../../components/PasswordRequirement';
-import Script from 'next/script';
+import Logo from '@/icons/Logo';
 import { validateForm } from '@/lib/SignupFormValidation';
 import { logError } from '@/lib/logging/client';
+import axios, { AxiosError } from 'axios';
+import classNames from 'classnames';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Script from 'next/script';
+import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
+import { PasswordRequirement } from '../../../components/PasswordRequirement';
+import { MemoizedOAuth } from './OAuthProvider';
+import { MemoizedUserAgreement } from './UserAgreement';
 
+import { getCopyrightText } from '@/lib/copyright';
 import styles from '../auth.module.css';
 
 const SignUp = ({
@@ -291,9 +286,7 @@ const SignUp = ({
           </form>
         </div>
         <div className="text-gray-500 text-sm">
-          <span>©&nbsp;</span>
-          <span>{new Date().getFullYear()}</span>
-          <span>&nbsp;SecurePaste, All rights reserved.</span>
+          <span>{getCopyrightText()}</span>
         </div>
       </div>
     </>
