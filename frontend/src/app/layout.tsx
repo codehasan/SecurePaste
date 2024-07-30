@@ -7,7 +7,8 @@ const globalFont = Inter({
   weight: ['400', '500', '600', '700'],
   style: ['normal'],
   subsets: ['latin'],
-  preload: false,
+  display: 'swap',
+  preload: true,
   fallback: ['Arial', 'sans-serif'],
   adjustFontFallback: true,
 });
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
+  colorScheme: 'only light',
   themeColor: '#000000',
   userScalable: true,
   width: 'device-width',
@@ -56,7 +57,7 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body className="bg-gray-100 min-h-screen">
+      <body className="bg-[#f8f8fa] min-h-screen">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
