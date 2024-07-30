@@ -9,37 +9,31 @@ datasource db {
 }
 
 model User {
-  id            String        @id
-  name          String
-  bio           String?
-  avatar        String?
-  verified      Boolean       @default(false)
-  pastesCount   Int           @default(0)
-  commentsCount Int           @default(0)
-  pastes        Paste[]
-  comments      Comment[]
-  commentLikes  CommentLike[]
-  pasteLikes    PasteLike[]
-  pasteVisits   PasteVisit[]
+  id           String        @id
+  name         String
+  bio          String?
+  avatar       String?
+  verified     Boolean       @default(false)
+  pastes       Paste[]
+  comments     Comment[]
+  commentLikes CommentLike[]
+  pasteLikes   PasteLike[]
 }
 
 model Paste {
-  id            String       @id @default(uuid())
-  title         String
-  bodyOverview  String
-  bodyUrl       String
-  syntax        String
-  likesCount    Int          @default(0)
-  visitsCount   Int          @default(0)
-  commentsCount Int          @default(0)
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  tags          String[]     @default([])
-  comments      Comment[]
-  PasteLike     PasteLike[]
-  pasteVisits   PasteVisit[]
+  id           String      @id @default(uuid())
+  title        String
+  bodyOverview String
+  bodyUrl      String
+  syntax       String
+  tags         String[]
+  visitsCount  Int         @default(0)
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  comments     Comment[]
+  likes        PasteLike[]
 }
 
 model PasteLike {
@@ -51,31 +45,19 @@ model PasteLike {
   @@id([userId, pasteId])
 }
 
-model PasteVisit {
-  id        String   @id @default(uuid())
-  ipAddress String?
-  createdAt DateTime @default(now())
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String?
-  paste     Paste    @relation(fields: [pasteId], references: [id], onDelete: Cascade)
-  pasteId   String
-}
-
 model Comment {
-  id            String        @id @default(uuid())
-  message       String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  likesCount    Int           @default(0)
-  childrenCount Int           @default(0)
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  paste         Paste         @relation(fields: [pasteId], references: [id], onDelete: Cascade)
-  pasteId       String
-  parent        Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
-  children      Comment[]     @relation("ParentChild")
-  parentId      String?
-  likes         CommentLike[]
+  id        String        @id @default(uuid())
+  message   String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  paste     Paste         @relation(fields: [pasteId], references: [id], onDelete: Cascade)
+  pasteId   String
+  parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  children  Comment[]     @relation("ParentChild")
+  likes     CommentLike[]
 }
 
 model CommentLike {
