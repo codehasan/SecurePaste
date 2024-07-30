@@ -1,6 +1,6 @@
 import { AuthError, isAuthApiError } from '@supabase/supabase-js';
 
-const errorMap: { [key: string]: string } = {
+const authErrors: { [key: string]: string } = {
   bad_code_verifier:
     'Invalid request due to incorrect code verifier. Please refresh and try again.',
   bad_json:
@@ -105,7 +105,7 @@ const errorMap: { [key: string]: string } = {
   weak_password: 'Your password is too weak. Please use a stronger password.',
 };
 
-const apiErrorMap: { [key: number]: string } = {
+const apiAuthErrors: { [key: number]: string } = {
   401: 'Authentication failed due to invalid credentials.',
   403: 'Access denied. You are not permitted to use this feature.',
   404: 'The requested resource does not exist.',
@@ -118,18 +118,18 @@ const apiErrorMap: { [key: number]: string } = {
   504: 'The server took too long to respond. Please try again later.',
 };
 
-const getErrorMessage = (error: AuthError): string => {
+const getAuthErrorMessage = (error: AuthError): string => {
   let errorMessage: string = '';
 
   if (isAuthApiError(error)) {
-    errorMessage = apiErrorMap[error.status];
+    errorMessage = apiAuthErrors[error.status];
   }
 
   if (error.code) {
-    errorMessage ||= errorMap[error.code];
+    errorMessage ||= authErrors[error.code];
   }
 
   return errorMessage || 'An unknown error occurred. Please try again later.';
 };
 
-export default getErrorMessage;
+export { getAuthErrorMessage };
