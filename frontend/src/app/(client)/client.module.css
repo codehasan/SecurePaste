@@ -2,9 +2,10 @@
   max-width: 1200px;
   width: 100%;
   padding: 0px 64px 64px;
-  margin: 0 auto 10px;
+  margin: 0 auto;
   background: #ffffff;
   border: 1px solid #d3d6dc;
+  border-bottom-color: transparent;
   border-top-color: transparent;
 }
 
