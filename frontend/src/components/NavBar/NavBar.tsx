@@ -39,7 +39,7 @@ const NavBar = async () => {
   ];
 
   return (
-    <nav className="bg-white shadow-md max-h-16 w-full relative">
+    <nav className="bg-white max-h-16 w-full relative border-b border-solid border-b-stone-300 shadow-md">
       <div className="mx-auto px-2 sm:px-4 lg:px-8">
         <div className="navbar justify-between p-0">
           <div className="flex items-center h-16 px-2 lg:px-0">

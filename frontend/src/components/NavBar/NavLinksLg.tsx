@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import DropdownProps from './DropdownProps';
 import { usePathname } from 'next/navigation';
+import { optionalMap } from '@/lib/ArrayHelper';
 
 type Partial<T> = { [P in keyof T]?: T[P] | null };
 
@@ -20,8 +21,8 @@ const NavLinksLg = ({
 
   return (
     <div className="hidden lg:ml-6 lg:flex h-full space-x-4">
-      {pageNavigations!.map((navigation) => {
-        if (!isValidUser && navigation.requiresUser) return <></>;
+      {optionalMap(pageNavigations!, (navigation) => {
+        if (!isValidUser && navigation.requiresUser) return null;
 
         return (
           <Link

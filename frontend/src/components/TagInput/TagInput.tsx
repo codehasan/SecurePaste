@@ -69,7 +69,14 @@ const TagInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
 
   return (
     <>
-      <input type="text" name="tags" hidden required={required} value={tags} />
+      <input
+        type="text"
+        name="tags"
+        required={required}
+        value={tags}
+        readOnly
+        hidden
+      />
       <div
         className="input flex items-center flex-wrap text-base h-auto min-h-12 cursor-text"
         onClick={handleDivClick}
