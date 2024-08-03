@@ -1,6 +1,6 @@
 import logger from '@/lib/logging/server';
 import prisma from '@/utils/prisma/db';
-import getAuthErrorMessage from '@/utils/supabase/errors';
+import { getAuthErrorMessage } from '@/utils/supabase/errors';
 import { createClient } from '@/utils/supabase/server';
 import { type EmailOtpType } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { z, ZodError } from 'zod';
 import { SignUpSchema } from '@/lib/schema/ZodSchema';
-import getAuthErrorMessage from '@/utils/supabase/errors';
+import { getAuthErrorMessage } from '@/utils/supabase/errors';
 import logger from '@/lib/logging/server';
 import prisma from '@/utils/prisma/db';
 

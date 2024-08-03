@@ -35,6 +35,7 @@ const TagInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
 
     switch (event.key) {
       case 'Enter':
+        event.preventDefault();
         input.value = '';
 
         if (

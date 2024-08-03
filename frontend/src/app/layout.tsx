@@ -2,6 +2,7 @@ import { ToastProvider } from '@/hooks/useToast';
 import { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import classNames from 'classnames';
 
 const globalFont = Inter({
   weight: ['400', '500', '600', '700'],
@@ -49,7 +50,7 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <html lang="en" className={globalFont.className}>
+    <html lang="en" className={classNames(globalFont.className, 'h-full')}>
       <head>
         <link rel="language" href="en-US" />
         <meta
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body className="bg-[#f8f8fa] min-h-screen">
+      <body className="bg-[#f8f8fa] h-full flex flex-col">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>

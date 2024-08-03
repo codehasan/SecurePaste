@@ -1,7 +1,7 @@
 import Logo from '@/icons/Logo';
 import TextLogo from '@/icons/TextLogo';
 import { createClient } from '@/utils/supabase/server';
-import getUser from '@/utils/supabase/user';
+import getUser from '@/utils/services/user';
 import classNames from 'classnames';
 import { headers } from 'next/headers';
 import Link from 'next/link';

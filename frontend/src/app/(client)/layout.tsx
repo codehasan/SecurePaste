@@ -1,7 +1,5 @@
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar/NavBar';
-import Logo from '@/icons/Logo';
-import { FaGithub } from 'react-icons/fa';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,9 +7,9 @@ interface LayoutProps {
 
 export default function ClientLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col h-full grow">
       <NavBar />
-      <main className="container mx-auto grow">{children}</main>
+      <main className="container mx-auto h-full grow">{children}</main>
       <Footer />
     </div>
   );

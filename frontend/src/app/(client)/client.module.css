@@ -7,6 +7,10 @@
   border: 1px solid #d3d6dc;
   border-bottom-color: transparent;
   border-top-color: transparent;
+
+  height: 100%;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .codeMockup > pre {

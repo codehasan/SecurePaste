@@ -8,7 +8,7 @@ import {
   SignInSchema,
   TokenVerificationSchema,
 } from '@/lib/schema/ZodSchema';
-import getErrorMessage from '@/utils/supabase/errors';
+import { getAuthErrorMessage } from '@/utils/supabase/errors';
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -36,7 +36,7 @@ export async function resendSignUpConfirmation(formData: FormData) {
 
   if (error) {
     logger.error(JSON.stringify(error));
-    redirect(`/auth/verify_account?error=${getErrorMessage(error)}`);
+    redirect(`/auth/verify_account?error=${getAuthErrorMessage(error)}`);
   }
 
   revalidatePath('/auth/verify_account', 'page');
@@ -64,7 +64,7 @@ export async function signIn(formData: FormData) {
 
   if (error) {
     logger.error(JSON.stringify(error));
-    redirect(`/auth/signin?error=${getErrorMessage(error)}`);
+    redirect(`/auth/signin?error=${getAuthErrorMessage(error)}`);
   }
 
   revalidatePath('/', 'layout');
@@ -88,7 +88,7 @@ async function signOutInternal(scope: 'global' | 'local' | 'others') {
   const { error } = await supabase.auth.signOut({ scope });
 
   if (error) {
-    redirect(`/auth/signout?error=${getErrorMessage(error)}`);
+    redirect(`/auth/signout?error=${getAuthErrorMessage(error)}`);
   }
 
   revalidatePath('/', 'layout');
@@ -114,7 +114,7 @@ export async function sendPasswordReset(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/auth/forgot_password?error=${getErrorMessage(error)}`);
+    redirect(`/auth/forgot_password?error=${getAuthErrorMessage(error)}`);
   }
 
   revalidatePath('/auth/forgot_password', 'page');
@@ -146,7 +146,7 @@ export async function verifyRecoveryOtp(formData: FormData) {
 
   if (error) {
     redirect(
-      `/auth/forgot_password?success=true&email=${data.email}&error=${getErrorMessage(error)}`
+      `/auth/forgot_password?success=true&email=${data.email}&error=${getAuthErrorMessage(error)}`
     );
   }
 
@@ -155,7 +155,7 @@ export async function verifyRecoveryOtp(formData: FormData) {
 
     if (sessionError) {
       redirect(
-        `/auth/forgot_password?success=true&email=${data.email}&error=${getErrorMessage(sessionError)}`
+        `/auth/forgot_password?success=true&email=${data.email}&error=${getAuthErrorMessage(sessionError)}`
       );
     }
 

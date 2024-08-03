@@ -14,7 +14,7 @@ const Footer = () => {
           className="link link-hover"
           href="mailto:ratul.hasan.rahat.bd@gmail.com"
         >
-          Contact developer
+          Contact us
         </a>
         <a
           className="link link-hover"

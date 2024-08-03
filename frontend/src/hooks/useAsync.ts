@@ -34,7 +34,7 @@ const useAsyncInternal = <T>(
   const execute = useCallback((...params: any[]) => {
     setLoading(true);
 
-    func(...params)
+    return func(...params)
       .then((data: T) => {
         setValue(data);
         return data;

@@ -1,21 +1,21 @@
 'use client';
+import { useAsyncFn } from '@/hooks/useAsync';
+import { usePost } from '@/hooks/usePaste';
 import { getTimePassedFromDate } from '@/lib/DateFormat';
-import { deleteComment, editComment } from '@/utils/supabase/actions/pastes';
-import { Comment as PrismaComment } from '@prisma/client';
+import {
+  createNewComment,
+  deleteComment,
+  toggleCommentLike,
+  updateComment,
+} from '@/utils/services/comment';
+import { CommentData } from '@/utils/services/paste';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FaEdit, FaRegMinusSquare, FaRegPlusSquare } from 'react-icons/fa';
 import { FaRegThumbsUp, FaReply } from 'react-icons/fa6';
 import { MdDelete } from 'react-icons/md';
-import CodeEditor from '../CodeEditor/CodeEditor';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
-
-interface CommentProps {
-  comment: PrismaComment;
-  comments: PrismaComment[];
-  pasteId: string;
-}
 
 enum CommentAction {
   NONE,
@@ -24,19 +24,26 @@ enum CommentAction {
   DELETE,
 }
 
-/**
- * Check the time difference between two dates in seconds time format
- * @param {Date} start - The starting date
- * @param {Date} end - The ending date
- * @returns {number} Time difference between the two given dates in seconds
- */
 const timeDifference = (start: Date, end: Date): number => {
   return (end.getTime() - start.getTime()) / 1000;
 };
 
-const Comment = ({ comment, comments, pasteId }: CommentProps) => {
+const Comment = (comment: CommentData) => {
   const [showReplies, setShowReplies] = useState(false);
   const [commentAction, setCommentAction] = useState(CommentAction.NONE);
+  const {
+    paste,
+    getReplies,
+    createLocalComment,
+    updateLocalComment,
+    deleteLocalComment,
+    toggleLocalCommentLike,
+  } = usePost();
+  const createCommentFn = useAsyncFn(createNewComment);
+  const updateCommentFn = useAsyncFn(updateComment);
+  const deleteCommentFn = useAsyncFn(deleteComment);
+  const toggleCommentLikeFn = useAsyncFn(toggleCommentLike);
+  const childComments = getReplies(comment.id);
 
   const handleToggle = (action: CommentAction) => {
     if (commentAction === action) {
@@ -50,17 +57,52 @@ const Comment = ({ comment, comments, pasteId }: CommentProps) => {
     setCommentAction(CommentAction.NONE);
   };
 
+  const onCommentReply = async (message: string) => {
+    return createCommentFn
+      .execute({ pasteId: paste!.id, message, parentId: comment.id })
+      .then((comment: CommentData) => {
+        handleCancelAction();
+        createLocalComment(comment);
+      });
+  };
+
+  function onCommentUpdate(message: string) {
+    return updateCommentFn
+      .execute({ pasteId: paste!.id, message, id: comment.id })
+      .then((comment: CommentData) => {
+        handleCancelAction();
+        updateLocalComment(comment.id, comment.message);
+      });
+  }
+
+  function onCommentDelete() {
+    return deleteCommentFn
+      .execute({ pasteId: paste!.id, id: comment.id })
+      .then((comment: CommentData) => {
+        handleCancelAction();
+        deleteLocalComment(comment.id);
+      });
+  }
+
+  function onToggleCommentLike() {
+    return toggleCommentLikeFn
+      .execute({ id: comment.id, pasteId: paste!.id })
+      .then(({ addLike }: { addLike: boolean }) =>
+        toggleLocalCommentLike(comment.id, addLike)
+      );
+  }
+
   return (
     <>
       <div
         className={classNames('p-4 bg-gray-100 rounded-md', {
-          'mb-2': comment.childrenCount === 0,
-          'mb-1': comment.childrenCount > 0,
+          'mb-2': childComments.length === 0,
+          'mb-1': childComments.length > 0,
         })}
       >
         <div className="flex gap-2 mb-2">
           <span className="grow font-medium text-ellipsis">
-            {comment.userId}
+            {comment.user.id}
           </span>
           <span className="flex items-center gap-1 mb-auto">
             {timeDifference(comment.createdAt, comment.updatedAt) > 1 && (
@@ -71,44 +113,17 @@ const Comment = ({ comment, comments, pasteId }: CommentProps) => {
         </div>
 
         {commentAction === CommentAction.EDIT ? (
-          <form
-            className="flex flex-col justify-center items-end gap-1 mb-2 sm:mb-0"
-            onSubmit={handleCancelAction}
-          >
-            <input
-              type="text"
-              name="commentId"
-              value={comment.id}
-              hidden
-              readOnly
-            />
-            <CodeEditor
-              className="bg-white grow min-h-24 w-full text-base"
-              name="message"
-              inputMode="text"
-              defaultValue={comment.message}
-              minLength={4}
-              maxLength={1024}
-              autoFocus
-              required
-            />
-            <div className="flex items-center gap-1">
-              <div
-                className="btn btn-custom btn-error sm:w-24 cursor-pointer"
-                onClick={handleCancelAction}
-              >
-                Cancel
-              </div>
-
-              <button
-                type="submit"
-                className="btn btn-custom btn-primary sm:w-24"
-                formAction={editComment}
-              >
-                Save
-              </button>
-            </div>
-          </form>
+          <CommentForm
+            className="mb-2"
+            onSubmit={onCommentUpdate}
+            onCancel={handleCancelAction}
+            defaultValue={comment.message}
+            loading={updateCommentFn.loading}
+            error={
+              updateCommentFn.error?.message || 'An unexpected error occured.'
+            }
+            autoFocus
+          />
         ) : (
           <div className="mb-4">{comment.message}</div>
         )}
@@ -118,10 +133,7 @@ const Comment = ({ comment, comments, pasteId }: CommentProps) => {
             <div className="flex items-center mb-1 sm:mb-0 grow">
               <span>Do you want to delete this comment?</span>
             </div>
-            <form
-              className="flex justify-end items-center font-medium"
-              onSubmit={handleCancelAction}
-            >
+            <div className="flex justify-end items-center font-medium">
               <input
                 type="text"
                 name="commentId"
@@ -129,26 +141,29 @@ const Comment = ({ comment, comments, pasteId }: CommentProps) => {
                 hidden
                 readOnly
               />
-              <div
+              <button
                 className="rounded-md hover:bg-red-200 px-2 py-1.5 cursor-pointer"
                 onClick={handleCancelAction}
               >
                 No
-              </div>
+              </button>
               <button
                 className="rounded-md hover:bg-red-200 px-2 py-1.5"
-                formAction={deleteComment}
+                onClick={onCommentDelete}
               >
                 Yes
               </button>
-            </form>
+            </div>
           </div>
         )}
 
         <div className="flex gap-3 items-center">
-          <button className="inline-flex justify-center items-center gap-1 text-gray-900 hover:text-gray-700">
+          <button
+            className="inline-flex justify-center items-center gap-1 text-gray-900 hover:text-gray-700"
+            disabled={toggleCommentLikeFn.loading}
+          >
             <FaRegThumbsUp />
-            <span>{comment.likesCount}</span>
+            <span>{comment._count.likes}</span>
           </button>
           <button
             className={classNames('text-gray-900 hover:text-gray-700', {
@@ -180,17 +195,20 @@ const Comment = ({ comment, comments, pasteId }: CommentProps) => {
       {commentAction === CommentAction.REPLY && (
         <CommentForm
           className={classNames('mt-2', {
-            'mb-2': comment.childrenCount === 0,
+            'mb-2': childComments.length === 0,
           })}
-          parentId={comment.id}
-          pasteId={comment.pasteId}
-          showCancel
           onCancel={handleCancelAction}
-          onSubmit={handleCancelAction}
+          onSubmit={onCommentReply}
+          error={
+            createCommentFn.error?.message || 'An unexpected error occured.'
+          }
+          loading={createCommentFn.loading}
+          submitText="Reply"
+          autoFocus
         />
       )}
 
-      {comment.childrenCount > 0 && (
+      {childComments.length > 0 && (
         <button
           className="mb-1 ml-2 text-sm cursor-pointer inline-flex items-center gap-1"
           onClick={() => setShowReplies(!showReplies)}
@@ -203,22 +221,18 @@ const Comment = ({ comment, comments, pasteId }: CommentProps) => {
           ) : (
             <>
               <FaRegPlusSquare />
-              <span>Show Replies ({comment.childrenCount})</span>
+              <span>Show Replies ({childComments.length})</span>
             </>
           )}
         </button>
       )}
 
-      {comment.childrenCount > 0 && showReplies && (
+      {childComments.length > 0 && showReplies && (
         <div className="pl-2 ml-3 relative">
           <div className="absolute top-0 left-0 bottom-0 bg-gray-300 mb-2">
             <div className="h-full w-[1px]"></div>
           </div>
-          <CommentList
-            comments={comments}
-            parent={comment.id}
-            pasteId={pasteId}
-          />
+          <CommentList comments={childComments} />
         </div>
       )}
     </>

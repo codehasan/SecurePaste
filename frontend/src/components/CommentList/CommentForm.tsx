@@ -1,45 +1,57 @@
-import { postComment } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
+import { FormEvent, useState } from 'react';
 import CodeEditor from '../CodeEditor/CodeEditor';
 
 interface CommentFormProps {
-  showCancel?: boolean;
-  onSubmit?: () => void;
+  onSubmit: (message: string) => Promise<void>;
   onCancel?: () => void;
   className?: string;
-  parentId?: string;
-  pasteId: string;
+  autoFocus?: boolean;
+  loading?: boolean;
+  error?: string;
+  defaultValue?: string;
+  submitText?: string;
 }
 
 const CommentForm = ({
   className,
-  showCancel,
   onCancel,
   onSubmit,
-  parentId,
-  pasteId,
+  autoFocus,
+  loading,
+  error,
+  defaultValue,
+  submitText,
 }: CommentFormProps) => {
+  const [message, setMessage] = useState(defaultValue || '');
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onSubmit(message).then(() => setMessage(''));
+  };
+
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       className={classNames(
         className,
         'flex flex-col justify-center items-end gap-1'
       )}
     >
-      <input type="text" name="parentId" value={parentId} hidden readOnly />
-      <input type="text" name="pasteId" value={pasteId} hidden readOnly />
       <CodeEditor
         className="bg-white grow min-h-24 w-full textarea"
         name="message"
         inputMode="text"
         minLength={4}
         maxLength={1024}
-        autoFocus
+        autoFocus={autoFocus}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
         required
       />
+      {error && <div className="text-red-600 text-sm">{error}</div>}
       <div className="flex items-center gap-1">
-        {showCancel && onCancel && (
+        {onCancel && (
           <div
             className="btn btn-custom btn-error sm:w-24 cursor-pointer"
             onClick={onCancel}
@@ -49,10 +61,15 @@ const CommentForm = ({
         )}
         <button
           type="submit"
-          className="btn btn-custom btn-primary sm:w-24"
-          formAction={postComment}
+          className={classNames('btn btn-custom btn-primary sm:w-24', {
+            'btn-disabled': loading,
+          })}
         >
-          Post
+          {loading ? (
+            <span className="loading loading-spinner loading-md"></span>
+          ) : (
+            <span>{submitText || 'Post'}</span>
+          )}
         </button>
       </div>
     </form>

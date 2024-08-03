@@ -35,6 +35,16 @@ export const optionalMap = <T>(
   return elements;
 };
 
+export const getTags = (text: string) => {
+  let tags: string[] = [];
+
+  if (text && text.trim().length > 0) {
+    tags = text.split(/[\s,]+/);
+  }
+
+  return tags;
+};
+
 export const getLines = (text: string, max: number): string => {
   const lines: string[] = [];
   let currentLine = '';

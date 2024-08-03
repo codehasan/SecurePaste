@@ -1,34 +1,16 @@
-import { Comment as PrismaComment } from '@prisma/client';
+import { CommentData } from '@/utils/services/paste';
 import Comment from './Comment';
 
 interface CommentListProps {
-  parent: string | null;
-  pasteId: string;
-  comments: PrismaComment[];
+  comments: CommentData[];
   className?: string;
 }
 
-const CommentList = ({
-  parent,
-  comments,
-  className,
-  pasteId,
-}: CommentListProps) => {
-  const rootComments = comments.filter(
-    (comment) => comment.parentId === parent
-  );
-
+const CommentList = ({ comments, className }: CommentListProps) => {
   return (
     <div className={className}>
-      {rootComments.map((comment, index) => {
-        return (
-          <Comment
-            key={comment.id}
-            comment={comment}
-            comments={comments}
-            pasteId={pasteId}
-          />
-        );
+      {comments.map((comment) => {
+        return <Comment key={comment.id} {...comment} />;
       })}
     </div>
   );

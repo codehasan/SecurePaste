@@ -11,7 +11,7 @@ interface ChipProps {
 const Tag = ({ value, onDelete, allowDelete, className }: ChipProps) => {
   return (
     <span
-      style={{ borderWidth: '0.15rem' }}
+      style={{ borderWidth: '0.13rem' }}
       className={classNames(
         'badge badge-outline border-slate-500 text-slate-700 font-medium rounded-md px-2 py-4 cursor-auto',
         className

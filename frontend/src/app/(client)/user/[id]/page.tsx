@@ -2,7 +2,7 @@ import CodeEditor from '@/components/CodeEditor/CodeEditor';
 import { MemoizedLabel } from '@/components/Label';
 import { getFormattedDate, getTimePassed } from '@/lib/DateFormat';
 import { createClient } from '@/utils/supabase/server';
-import getUser from '@/utils/supabase/user';
+import getUser from '@/utils/services/user';
 import classNames from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -79,11 +79,11 @@ const User = async ({ params }: UserProps) => {
           <div className="flex px-4 w-full">
             <div className="flex flex-col grow items-center justify-center">
               <span className="font-medium">Pastes</span>
-              <span>{dbUser!.pastesCount}</span>
+              <span>{0}</span>
             </div>
             <div className="flex flex-col grow items-center justify-center">
               <span className="font-medium">Comments</span>
-              <span>{dbUser!.commentsCount}</span>
+              <span>{1}</span>
             </div>
           </div>
         </div>
