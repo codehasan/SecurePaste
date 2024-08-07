@@ -27,7 +27,6 @@ model Paste {
   bodyUrl      String
   syntax       String
   tags         String[]
-  visitsCount  Int         @default(0)
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   createdAt    DateTime    @default(now())
