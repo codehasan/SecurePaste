@@ -11,7 +11,12 @@ import {
 import { CommentData } from '@/utils/services/paste';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { FaEdit, FaRegMinusSquare, FaRegPlusSquare } from 'react-icons/fa';
+import {
+  FaEdit,
+  FaRegMinusSquare,
+  FaRegPlusSquare,
+  FaThumbsUp,
+} from 'react-icons/fa';
 import { FaRegThumbsUp, FaReply } from 'react-icons/fa6';
 import { MdDelete } from 'react-icons/md';
 import CommentForm from './CommentForm';
@@ -120,7 +125,10 @@ const Comment = (comment: CommentData) => {
             defaultValue={comment.message}
             loading={updateCommentFn.loading}
             error={
-              updateCommentFn.error?.message || 'An unexpected error occured.'
+              updateCommentFn.error
+                ? updateCommentFn.error.message ||
+                  'An unexpected error occured.'
+                : null
             }
             autoFocus
           />
@@ -161,8 +169,9 @@ const Comment = (comment: CommentData) => {
           <button
             className="inline-flex justify-center items-center gap-1 text-gray-900 hover:text-gray-700"
             disabled={toggleCommentLikeFn.loading}
+            onClick={onToggleCommentLike}
           >
-            <FaRegThumbsUp />
+            {comment.likedByMe ? <FaThumbsUp /> : <FaRegThumbsUp />}
             <span>{comment._count.likes}</span>
           </button>
           <button

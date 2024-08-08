@@ -1,13 +1,8 @@
-import { SupabaseClient, User } from '@supabase/supabase-js';
-import prisma from '../prisma/db';
-import {
-  Comment,
-  CommentLike,
-  Paste,
-  PasteLike,
-  User as PrismaUser,
-} from '@prisma/client';
-import { sort } from '@/lib/CommentSort';
+import { logError } from '@/lib/logging/client';
+import { Comment, Paste, User as PrismaUser } from '@prisma/client';
+import { User } from '@supabase/supabase-js';
+import axios from 'axios';
+import { getErrorMessage } from '../axios/error';
 
 export type UserData = Omit<PrismaUser, 'bio'>;
 
@@ -21,6 +16,7 @@ export type CommentData = Omit<Comment, 'userId' | 'pasteId'> & {
 };
 
 export type PasteData = Omit<Paste, 'bodyOverview' | 'updatedAt' | 'userId'> & {
+  body: string;
   owner: boolean;
   likedByMe: boolean;
   _count: {
@@ -30,109 +26,28 @@ export type PasteData = Omit<Paste, 'bodyOverview' | 'updatedAt' | 'userId'> & {
   user: UserData;
 };
 
-const UserDataSelect = {
-  id: true,
-  avatar: true,
-  name: true,
-  verified: true,
-};
-
-export async function getPasteById(supabase: SupabaseClient, id: string) {
-  let authUser: User | null = null;
-  let data: PasteData | null = null;
-
+export const togglePasteLike = async ({ id }: { id: string }) => {
   try {
-    const { data, error } = await supabase.auth.getUser();
-
-    if (error) {
-      console.error('Supabase user error:', error.message);
-    } else if (data?.user) {
-      authUser = data.user;
-    }
-  } catch (unexpectedError) {
-    console.error('Unexpected error:', unexpectedError);
-  }
-
-  try {
-    const paste = await prisma.paste.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        id: true,
-        bodyUrl: true,
-        title: true,
-        syntax: true,
-        visitsCount: true,
-        tags: true,
-        createdAt: true,
-        _count: { select: { likes: true } },
-        user: {
-          select: UserDataSelect,
-        },
-        comments: {
-          orderBy: {
-            createdAt: 'desc',
-          },
-          select: {
-            id: true,
-            message: true,
-            parentId: true,
-            createdAt: true,
-            updatedAt: true,
-            user: {
-              select: UserDataSelect,
-            },
-            _count: { select: { likes: true } },
-          },
-        },
-      },
+    const response = await axios.post(`/api/paste/${id}/toggleLike`, {
+      timeout: 10_000,
     });
 
-    if (paste) {
-      let commentLikes: CommentLike[] = [];
-      let pasteLike: PasteLike | null = null;
-
-      if (authUser) {
-        commentLikes = await prisma.commentLike.findMany({
-          where: {
-            userId: authUser.id,
-            commentId: { in: paste.comments.map((comment) => comment.id) },
-          },
-        });
-
-        pasteLike = await prisma.pasteLike.findUnique({
-          where: {
-            userId_pasteId: {
-              userId: authUser.id,
-              pasteId: id,
-            },
-          },
-        });
-      }
-
-      const comments = paste.comments.map((comment) => {
-        return {
-          ...comment,
-          owner: authUser ? comment.user.id === authUser.id : false,
-          likedByMe: Boolean(
-            commentLikes.find((like) => like.commentId === comment.id)
-          ),
-        };
-      });
-
-      data = {
-        ...paste,
-        comments: authUser
-          ? sort(comments, { userId: authUser.id })
-          : sort(comments),
-        owner: authUser ? paste.user.id === authUser.id : false,
-        likedByMe: Boolean(pasteLike),
-      };
-    }
+    return response.data as { addLike: boolean };
   } catch (error) {
-    console.error('Error fetching paste data:', JSON.stringify(error));
+    logError(JSON.stringify(error));
+    throw getErrorMessage(error);
   }
+};
 
-  return { authUser, paste: data };
-}
+export const getPasteById = async ({ id }: { id: string }) => {
+  try {
+    const response = await axios.get(`/api/paste/${id}`, {
+      timeout: 10_000,
+    });
+
+    return response.data as { authUser: User | null; paste: PasteData | null };
+  } catch (error) {
+    logError(JSON.stringify(error));
+    throw getErrorMessage(error);
+  }
+};

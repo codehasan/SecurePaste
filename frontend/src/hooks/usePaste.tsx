@@ -1,5 +1,6 @@
 'use client';
-import { CommentData, PasteData } from '@/utils/services/paste';
+import Loading from '@/app/(client)/loading';
+import { CommentData, getPasteById, PasteData } from '@/utils/services/paste';
 import { User } from '@supabase/supabase-js';
 import React, {
   ReactNode,
@@ -8,6 +9,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useAsync } from './useAsync';
 
 interface PasteState {
   authUser: User | null;
@@ -18,11 +20,11 @@ interface PasteState {
   updateLocalComment: (id: string, message: string) => void;
   deleteLocalComment: (id: string) => void;
   toggleLocalCommentLike: (id: string, addLike: boolean) => void;
+  toggleLocalPasteLike: (addLike: boolean) => void;
 }
 
 interface PasteProviderProps {
-  authUser: User | null;
-  paste: PasteData | null;
+  pasteId: string;
   children: ReactNode;
 }
 
@@ -41,11 +43,11 @@ export const usePost = () => {
   return useContext(PasteContext);
 };
 
-export const PasteProvider = ({
-  children,
-  authUser,
-  paste,
-}: PasteProviderProps) => {
+export const PasteProvider = ({ children, pasteId }: PasteProviderProps) => {
+  const { loading, value, setValue } = useAsync(
+    () => getPasteById({ id: pasteId }),
+    [pasteId]
+  );
   const [comments, setComments] = useState<CommentData[]>([]);
   const commentsByParentId = useMemo(() => {
     const group: { [key: string]: CommentData[] } = {};
@@ -58,9 +60,13 @@ export const PasteProvider = ({
   }, [comments]);
 
   useEffect(() => {
-    if (!paste || paste.comments === null) return;
+    const paste = value?.paste;
+
+    if (!paste || paste.comments === null || paste.comments === undefined)
+      return;
+
     setComments(paste.comments);
-  }, [paste?.comments]);
+  }, [value?.paste?.comments]);
 
   const getReplies = (parentId: string) => {
     return commentsByParentId[parentId];
@@ -97,13 +103,17 @@ export const PasteProvider = ({
           if (addLike) {
             return {
               ...comment,
-              likeCount: comment._count.likes + 1,
+              _count: {
+                likes: comment._count.likes + 1,
+              },
               likedByMe: true,
             };
           } else {
             return {
               ...comment,
-              likeCount: comment._count.likes - 1,
+              _count: {
+                likes: comment._count.likes - 1,
+              },
               likedByMe: false,
             };
           }
@@ -114,20 +124,51 @@ export const PasteProvider = ({
     });
   };
 
+  const toggleLocalPasteLike = (addLike: boolean) => {
+    setValue((prevValue) => {
+      if (!prevValue || !prevValue.paste) return prevValue;
+
+      if (addLike) {
+        return {
+          authUser: prevValue.authUser,
+          paste: {
+            ...prevValue.paste,
+            _count: {
+              likes: prevValue.paste._count.likes + 1,
+            },
+            likedByMe: true,
+          },
+        };
+      } else {
+        return {
+          authUser: prevValue.authUser,
+          paste: {
+            ...prevValue.paste,
+            _count: {
+              likes: prevValue.paste._count.likes - 1,
+            },
+            likedByMe: false,
+          },
+        };
+      }
+    });
+  };
+
   return (
     <PasteContext.Provider
       value={{
-        authUser,
-        paste,
+        authUser: value?.authUser || null,
+        paste: value?.paste || null,
         rootComments: commentsByParentId[''],
         getReplies,
         createLocalComment,
         updateLocalComment,
         deleteLocalComment,
         toggleLocalCommentLike,
+        toggleLocalPasteLike,
       }}
     >
-      {children}
+      {loading ? <Loading /> : children}
     </PasteContext.Provider>
   );
 };

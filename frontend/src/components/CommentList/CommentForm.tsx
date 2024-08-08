@@ -8,7 +8,7 @@ interface CommentFormProps {
   className?: string;
   autoFocus?: boolean;
   loading?: boolean;
-  error?: string;
+  error?: string | null;
   defaultValue?: string;
   submitText?: string;
 }

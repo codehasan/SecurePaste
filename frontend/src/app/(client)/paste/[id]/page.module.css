@@ -1,0 +1,98 @@
+.bodyContainer {
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+}
+
+.topBar {
+  padding: 8px;
+  background: #f6f8fa;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.actionButton {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+}
+
+.actionButton:hover {
+  background: #dde3ec;
+}
+
+.actionButton:active {
+  color: #3f5974;
+}
+
+.buttons {
+  display: inline-flex;
+  vertical-align: middle;
+  isolation: isolate;
+  line-height: 1.5;
+  color: #1f2328;
+  height: 28px;
+  font-size: 12px;
+}
+
+.buttons > * {
+  position: relative;
+  height: 100%;
+  width: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #d0d7de;
+  border-right-color: transparent;
+  box-shadow:
+    rgba(31, 35, 40, 0.04) 0px 1px 0px 0px,
+    rgba(255, 255, 255, 0.25) 0px 1px 0px 0px inset;
+}
+
+.buttons > *:hover {
+  background-color: #eef1f4;
+}
+
+.buttons > *:active {
+  background-color: #e7ebef;
+}
+
+.buttons > *:first-child {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.buttons > *:last-child {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border-right-color: #d0d7de;
+}
+
+.buttons > [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 10;
+  background-color: #24292f;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: #f0f8ff;
+  width: max-content;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s;
+}
+
+.buttons > [data-tooltip]:hover::after,
+.buttons > [data-tooltip]:focus::after {
+  visibility: visible;
+  opacity: 1;
+}

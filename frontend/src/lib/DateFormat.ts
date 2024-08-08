@@ -32,7 +32,11 @@ export const getTimePassedFromDate = (past: Date) => {
   return '0m';
 };
 
-export const getFormattedDate = (date: string | undefined) => {
+export const getFormattedDate = (date: string | Date | undefined) => {
   if (!date) return 'No data';
+
+  if (date instanceof Date) {
+    return dateFormat.format(date);
+  }
   return dateFormat.format(new Date(date));
 };

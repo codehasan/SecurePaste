@@ -1,4 +1,5 @@
 export const langs = [
+  { name: 'Text', code: 'text' },
   { name: 'Bash', code: 'bash' },
   { name: 'C', code: 'c' },
   { name: 'CMake', code: 'cmake' },
@@ -44,3 +45,8 @@ export const langs = [
   { name: 'YAML', code: 'yaml' },
   { name: 'Zig', code: 'zig' },
 ];
+
+export const getNameFromCode = (code: string) => {
+  const lang = langs.find((lang) => lang.code === code);
+  return lang ? lang.name : langs[0].name;
+};
