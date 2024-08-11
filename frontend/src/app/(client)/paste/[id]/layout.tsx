@@ -1,7 +1,5 @@
-'use client';
 import { PasteProvider } from '@/hooks/usePaste';
-import { ReactNode, Suspense } from 'react';
-import Loading from '../../loading';
+import { ReactNode } from 'react';
 
 interface PasteLayoutProps {
   children: ReactNode;

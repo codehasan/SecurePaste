@@ -65,11 +65,7 @@ export async function newComment(formData: FormData) {
         bodyUrl,
         syntax: data.syntax,
         tags: data.tags,
-        user: {
-          connect: {
-            id: userResponse.data.user.id,
-          },
-        },
+        userId: userResponse.data.user.id,
       },
     });
   } catch (e) {

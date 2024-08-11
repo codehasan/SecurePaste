@@ -44,7 +44,7 @@ const CommentForm = ({
         inputMode="text"
         minLength={4}
         maxLength={1024}
-        autoFocus={autoFocus}
+        autoFocus={autoFocus ? true : undefined}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         required

@@ -25,14 +25,9 @@ import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
 
-export default async function ViewPaste() {
-  const {
-    authUser,
-    paste,
-    rootComments,
-    createLocalComment,
-    toggleLocalPasteLike,
-  } = usePost();
+export default function ViewPaste() {
+  const { paste, rootComments, createLocalComment, toggleLocalPasteLike } =
+    usePost();
   const createCommentFn = useAsyncFn(createNewComment);
   const togglePasteLikeFn = useAsyncFn(togglePasteLike);
 
@@ -42,7 +37,7 @@ export default async function ViewPaste() {
     [paste?.body]
   );
 
-  const onNewComment = async (message: string) => {
+  const onNewComment = (message: string) => {
     return createCommentFn
       .execute({ pasteId: paste!.id, message, parentId: null })
       .then((comment: CommentData) => {
@@ -50,13 +45,13 @@ export default async function ViewPaste() {
       });
   };
 
-  function onTogglePasteLike() {
+  const onTogglePasteLike = () => {
     return togglePasteLikeFn
       .execute({ id: paste!.id })
       .then(({ addLike }: { addLike: boolean }) =>
         toggleLocalPasteLike(addLike)
       );
-  }
+  };
 
   return (
     <div className="size-full">
@@ -165,7 +160,7 @@ export default async function ViewPaste() {
                       </button>
                     </div>
 
-                    {authUser ? (
+                    {paste.owner ? (
                       <>
                         <div
                           className={classNames(

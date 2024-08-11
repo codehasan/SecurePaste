@@ -139,5 +139,5 @@ export async function GET(
     );
   }
 
-  return NextResponse.json({ authUser, paste: data }, { status: 200 });
+  return NextResponse.json(data, { status: 200 });
 }
