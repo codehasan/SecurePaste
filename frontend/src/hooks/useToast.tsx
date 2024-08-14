@@ -1,7 +1,6 @@
 'use client';
 import CryptoJS from 'crypto-js';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 import { Bounce, toast, ToastContainer, ToastOptions } from 'react-toastify';
 
 type ToastType = 'warning' | 'error' | 'success' | 'info' | 'normal';
@@ -21,10 +20,6 @@ const ToastContext = createContext({
 export const useToast = () => useContext(ToastContext);
 
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   const showToast = (content: string, type?: ToastType, duration?: number) => {
     const options: ToastOptions = {
       autoClose: duration || ToastDuration.long,
@@ -47,25 +42,10 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         break;
       case 'normal':
       default:
-        toast(content, options);
+        toast(content, { ...options, theme: 'light' });
         break;
     }
   };
-
-  useEffect(() => {
-    const error = searchParams.get('error');
-
-    if (error) {
-      showToast(decodeURIComponent(error), 'error');
-
-      const newParams = new URLSearchParams(searchParams.toString());
-      newParams.delete('error');
-
-      router.replace(
-        newParams.size > 0 ? `${pathname}?${newParams.toString()}` : pathname
-      );
-    }
-  }, [searchParams]);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
