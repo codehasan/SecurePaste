@@ -22,7 +22,7 @@ interface PasteState {
 }
 
 interface PasteProviderProps {
-  pasteId: string;
+  paste: PasteData | null;
   children: ReactNode;
 }
 
@@ -40,12 +40,7 @@ export const usePost = () => {
   return useContext(PasteContext);
 };
 
-export const PasteProvider = ({ children, pasteId }: PasteProviderProps) => {
-  const {
-    loading,
-    value: paste,
-    setValue: setPaste,
-  } = useAsync(() => getPasteById({ id: pasteId }), [pasteId]);
+export const PasteProvider = ({ children, paste }: PasteProviderProps) => {
   const [comments, setComments] = useState<CommentData[]>([]);
   const commentsByParentId = useMemo(() => {
     const group: { [key: string]: CommentData[] } = {};
@@ -121,27 +116,25 @@ export const PasteProvider = ({ children, pasteId }: PasteProviderProps) => {
   };
 
   const toggleLocalPasteLike = (addLike: boolean) => {
-    setPaste((prevPaste) => {
-      if (!prevPaste) return prevPaste;
+    const prevPaste = { _count: { likes: 9 } }; // dummy
 
-      if (addLike) {
-        return {
-          ...prevPaste,
-          _count: {
-            likes: prevPaste._count.likes + 1,
-          },
-          likedByMe: true,
-        };
-      } else {
-        return {
-          ...prevPaste,
-          _count: {
-            likes: prevPaste._count.likes - 1,
-          },
-          likedByMe: false,
-        };
-      }
-    });
+    if (addLike) {
+      return {
+        ...prevPaste,
+        _count: {
+          likes: prevPaste._count.likes + 1,
+        },
+        likedByMe: true,
+      };
+    } else {
+      return {
+        ...prevPaste,
+        _count: {
+          likes: prevPaste._count.likes - 1,
+        },
+        likedByMe: false,
+      };
+    }
   };
 
   return (
@@ -157,7 +150,7 @@ export const PasteProvider = ({ children, pasteId }: PasteProviderProps) => {
         toggleLocalPasteLike,
       }}
     >
-      {loading ? <Loading /> : children}
+      {children}
     </PasteContext.Provider>
   );
 };
