@@ -1,4 +1,5 @@
 'use client';
+import CryptoJS from 'crypto-js';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { Bounce, toast, ToastContainer, ToastOptions } from 'react-toastify';
@@ -10,11 +11,7 @@ const ToastDuration = {
 };
 
 interface ToastState {
-  showToast: (
-    message: string,
-    type?: ToastType,
-    options?: ToastOptions
-  ) => void;
+  showToast: (content: string, type?: ToastType, duration?: number) => void;
 }
 
 const ToastContext = createContext({
@@ -28,26 +25,29 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const showToast = (
-    message: string,
-    type?: ToastType,
-    options?: ToastOptions
-  ) => {
+  const showToast = (content: string, type?: ToastType, duration?: number) => {
+    const options: ToastOptions = {
+      autoClose: duration || ToastDuration.long,
+      toastId: CryptoJS.SHA256(content).toString(CryptoJS.enc.Hex),
+      theme: 'colored',
+    };
+
     switch (type) {
       case 'error':
-        toast.error(message, options);
+        toast.error(content, options);
         break;
       case 'info':
-        toast.info(message, options);
+        toast.info(content, options);
         break;
       case 'success':
-        toast.success(message, options);
+        toast.success(content, options);
         break;
       case 'warning':
-        toast.warn(message, options);
+        toast.warn(content, options);
         break;
       case 'normal':
-        toast(message, options);
+      default:
+        toast(content, options);
         break;
     }
   };
@@ -57,7 +57,13 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
     if (error) {
       showToast(decodeURIComponent(error), 'error');
-      router.replace(pathname);
+
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.delete('error');
+
+      router.replace(
+        newParams.size > 0 ? `${pathname}?${newParams.toString()}` : pathname
+      );
     }
   }, [searchParams]);
 
@@ -65,7 +71,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     <ToastContext.Provider value={{ showToast }}>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
         rtl={false}
@@ -73,7 +78,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         closeOnClick
         pauseOnFocusLoss
         pauseOnHover
-        theme="colored"
         limit={3}
         transition={Bounce}
       />
