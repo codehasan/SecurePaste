@@ -44,19 +44,6 @@ const UserDataSelect = {
   verified: true,
 };
 
-export const togglePasteLike = async ({ id }: { id: string }) => {
-  try {
-    const response = await axios.post(`/api/paste/${id}/toggleLike`, {
-      timeout: 10_000,
-    });
-
-    return response.data as { addLike: boolean };
-  } catch (error) {
-    logError(JSON.stringify(error));
-    throw getErrorMessage(error);
-  }
-};
-
 export const getPasteById = async (id: string) => {
   let authUser: User | null = null;
   let data: PasteData | null = null;
