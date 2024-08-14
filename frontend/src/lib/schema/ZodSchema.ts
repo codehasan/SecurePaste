@@ -111,3 +111,7 @@ export const TokenVerificationSchema = z
     token: z.string().min(0, { message: 'OTP is required.' }),
   })
   .strict();
+
+export const IdVerificationSchema = z
+  .string()
+  .min(0, { message: 'ID is required.' });
