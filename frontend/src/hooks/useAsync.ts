@@ -17,7 +17,7 @@ export const useAsync = <T>(
 
 export const useAsyncFn = <T>(
   func: AsyncFunction<T>,
-  dependencies: React.DependencyList = []
+  dependencies: any[] = []
 ) => {
   return useAsyncInternal<T>(func, dependencies, false);
 };
@@ -46,7 +46,6 @@ const useAsyncInternal = <T>(
       .finally(() => {
         setLoading(false);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies);
 
   return { loading, value, error, execute };
