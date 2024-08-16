@@ -1,6 +1,6 @@
 'use client';
-import Loading from '@/app/(client)/loading';
-import { CommentData, getPasteById, PasteData } from '@/utils/services/paste';
+import { CommentData, PasteData } from '@/utils/services/paste';
+import { User } from '@supabase/supabase-js';
 import React, {
   ReactNode,
   useContext,
@@ -8,9 +8,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useAsync } from './useAsync';
 
 interface PasteState {
+  authUser: User | null;
   paste: PasteData | null;
   rootComments: CommentData[];
   getReplies: (parentId: string) => CommentData[];
@@ -22,6 +22,7 @@ interface PasteState {
 }
 
 interface PasteProviderProps {
+  authUser: User | null;
   paste: PasteData | null;
   children: ReactNode;
 }
@@ -40,7 +41,11 @@ export const usePost = () => {
   return useContext(PasteContext);
 };
 
-export const PasteProvider = ({ children, paste }: PasteProviderProps) => {
+export const PasteProvider = ({
+  children,
+  paste,
+  authUser,
+}: PasteProviderProps) => {
   const [comments, setComments] = useState<CommentData[]>([]);
   const commentsByParentId = useMemo(() => {
     const group: { [key: string]: CommentData[] } = {};
@@ -60,7 +65,7 @@ export const PasteProvider = ({ children, paste }: PasteProviderProps) => {
   }, [paste?.comments]);
 
   const getReplies = (parentId: string) => {
-    return commentsByParentId[parentId];
+    return commentsByParentId[parentId] ?? [];
   };
 
   const createLocalComment = (comment: CommentData) => {
@@ -116,30 +121,25 @@ export const PasteProvider = ({ children, paste }: PasteProviderProps) => {
   };
 
   const toggleLocalPasteLike = (addLike: boolean) => {
-    const prevPaste = { _count: { likes: 9 } }; // dummy
-
-    if (addLike) {
-      return {
-        ...prevPaste,
-        _count: {
-          likes: prevPaste._count.likes + 1,
-        },
-        likedByMe: true,
-      };
-    } else {
-      return {
-        ...prevPaste,
-        _count: {
-          likes: prevPaste._count.likes - 1,
-        },
-        likedByMe: false,
-      };
+    if (paste) {
+      if (addLike) {
+        paste._count = {
+          likes: paste._count.likes + 1,
+        };
+        paste.likedByMe = true;
+      } else {
+        paste._count = {
+          likes: paste._count.likes - 1,
+        };
+        paste.likedByMe = false;
+      }
     }
   };
 
   return (
     <PasteContext.Provider
       value={{
+        authUser,
         paste: paste,
         rootComments: commentsByParentId[''],
         getReplies,
