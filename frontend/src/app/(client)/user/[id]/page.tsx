@@ -28,18 +28,18 @@ const User = async ({ params }: UserProps) => {
     <div className="size-full">
       <div className={classNames(styles.container)}>
         <div className={classNames('text-2xl font-semibold', styles.header)}>
-          Your profile
+          My profile
         </div>
         <div className="flex flex-col items-center px-4 py-2 sm:flex-row">
           <Image
-            className="size-20 max-w-full rounded-full shadow-md sm:size-24 md:size-28 lg:size-32"
+            className="size-20 max-w-full rounded-full border border-solid border-black border-opacity-5 shadow-md sm:size-24 md:size-28 lg:size-32"
             alt="Profile"
             src={dbUser!.avatar || '/img/avatar.svg'}
             width={40}
             height={40}
           />
           <div className="mt-3 sm:ml-8 sm:mt-0">
-            <div className="flex justify-center items-center gap-1 text-gray-800 font-medium text-lg text-center sm:justify-start md:text-xl lg:text-2xl">
+            <div className="flex items-center justify-center gap-1 text-center text-lg font-medium text-gray-800 sm:justify-start md:text-xl lg:text-2xl">
               <span>{dbUser!.name}</span>
               {dbUser!.verified && (
                 <span className="text-primary tooltip" data-tip="Verified">
@@ -47,11 +47,11 @@ const User = async ({ params }: UserProps) => {
                 </span>
               )}
             </div>
-            <div className="text-gray-500 font-medium text-base text-wrap">
+            <div className="text-wrap text-base font-medium text-gray-500">
               {authUser!.email || 'Email not set'}
             </div>
             <form className="mt-3">
-              <button className="btn btn-custom bg-gray-300 border-gray-300 text-gray-900">
+              <button className="btn btn-custom border-gray-300 bg-gray-300 text-gray-900">
                 <FaImage />
                 <span>
                   {dbUser!.avatar
@@ -74,22 +74,22 @@ const User = async ({ params }: UserProps) => {
           </span>
         </div>
         <div className="mt-4">
-          <div className="font-medium text-lg">Metrics</div>
-          <div className="divider mt-1 mb-1"></div>
-          <div className="flex px-4 w-full">
-            <div className="flex flex-col grow items-center justify-center">
+          <div className="text-lg font-medium">Metrics</div>
+          <div className="divider mb-1 mt-1"></div>
+          <div className="flex w-full px-4">
+            <div className="flex grow flex-col items-center justify-center">
               <span className="font-medium">Pastes</span>
               <span>{0}</span>
             </div>
-            <div className="flex flex-col grow items-center justify-center">
+            <div className="flex grow flex-col items-center justify-center">
               <span className="font-medium">Comments</span>
               <span>{1}</span>
             </div>
           </div>
         </div>
         <div className="mt-4 md:mt-6">
-          <div className="font-medium text-lg">Personal</div>
-          <div className="divider mt-1 mb-1"></div>
+          <div className="text-lg font-medium">Personal</div>
+          <div className="divider mb-1 mt-1"></div>
           <form>
             <MemoizedLabel
               primaryText="Full name"
@@ -125,13 +125,13 @@ const User = async ({ params }: UserProps) => {
               />
             </MemoizedLabel>
 
-            <div className="text-sm mt-1 ml-1 text-sky-600">
+            <div className="ml-1 mt-1 text-sm text-sky-600">
               <Link href="/auth/change_email">Change email</Link>
             </div>
 
             <MemoizedLabel className="mt-3" primaryText="Bio">
               <CodeEditor
-                className="w-full bg-transparent min-h-32"
+                className="min-h-32 w-full bg-transparent"
                 placeholder="Lorem ipsum dolor sit amet consectetur adipiscing elit"
                 name="bio"
                 inputMode="text"
@@ -140,7 +140,7 @@ const User = async ({ params }: UserProps) => {
               />
             </MemoizedLabel>
 
-            <div className="w-full mt-6">
+            <div className="mt-6 w-full">
               <button
                 type="submit"
                 className="btn btn-accent text-sm font-semibold"
