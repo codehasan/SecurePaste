@@ -4,7 +4,7 @@ const config = {
   tabWidth: 2,
   semi: true,
   singleQuote: true,
-  plugins: ['prettier-plugin-solidity'],
+  plugins: ['prettier-plugin-solidity', 'prettier-plugin-tailwindcss'],
   overrides: [
     {
       files: '*.sol',
@@ -16,6 +16,12 @@ const config = {
         singleQuote: false,
         bracketSpacing: false,
         explicitTypes: 'preserve',
+      },
+    },
+    {
+      files: ['*.ts', '*.tsx', '*.js', '*.jsx'],
+      options: {
+        parser: 'typescript',
       },
     },
   ],
