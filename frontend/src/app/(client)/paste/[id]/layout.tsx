@@ -1,4 +1,5 @@
 import { PasteProvider } from '@/hooks/usePaste';
+import { getPasteById } from '@/utils/services/paste';
 import { ReactNode } from 'react';
 
 interface PasteLayoutProps {
@@ -9,7 +10,13 @@ interface PasteLayoutProps {
 }
 
 const PasteLayout = async ({ children, params }: PasteLayoutProps) => {
-  return <PasteProvider pasteId={params.id}>{children}</PasteProvider>;
+  const { authUser, data } = await getPasteById(params.id);
+
+  return (
+    <PasteProvider paste={data} authUser={authUser}>
+      {children}
+    </PasteProvider>
+  );
 };
 
 export default PasteLayout;
