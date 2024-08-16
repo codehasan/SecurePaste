@@ -61,6 +61,7 @@ const CommentForm = ({
         )}
         <button
           type="submit"
+          disabled={loading}
           className={classNames('btn btn-custom btn-primary sm:w-24', {
             'btn-disabled': loading,
           })}
