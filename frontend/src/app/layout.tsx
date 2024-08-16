@@ -8,7 +8,7 @@ const globalFont = Inter({
   style: ['normal'],
   subsets: ['latin'],
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['Arial', 'sans-serif'],
   adjustFontFallback: true,
 });
