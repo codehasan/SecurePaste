@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext } from 'react';
 import { Bounce, toast, ToastContainer, ToastOptions } from 'react-toastify';
 
 type ToastType = 'warning' | 'error' | 'success' | 'info' | 'normal';
-const ToastDuration = {
+export const ToastDuration = {
   short: 2500,
   long: 5000,
 };
