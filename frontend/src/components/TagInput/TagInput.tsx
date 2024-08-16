@@ -14,11 +14,14 @@ const RateLimits = {
   tagCharacterLimit: 15,
 };
 
-const TagInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
-  required,
-  ...props
-}) => {
-  const [tags, setTags] = useState<string[]>([]);
+interface TagInputProps {
+  initialTags?: string[];
+}
+
+const TagInput: React.FC<
+  TagInputProps & InputHTMLAttributes<HTMLInputElement>
+> = ({ initialTags = [], required, ...props }) => {
+  const [tags, setTags] = useState<string[]>(initialTags);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const removeTag = (tagToRemove: string) => {
