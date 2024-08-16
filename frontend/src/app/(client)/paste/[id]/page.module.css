@@ -80,7 +80,7 @@
   left: 50%;
   transform: translate(-50%, 0);
   z-index: 10;
-  background-color: #24292f;
+  background-color: #2b3138;
   border-radius: 6px;
   padding: 5px 10px;
   font-size: 11px;
@@ -91,8 +91,20 @@
   transition: opacity 0.2s;
 }
 
-.buttons > [data-tooltip]:hover::after,
-.buttons > [data-tooltip]:focus::after {
+.buttons > [data-tooltip]:hover::after {
   visibility: visible;
   opacity: 1;
+  animation: hideTooltip 3s forwards;
+}
+
+@keyframes hideTooltip {
+  0%,
+  95% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
