@@ -33,23 +33,23 @@ const NavBar = async () => {
   ];
 
   const profileNavigations = [
-    { name: 'Your profile', path: `/user/${authUser?.id}` },
+    { name: 'My profile', path: `/user/${authUser?.id}` },
     { name: 'Change password', path: `/auth/update_password` },
     { name: 'Sign out', path: '/auth/signout' },
   ];
 
   return (
-    <nav className="bg-white max-h-16 w-full relative border-b border-solid border-b-stone-300 shadow-md">
+    <nav className="relative max-h-16 w-full border-b border-solid border-b-stone-300 bg-white shadow-md">
       <div className="mx-auto px-2 sm:px-4 lg:px-8">
         <div className="navbar justify-between p-0">
-          <div className="flex items-center h-16 px-2 lg:px-0">
+          <div className="flex h-16 items-center px-2 lg:px-0">
             <Link
-              className="flex items-center h-full"
+              className="flex h-full items-center"
               href="/"
               rel="noopener noreferrer"
             >
-              <Logo className="max-w-full w-auto h-8 text-teal-700" />
-              <TextLogo className="max-w-full w-auto h-7 text-teal-700 ml-2 hidden md:block" />
+              <Logo className="h-8 w-auto max-w-full text-teal-700" />
+              <TextLogo className="ml-2 hidden h-7 w-auto max-w-full text-teal-700 md:block" />
             </Link>
 
             <NavLinksLg
@@ -59,16 +59,16 @@ const NavBar = async () => {
             />
           </div>
 
-          <div className="flex grow shrink basis-0 justify-center px-2 lg:justify-end lg:ml-6">
+          <div className="flex shrink grow basis-0 justify-center px-2 lg:ml-6 lg:justify-end">
             <div className="relative w-full max-w-lg lg:max-w-80">
-              <div className="flex items-center absolute left-0 top-0 bottom-0 pl-3 pointer-events-none">
+              <div className="pointer-events-none absolute bottom-0 left-0 top-0 flex items-center pl-3">
                 <IoSearch className="size-5 fill-gray-500" />
               </div>
               <input
                 id="search"
                 name="search"
                 type="search"
-                className="text-gray-900 placeholder-gray-500 rounded-md w-full pr-3 pl-10 py-1.5 ring-1 ring-gray-400 focus:ring-2 focus:ring-primary sm:text-sm sm:leading-6 bg-transparent"
+                className="focus:ring-primary w-full rounded-md bg-transparent py-1.5 pl-10 pr-3 text-gray-900 placeholder-gray-500 ring-1 ring-gray-400 focus:ring-2 sm:text-sm sm:leading-6"
                 placeholder="Search"
                 autoComplete="off"
               />
@@ -105,7 +105,7 @@ const NavBar = async () => {
 
                   <Link
                     href="/notifications"
-                    className="ml-3 text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50"
+                    className="ml-3 rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50"
                   >
                     <RiInbox2Line className="size-5" />
                   </Link>

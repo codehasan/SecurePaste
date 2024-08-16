@@ -17,15 +17,15 @@ const ProfileDropdownLg = ({
   };
 
   return (
-    <div className="ml-3 dropdown dropdown-end">
+    <div className="dropdown dropdown-end ml-3">
       <div
         tabIndex={0}
         role="button"
-        className="rounded-full flex items-center cursor-pointer"
+        className="flex cursor-pointer items-center rounded-full"
         onClick={() => setOpen(true)}
       >
         <Image
-          className="size-8 max-w-full rounded-full"
+          className="size-8 max-w-full rounded-full border border-solid border-black border-opacity-5"
           alt="Profile"
           src={dbUser.avatar || '/img/avatar.svg'}
           width={40}
@@ -33,18 +33,18 @@ const ProfileDropdownLg = ({
         />
       </div>
       {open && (
-        <ul className="dropdown-content border border-solid border-opacity-10 border-black  text-gray-700 bg-white rounded-md w-80 z-[10] py-1 px-0 mt-2 shadow-lg">
+        <ul className="dropdown-content z-[10] mt-2 w-80 rounded-md border border-solid border-black border-opacity-10 bg-white px-0 py-1 text-gray-700 shadow-lg">
           <li key={'hero'}>
             <div className="flex items-center px-4 py-2">
               <Image
-                className="size-10 max-w-full rounded-full"
+                className="size-10 max-w-full rounded-full border border-solid border-black border-opacity-5"
                 alt="Profile"
                 src={dbUser.avatar || '/img/avatar.svg'}
                 width={40}
                 height={40}
               />
               <div className="ml-3">
-                <div className="flex items-center gap-1 text-gray-800 font-medium text-base">
+                <div className="flex items-center gap-1 text-base font-medium text-gray-800">
                   <span>{dbUser.name}</span>
                   {dbUser.verified && (
                     <span className="text-primary tooltip" data-tip="Verified">
@@ -52,7 +52,7 @@ const ProfileDropdownLg = ({
                     </span>
                   )}
                 </div>
-                <div className="text-gray-500 font-medium text-sm">
+                <div className="text-sm font-medium text-gray-500">
                   {authUser.email || 'Email not set'}
                 </div>
               </div>
