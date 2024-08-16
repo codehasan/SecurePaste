@@ -31,14 +31,14 @@ const DropdownMenuSm = ({
     <>
       {open ? (
         <button
-          className="text-gray-500 p-2 rounded-md inline-flex justify-center cursor-pointer hover:text-gray-600 hover:bg-gray-100"
+          className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600"
           onClick={handleToggle}
         >
           <IoMdClose className="size-6 text-inherit" />
         </button>
       ) : (
         <button
-          className="text-gray-500 p-2 rounded-md inline-flex justify-center cursor-pointer hover:text-gray-600 hover:bg-gray-100"
+          className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600"
           onClick={handleToggle}
         >
           <FiMenu className="size-6 text-inherit" />
@@ -46,16 +46,16 @@ const DropdownMenuSm = ({
       )}
 
       {open && (
-        <div className="absolute left-0 top-full w-full z-[10] bg-white shadow-md">
-          <div className="pt-2 pb-3 space-y-1">
+        <div className="absolute left-0 top-full z-[10] w-full bg-white shadow-md">
+          <div className="space-y-1 pb-3 pt-2">
             {pageNavigations.map((navigation) => {
               return (
                 <Link
                   key={navigation.name}
                   className={
                     isActive(navigation.path)
-                      ? 'text-primary bg-[rgb(228,242,254)] border-l-4 border-primary font-medium text-base pr-4 pl-3 py-2 block'
-                      : 'text-gray-600 border-l-4 border-transparent font-medium text-base pr-4 pl-3 py-2 block hover:text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                      ? 'text-primary border-primary block border-l-4 bg-[rgb(228,242,254)] py-2 pl-3 pr-4 text-base font-medium'
+                      : 'block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-400 hover:bg-gray-50 hover:text-gray-700'
                   }
                   href={navigation.path}
                   onClick={handleToggle}
@@ -65,17 +65,17 @@ const DropdownMenuSm = ({
               );
             })}
           </div>
-          <div className="pt-4 pb-3 border-gray-200 border-y border-b-0">
+          <div className="border-y border-b-0 border-gray-200 pb-3 pt-4">
             <div className="flex items-center px-4">
               <Image
-                className="size-10 max-w-full rounded-full"
+                className="size-10 max-w-full rounded-full border border-solid border-black border-opacity-5"
                 alt="Profile"
                 src={dbUser.avatar || '/img/avatar.svg'}
                 width={40}
                 height={40}
               />
               <div className="ml-3">
-                <div className="flex items-center gap-1 text-gray-800 font-medium text-base">
+                <div className="flex items-center gap-1 text-base font-medium text-gray-800">
                   <span>{dbUser.name}</span>
                   {dbUser.verified && (
                     <span className="text-primary tooltip" data-tip="Verified">
@@ -83,13 +83,13 @@ const DropdownMenuSm = ({
                     </span>
                   )}
                 </div>
-                <div className="text-gray-500 font-medium text-sm">
+                <div className="text-sm font-medium text-gray-500">
                   {authUser.email || 'Email not set'}
                 </div>
               </div>
               <Link
                 href="/notifications"
-                className="ml-auto text-gray-500 border border-gray-400 border-solid rounded-md p-1 hover:bg-gray-50"
+                className="ml-auto rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50"
                 onClick={handleToggle}
               >
                 <RiInbox2Line className="size-5" />
@@ -100,7 +100,7 @@ const DropdownMenuSm = ({
                 return (
                   <Link
                     key={navigation.name}
-                    className="text-gray-500 font-medium text-base px-4 py-2 block hover:text-gray-600 hover:bg-gray-50"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-600"
                     href={navigation.path}
                     onClick={handleToggle}
                   >
