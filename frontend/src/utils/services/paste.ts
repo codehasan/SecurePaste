@@ -1,5 +1,6 @@
 'use server';
-import { logError } from '@/lib/logging/client';
+import { sort } from '@/lib/CommentSort';
+import logger from '@/lib/logging/server';
 import {
   Comment,
   CommentLike,
@@ -9,11 +10,8 @@ import {
 } from '@prisma/client';
 import { User } from '@supabase/supabase-js';
 import axios from 'axios';
-import { getErrorMessage } from '../axios/error';
-import { sort } from '@/lib/CommentSort';
-import { createClient } from '../supabase/server';
-import logger from '@/lib/logging/server';
 import prisma from '../prisma/db';
+import { createClient } from '../supabase/server';
 
 export type UserData = Omit<PrismaUser, 'bio'>;
 
@@ -120,13 +118,14 @@ export const getPasteById = async (id: string) => {
 
       const response = await axios.get(paste.bodyUrl, {
         timeout: 10_000,
+        responseType: 'text',
       });
 
       if (!response.data) {
         logger.info(`Body url: ${paste.bodyUrl}`);
         logger.error(`Error retrieving paste body: ${response.statusText}`);
 
-        return null;
+        return { authUser, data: null };
       }
 
       const comments = paste.comments.map((comment) => {
@@ -153,5 +152,5 @@ export const getPasteById = async (id: string) => {
     logger.error(`Unexpected error: ${JSON.stringify(err)}`);
   }
 
-  return data;
+  return { authUser, data };
 };
