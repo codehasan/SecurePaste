@@ -1,6 +1,7 @@
 import Footer from '@/components/Footer';
 import NavBar from '@/components/NavBar/NavBar';
 import { ToastProvider } from '@/hooks/useToast';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -8,11 +9,11 @@ interface LayoutProps {
 
 export default function ClientLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <div className="flex flex-col h-full grow">
+    <div className="flex flex-col grow">
       <NavBar />
-      <ToastProvider>
-        <main className="container mx-auto h-full grow">{children}</main>
-      </ToastProvider>
+      <main className="container mx-auto h-full grow">
+        <ToastProvider>{children}</ToastProvider>
+      </main>
       <Footer />
     </div>
   );
