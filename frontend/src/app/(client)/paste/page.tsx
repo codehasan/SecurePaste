@@ -1,18 +1,62 @@
 import CodeEditor from '@/components/CodeEditor/CodeEditor';
+import { langs } from '@/components/CodeView/languages';
 import { MemoizedLabel } from '@/components/Label';
 import TagInput from '@/components/TagInput/TagInput';
-import { newComment } from '@/utils/supabase/actions/pastes';
+import logger from '@/lib/logging/server';
+import { createNewPaste } from '@/utils/supabase/actions/pastes';
+import axios from 'axios';
 import classNames from 'classnames';
 import styles from '../client.module.css';
-import { langs } from '@/components/CodeView/languages';
 
-const NewPaste = () => {
+export enum Mode {
+  edit = 0,
+  clone = 1,
+}
+
+export enum Visibility {
+  public = 0,
+  private = 1,
+}
+
+interface PasteProps {
+  searchParams?: {
+    m: Mode;
+    id?: string;
+    title: string;
+    url: string;
+    syntax: string;
+    v?: Visibility;
+    tags?: string[];
+  };
+}
+
+const NewPaste = async ({ searchParams }: PasteProps) => {
+  let body: string | null = null;
+
+  if (searchParams?.url) {
+    const response = await axios.get(searchParams.url, {
+      timeout: 10_000,
+      responseType: 'text',
+    });
+
+    if (!response.data) {
+      logger.info(`Body url: ${searchParams.url}`);
+      logger.error(`Error retrieving paste body: ${response.statusText}`);
+    } else {
+      body = response.data;
+    }
+  }
+
   return (
     <div className="size-full">
       <div className={classNames(styles.container)}>
-        <div className="text-2xl font-semibold my-8">New paste</div>
+        <div className="my-8 text-2xl font-semibold">
+          {(searchParams?.m == Mode.clone && 'Clone paste') ||
+            (searchParams?.m == Mode.edit && 'Edit paste') ||
+            'New paste'}
+        </div>
 
-        <form className="w-full" action={newComment}>
+        <form className="w-full" action={createNewPaste}>
           <MemoizedLabel
             primaryText="Paste Name"
             topRight="4 character minimum"
@@ -25,6 +69,7 @@ const NewPaste = () => {
               name="title"
               inputMode="text"
               placeholder="Untitled"
+              defaultValue={searchParams?.title || ''}
               min={4}
               max={100}
               required
@@ -39,11 +84,12 @@ const NewPaste = () => {
             required
           >
             <CodeEditor
-              className="bg-white w-full min-h-80"
+              className="min-h-80 w-full bg-white"
               name="body"
               inputMode="text"
               minLength={4}
               maxLength={524_288}
+              defaultValue={body || ''}
               required
             />
           </MemoizedLabel>
@@ -54,9 +100,10 @@ const NewPaste = () => {
             largeText
           >
             <select
-              className="select select-text cursor-pointer bg-white w-full"
+              className="select w-full cursor-pointer select-text bg-white"
               name="syntax"
               required
+              defaultValue={searchParams?.syntax || langs[0].code}
             >
               {langs.map((language) => (
                 <option key={language.code} value={language.code}>
@@ -73,12 +120,19 @@ const NewPaste = () => {
             largeText
           >
             <select
-              className="select select-text cursor-pointer bg-white w-full"
+              className={classNames(
+                'select w-full cursor-pointer select-text bg-white',
+                { 'select-disabled': searchParams?.m == Mode.edit }
+              )}
+              disabled={searchParams?.m == Mode.edit}
               name="visibility"
+              defaultValue={
+                (searchParams?.v == Visibility.private && 'private') || 'public'
+              }
               required
             >
-              <option>Public</option>
-              <option>Private</option>
+              <option value="public">Public</option>
+              <option value="private">Private</option>
             </select>
           </MemoizedLabel>
 
@@ -91,8 +145,8 @@ const NewPaste = () => {
             <TagInput />
           </MemoizedLabel>
 
-          <div className="w-full flex justify-center">
-            <button className="btn btn-primary btn-wide shadow-md m-6">
+          <div className="flex w-full justify-center">
+            <button className="btn btn-primary btn-wide m-6 shadow-md">
               Create new paste
             </button>
           </div>
