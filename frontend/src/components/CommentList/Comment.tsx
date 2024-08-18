@@ -1,6 +1,6 @@
 'use client';
 import { useAsyncFn } from '@/hooks/useAsync';
-import { usePost } from '@/hooks/usePaste';
+import { usePaste } from '@/hooks/usePaste';
 import { getTimePassedFromDate } from '@/lib/DateFormat';
 import {
   createNewComment,
@@ -43,7 +43,7 @@ const Comment = (comment: CommentData) => {
     updateLocalComment,
     deleteLocalComment,
     toggleLocalCommentLike,
-  } = usePost();
+  } = usePaste();
   const createCommentFn = useAsyncFn(createNewComment);
   const updateCommentFn = useAsyncFn(updateComment);
   const deleteCommentFn = useAsyncFn(deleteComment);
@@ -100,16 +100,16 @@ const Comment = (comment: CommentData) => {
   return (
     <>
       <div
-        className={classNames('p-4 bg-gray-100 rounded-md', {
+        className={classNames('rounded-md bg-gray-100 p-4', {
           'mb-2': childComments.length === 0,
           'mb-1': childComments.length > 0,
         })}
       >
-        <div className="flex gap-2 mb-2">
-          <span className="grow font-medium text-ellipsis">
+        <div className="mb-2 flex gap-2">
+          <span className="grow text-ellipsis font-medium">
             {comment.user.id}
           </span>
-          <span className="flex items-center gap-1 mb-auto">
+          <span className="mb-auto flex items-center gap-1">
             {timeDifference(comment.createdAt, comment.updatedAt) > 1 && (
               <span className="text-gray-700">(Edit)</span>
             )}
@@ -137,11 +137,11 @@ const Comment = (comment: CommentData) => {
         )}
 
         {commentAction === CommentAction.DELETE && (
-          <div className="flex flex-col mb-2 text-sm bg-red-300 p-2 rounded-md sm:px-4 min-[450px]:flex-row">
-            <div className="flex items-center mb-1 sm:mb-0 grow">
+          <div className="mb-2 flex flex-col rounded-md bg-red-300 p-2 text-sm min-[450px]:flex-row sm:px-4">
+            <div className="mb-1 flex grow items-center sm:mb-0">
               <span>Do you want to delete this comment?</span>
             </div>
-            <div className="flex justify-end items-center font-medium">
+            <div className="flex items-center justify-end font-medium">
               <input
                 type="text"
                 name="commentId"
@@ -150,13 +150,13 @@ const Comment = (comment: CommentData) => {
                 readOnly
               />
               <button
-                className="rounded-md hover:bg-red-200 px-2 py-1.5 cursor-pointer"
+                className="cursor-pointer rounded-md px-2 py-1.5 hover:bg-red-200"
                 onClick={handleCancelAction}
               >
                 No
               </button>
               <button
-                className="rounded-md hover:bg-red-200 px-2 py-1.5"
+                className="rounded-md px-2 py-1.5 hover:bg-red-200"
                 onClick={onCommentDelete}
               >
                 Yes
@@ -165,9 +165,9 @@ const Comment = (comment: CommentData) => {
           </div>
         )}
 
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center gap-3">
           <button
-            className="inline-flex justify-center items-center gap-1 text-gray-900 hover:text-gray-700"
+            className="inline-flex items-center justify-center gap-1 text-gray-900 hover:text-gray-700"
             disabled={toggleCommentLikeFn.loading}
             onClick={onToggleCommentLike}
           >
@@ -219,7 +219,7 @@ const Comment = (comment: CommentData) => {
 
       {childComments.length > 0 && (
         <button
-          className="mb-1 ml-2 text-sm cursor-pointer inline-flex items-center gap-1"
+          className="mb-1 ml-2 inline-flex cursor-pointer items-center gap-1 text-sm"
           onClick={() => setShowReplies(!showReplies)}
         >
           {showReplies ? (
@@ -237,8 +237,8 @@ const Comment = (comment: CommentData) => {
       )}
 
       {childComments.length > 0 && showReplies && (
-        <div className="pl-2 ml-3 relative">
-          <div className="absolute top-0 left-0 bottom-0 bg-gray-300 mb-2">
+        <div className="relative ml-3 pl-2">
+          <div className="absolute bottom-0 left-0 top-0 mb-2 bg-gray-300">
             <div className="h-full w-[1px]"></div>
           </div>
           <CommentList comments={childComments} />
