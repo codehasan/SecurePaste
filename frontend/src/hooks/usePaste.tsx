@@ -37,7 +37,7 @@ const PasteContext = React.createContext({
   toggleLocalCommentLike: (id: string, addLike: boolean) => {},
 } as PasteState);
 
-export const usePost = () => {
+export const usePaste = () => {
   return useContext(PasteContext);
 };
 
