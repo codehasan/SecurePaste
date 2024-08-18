@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { FaImage } from 'react-icons/fa6';
 import { MdVerified } from 'react-icons/md';
 import styles from '../../client.module.css';
+import Avatar from '@/components/Avatar';
 
 interface UserProps {
   params: { id: string };
@@ -31,13 +32,8 @@ const User = async ({ params }: UserProps) => {
           My profile
         </div>
         <div className="flex flex-col items-center px-4 py-2 sm:flex-row">
-          <Image
-            className="size-20 max-w-full rounded-full border border-solid border-black border-opacity-5 shadow-md sm:size-24 md:size-28 lg:size-32"
-            alt="Profile"
-            src={dbUser!.avatar || '/img/avatar.svg'}
-            width={40}
-            height={40}
-          />
+          <Avatar src={dbUser!.avatar} parentClassName="size-20" />
+
           <div className="mt-3 sm:ml-8 sm:mt-0">
             <div className="flex items-center justify-center gap-1 text-center text-lg font-medium text-gray-800 sm:justify-start md:text-xl lg:text-2xl">
               <span>{dbUser!.name}</span>
