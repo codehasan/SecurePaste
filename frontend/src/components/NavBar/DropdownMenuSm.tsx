@@ -8,6 +8,7 @@ import { IoMdClose } from 'react-icons/io';
 import { MdVerified } from 'react-icons/md';
 import { RiInbox2Line } from 'react-icons/ri';
 import DropdownProps from './DropdownProps';
+import Avatar from '../Avatar';
 
 const DropdownMenuSm = ({
   authUser,
@@ -67,13 +68,8 @@ const DropdownMenuSm = ({
           </div>
           <div className="border-y border-b-0 border-gray-200 pb-3 pt-4">
             <div className="flex items-center px-4">
-              <Image
-                className="size-10 max-w-full rounded-full border border-solid border-black border-opacity-5"
-                alt="Profile"
-                src={dbUser.avatar || '/img/avatar.svg'}
-                width={40}
-                height={40}
-              />
+              <Avatar src={dbUser.avatar} parentClassName="size-10" />
+
               <div className="ml-3">
                 <div className="flex items-center gap-1 text-base font-medium text-gray-800">
                   <span>{dbUser.name}</span>
