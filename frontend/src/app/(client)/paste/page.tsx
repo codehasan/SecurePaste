@@ -1,3 +1,4 @@
+'use server';
 import CodeEditor from '@/components/CodeEditor/CodeEditor';
 import { langs } from '@/components/CodeView/languages';
 import { MemoizedLabel } from '@/components/Label';
@@ -7,16 +8,7 @@ import { createNewPaste } from '@/utils/supabase/actions/pastes';
 import axios from 'axios';
 import classNames from 'classnames';
 import styles from '../client.module.css';
-
-export enum Mode {
-  edit = 0,
-  clone = 1,
-}
-
-export enum Visibility {
-  public = 0,
-  private = 1,
-}
+import { Mode, Visibility } from '@/lib/Types';
 
 interface PasteProps {
   searchParams?: {
