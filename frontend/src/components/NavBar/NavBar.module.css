@@ -8,3 +8,11 @@
   font-size: 0.875rem;
   line-height: 1.5;
 }
+
+.borderModal {
+  border: 1px solid rgba(34, 34, 34, 0.07);
+}
+
+.borderMedium {
+  border: medium;
+}

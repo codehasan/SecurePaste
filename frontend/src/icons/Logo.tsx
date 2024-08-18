@@ -1,4 +1,4 @@
-import React, { ReactNode, SVGAttributes } from 'react';
+import React, { SVGAttributes } from 'react';
 
 interface LogoProps {
   className?: string;
