@@ -3,50 +3,15 @@ import CodeEditor from '@/components/CodeEditor/CodeEditor';
 import { langs } from '@/components/CodeView/languages';
 import { MemoizedLabel } from '@/components/Label';
 import TagInput from '@/components/TagInput/TagInput';
-import logger from '@/lib/logging/server';
 import { createNewPaste } from '@/utils/supabase/actions/pastes';
-import axios from 'axios';
 import classNames from 'classnames';
 import styles from '../client.module.css';
-import { Mode, Visibility } from '@/lib/Types';
 
-interface PasteProps {
-  searchParams?: {
-    m: Mode;
-    id?: string;
-    title: string;
-    url: string;
-    syntax: string;
-    v?: Visibility;
-    tags?: string[];
-  };
-}
-
-const NewPaste = async ({ searchParams }: PasteProps) => {
-  let body: string | null = null;
-
-  if (searchParams?.url) {
-    const response = await axios.get(searchParams.url, {
-      timeout: 10_000,
-      responseType: 'text',
-    });
-
-    if (!response.data) {
-      logger.info(`Body url: ${searchParams.url}`);
-      logger.error(`Error retrieving paste body: ${response.statusText}`);
-    } else {
-      body = response.data;
-    }
-  }
-
+const NewPaste = async () => {
   return (
     <div className="size-full">
       <div className={classNames(styles.container)}>
-        <div className="my-8 text-2xl font-semibold">
-          {(searchParams?.m == Mode.clone && 'Clone paste') ||
-            (searchParams?.m == Mode.edit && 'Edit paste') ||
-            'New paste'}
-        </div>
+        <div className="my-8 text-2xl font-semibold">New paste</div>
 
         <form className="w-full" action={createNewPaste}>
           <MemoizedLabel
@@ -61,7 +26,6 @@ const NewPaste = async ({ searchParams }: PasteProps) => {
               name="title"
               inputMode="text"
               placeholder="Untitled"
-              defaultValue={searchParams?.title || ''}
               min={4}
               max={100}
               required
@@ -81,7 +45,6 @@ const NewPaste = async ({ searchParams }: PasteProps) => {
               inputMode="text"
               minLength={4}
               maxLength={524_288}
-              defaultValue={body || ''}
               required
             />
           </MemoizedLabel>
@@ -95,7 +58,6 @@ const NewPaste = async ({ searchParams }: PasteProps) => {
               className="select w-full cursor-pointer select-text bg-white"
               name="syntax"
               required
-              defaultValue={searchParams?.syntax || langs[0].code}
             >
               {langs.map((language) => (
                 <option key={language.code} value={language.code}>
@@ -112,15 +74,8 @@ const NewPaste = async ({ searchParams }: PasteProps) => {
             largeText
           >
             <select
-              className={classNames(
-                'select w-full cursor-pointer select-text bg-white',
-                { 'select-disabled': searchParams?.m == Mode.edit }
-              )}
-              disabled={searchParams?.m == Mode.edit}
+              className="select w-full cursor-pointer select-text bg-white"
               name="visibility"
-              defaultValue={
-                (searchParams?.v == Visibility.private && 'private') || 'public'
-              }
               required
             >
               <option value="public">Public</option>
@@ -137,7 +92,7 @@ const NewPaste = async ({ searchParams }: PasteProps) => {
             <TagInput />
           </MemoizedLabel>
 
-          <div className="flex w-full justify-center">
+          <div className="flex w-full justify-end">
             <button className="btn btn-primary btn-wide m-6 shadow-md">
               Create new paste
             </button>
