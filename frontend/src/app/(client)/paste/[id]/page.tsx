@@ -27,6 +27,7 @@ import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { v4 } from 'uuid';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
+import { createNewComment } from '@/utils/supabase/actions/comments';
 
 const ViewPaste = () => {
   const pathname = usePathname();
@@ -120,28 +121,15 @@ const ViewPaste = () => {
   const onDeletePaste = () => {};
 
   const onNewComment = async (message: string) => {
-    if (authUser) {
+    if (paste && authUser && message) {
       startNewCommentTransition(async () => {
         try {
-          const comment: CommentData = {
-            id: v4(),
-            likedByMe: false,
-            message,
-            owner: true,
+          const comment = await createNewComment({
+            pasteId: paste.id,
             parentId: null,
-            user: {
-              avatar: null,
-              id: authUser.id,
-              name: 'Test Account',
-              verified: false,
-            },
-            updatedAt: new Date(),
-            createdAt: new Date(),
-            _count: {
-              likes: 0,
-            },
-          };
-
+            message,
+            userId: authUser.id,
+          });
           createLocalComment(comment);
         } catch (e) {
           if (e instanceof Error) {
@@ -381,7 +369,7 @@ const ViewPaste = () => {
               </div>
             )}
 
-            <div id="comments" className="mb-3 text-xl font-semibold">
+            <div id="comments" className="mb-3 text-lg font-semibold">
               Comments
             </div>
             <CommentForm

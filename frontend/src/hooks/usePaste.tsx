@@ -1,5 +1,6 @@
 'use client';
 import { CommentData, PasteData } from '@/utils/services/paste';
+import { User as PrismaUser } from '@prisma/client';
 import { User } from '@supabase/supabase-js';
 import React, {
   ReactNode,
@@ -28,6 +29,7 @@ interface PasteProviderProps {
 }
 
 const PasteContext = React.createContext({
+  authUser: null,
   paste: null,
   rootComments: [] as CommentData[],
   getReplies: (parentId: string) => [] as CommentData[],

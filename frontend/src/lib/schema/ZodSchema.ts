@@ -23,12 +23,7 @@ export const NewPasteSchema = z
 export const NewCommentSchema = z
   .object({
     parentId: z.string().nullable(),
-    user: z.object({
-      id: z.string().min(1, { message: 'User ID is required.' }),
-      name: z.string().min(1, { message: 'User name is required.' }),
-      avatar: z.string().nullable(),
-      verified: z.boolean({ message: 'User verification status is required.' }),
-    }),
+    userId: z.string().min(1, { message: 'User ID is required.' }),
     pasteId: z.string().min(1, { message: 'Paste ID is required.' }),
     message: z
       .string()

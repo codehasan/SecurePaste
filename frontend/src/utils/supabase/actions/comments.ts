@@ -7,24 +7,19 @@ import { CommentData } from '@/utils/services/paste';
 
 export async function createNewComment({
   pasteId,
-  user,
+  userId,
   parentId,
   message,
 }: {
   pasteId: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string | null;
-    verified: boolean;
-  };
+  userId: string;
   parentId: string | null;
   message: string;
 }): Promise<CommentData> {
   // 1. Validate the form data sent from the app
   const data = {
     pasteId,
-    user,
+    userId,
     parentId,
     message,
   };
@@ -42,7 +37,17 @@ export async function createNewComment({
         message,
         pasteId,
         parentId,
-        userId: user.id,
+        userId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            avatar: true,
+            name: true,
+            verified: true,
+          },
+        },
       },
     });
 
@@ -53,7 +58,6 @@ export async function createNewComment({
       },
       likedByMe: false,
       owner: true,
-      user,
     };
   } catch (e) {
     logger.error(JSON.stringify(e));
