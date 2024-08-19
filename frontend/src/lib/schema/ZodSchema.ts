@@ -23,10 +23,16 @@ export const NewPasteSchema = z
 export const NewCommentSchema = z
   .object({
     parentId: z.string().nullable(),
+    user: z.object({
+      id: z.string().min(1, { message: 'User ID is required.' }),
+      name: z.string().min(1, { message: 'User name is required.' }),
+      avatar: z.string().nullable(),
+      verified: z.boolean({ message: 'User verification status is required.' }),
+    }),
     pasteId: z.string().min(1, { message: 'Paste ID is required.' }),
     message: z
       .string()
-      .min(4, { message: 'Message must be at least 4 characters long' })
+      .min(1, { message: 'Message must be at least 1 characters long' })
       .max(1024, { message: 'Message must not exceed 1024 characters' }),
   })
   .strict();
