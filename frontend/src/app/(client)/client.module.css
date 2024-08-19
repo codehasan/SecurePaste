@@ -13,10 +13,12 @@
 }
 
 .codeMockup > pre {
-  padding-top: 0 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  padding-bottom: 0.25rem !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.codeMockup > pre > code {
+  padding: 0 !important;
   margin: 0 !important;
 }
 

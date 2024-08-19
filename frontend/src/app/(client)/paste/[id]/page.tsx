@@ -1,4 +1,5 @@
 'use client';
+import Avatar from '@/components/Avatar';
 import { getNameFromCode } from '@/components/CodeView/languages';
 import CommentForm from '@/components/CommentList/CommentForm';
 import CommentList from '@/components/CommentList/CommentList';
@@ -12,12 +13,13 @@ import HorizontalMenu from '@/icons/HorizontalMenu';
 import { getFormattedDate } from '@/lib/DateFormat';
 import { logError } from '@/lib/logging/client';
 import { getLinesCount, getSize } from '@/lib/PasteHelper';
+import { constructUrl } from '@/lib/RedirectHelper';
 import { CommentData } from '@/utils/services/paste';
 import { toggleLike } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useTransition } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useMemo, useRef, useTransition } from 'react';
 import { BiDuplicate } from 'react-icons/bi';
 import { FaRegComment, FaRegThumbsUp, FaThumbsUp } from 'react-icons/fa';
 import { MdDeleteOutline, MdOutlinePrint, MdVerified } from 'react-icons/md';
@@ -26,12 +28,9 @@ import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { v4 } from 'uuid';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
-import { useRouter } from 'next/navigation';
-import { constructUrl } from '@/lib/RedirectHelper';
-import { Mode, Visibility } from '@/lib/Types';
-import Avatar from '@/components/Avatar';
 
 const ViewPaste = () => {
+  const pathname = usePathname();
   const router = useRouter();
   const {
     authUser,
@@ -43,6 +42,7 @@ const ViewPaste = () => {
   const { showToast } = useToast();
   const [pendingPasteLike, startPasteLikeTransition] = useTransition();
   const [pendingNewComment, startNewCommentTransition] = useTransition();
+  const codeViewerRef = useRef(null);
 
   const bodySize = useMemo(() => getSize(paste?.body || ''), [paste?.body]);
   const bodyLines = useMemo(
@@ -102,16 +102,7 @@ const ViewPaste = () => {
 
   const onClonePaste = () => {
     if (paste && authUser) {
-      router.push(
-        constructUrl('/paste', {
-          m: Mode.clone,
-          title: paste.title,
-          url: paste.bodyUrl,
-          syntax: paste.syntax,
-          v: paste.id.length > 32 ? Visibility.public : Visibility.private,
-          tags: paste.tags,
-        })
-      );
+      router.push(pathname + '/clone');
     }
   };
 
@@ -119,16 +110,7 @@ const ViewPaste = () => {
 
   const onEditPaste = () => {
     if (paste && authUser) {
-      router.push(
-        constructUrl('/paste', {
-          m: Mode.edit,
-          id: paste.id,
-          title: paste.title,
-          url: paste.bodyUrl,
-          syntax: paste.syntax,
-          tags: paste.tags,
-        })
-      );
+      router.push(pathname + '/edit');
     }
   };
 
@@ -366,7 +348,7 @@ const ViewPaste = () => {
 
               <div
                 className={classNames(
-                  'rounded-b-[6px] bg-white p-2 px-4',
+                  'rounded-b-[6px] bg-white py-2 pl-4',
                   codeStyles.codeMockup
                 )}
               >
@@ -377,7 +359,7 @@ const ViewPaste = () => {
                   useInlineStyles
                   showLineNumbers
                 >
-                  {paste.body}
+                  {'The fuck\nNope'}
                 </Prism>
               </div>
             </div>
