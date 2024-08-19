@@ -26,3 +26,7 @@ export const getSize = (input: string) => {
 
   return size + ' Bytes';
 };
+
+export const isPrivatePaste = (id: string | null) => {
+  return id && id.length === 32;
+};
