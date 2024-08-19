@@ -35,25 +35,25 @@ const CommentForm = ({
       onSubmit={handleSubmit}
       className={classNames(
         className,
-        'flex flex-col justify-center items-end gap-1'
+        'flex flex-col items-end justify-center gap-1'
       )}
     >
       <CodeEditor
-        className="bg-white grow min-h-24 w-full textarea"
+        className="textarea min-h-24 w-full grow bg-white"
         name="message"
         inputMode="text"
-        minLength={4}
+        minLength={1}
         maxLength={1024}
         autoFocus={autoFocus ? true : undefined}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         required
       />
-      {error && <div className="text-red-600 text-sm">{error}</div>}
+      {error && <div className="text-sm text-red-600">{error}</div>}
       <div className="flex items-center gap-1">
         {onCancel && (
           <div
-            className="btn btn-custom btn-error sm:w-24 cursor-pointer"
+            className="btn btn-custom btn-error cursor-pointer sm:w-24"
             onClick={onCancel}
           >
             Cancel
