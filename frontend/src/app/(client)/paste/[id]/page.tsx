@@ -13,7 +13,6 @@ import HorizontalMenu from '@/icons/HorizontalMenu';
 import { getFormattedDate } from '@/lib/DateFormat';
 import { logError } from '@/lib/logging/client';
 import { getLinesCount, getSize } from '@/lib/PasteHelper';
-import { constructUrl } from '@/lib/RedirectHelper';
 import { CommentData } from '@/utils/services/paste';
 import { toggleLike } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
@@ -106,7 +105,11 @@ const ViewPaste = () => {
     }
   };
 
-  const onPrintPaste = () => {};
+  const onPrintPaste = () => {
+    if (paste && authUser) {
+      router.push(pathname + '/print');
+    }
+  };
 
   const onEditPaste = () => {
     if (paste && authUser) {
@@ -359,7 +362,7 @@ const ViewPaste = () => {
                   useInlineStyles
                   showLineNumbers
                 >
-                  {'The fuck\nNope'}
+                  {paste.body}
                 </Prism>
               </div>
             </div>
