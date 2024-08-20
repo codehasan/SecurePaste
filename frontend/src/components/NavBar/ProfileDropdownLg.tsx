@@ -111,7 +111,7 @@ const ProfileDropdownLg = ({
             </button>
           </form>
 
-          <div className="">
+          <div>
             <div className="flex flex-1 flex-col items-center justify-start gap-4 text-base">
               <div className="flex w-full flex-wrap items-center pr-8 text-lg font-medium">
                 Connect a wallet

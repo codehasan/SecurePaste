@@ -20,25 +20,25 @@ const SignIn = async ({
 }) => {
   return (
     <div
-      className={classNames(styles.base, 'flex flex-col items-center w-full')}
+      className={classNames(styles.base, 'flex w-full flex-col items-center')}
     >
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="lazyOnload"
       />
-      <div id="logo-container" className="mt-16 mb-8">
+      <div id="logo-container" className="mb-8 mt-16">
         <Link href="/" rel="noopener noreferrer">
           <Logo className={styles.logo} width={50} height={50} />
         </Link>
       </div>
       <div id="signup-form" className={styles.container}>
         <h1
-          className={classNames(styles.header, 'text-xl p-1 pl-0 font-normal')}
+          className={classNames(styles.header, 'p-1 pl-0 text-xl font-normal')}
         >
           Sign in to your account
         </h1>
         <MemoizedOAuth />
-        <div className="divider text-gray-500 text-sm mt-6 mb-6">OR</div>
+        <div className="divider mb-6 mt-6 text-sm text-gray-500">OR</div>
 
         {searchParams?.error && (
           <Alert message={searchParams.error} type={Type.ERROR} />
@@ -47,7 +47,7 @@ const SignIn = async ({
         <form className="mt-2">
           <MemoizedLabel className="mt-3" primaryText="Email address" required>
             <input
-              className="input shadow-md w-full"
+              className="input w-full shadow-md"
               type="email"
               name="email"
               inputMode="email"
@@ -58,18 +58,18 @@ const SignIn = async ({
           </MemoizedLabel>
 
           <MemoizedLabel
-            className="mt-3 mb-1"
+            className="mb-1 mt-3"
             primaryText="Password"
             topRight="8-32 characters"
             required
           >
             <input
-              className="input shadow-md w-full"
+              className="input w-full shadow-md"
               type="password"
               name="password"
               placeholder="●●●●●●●●"
-              min={8}
-              max={32}
+              minLength={8}
+              maxLength={32}
               required
             />
           </MemoizedLabel>
@@ -81,7 +81,7 @@ const SignIn = async ({
           </a>
 
           {/* Turnstile captcha */}
-          <div className="label justify-start mt-4 mb-4">
+          <div className="label mb-4 mt-4 justify-start">
             <div
               className="cf-turnstile bg-transparent"
               data-theme="light"
@@ -90,7 +90,7 @@ const SignIn = async ({
           </div>
 
           <button
-            className="btn btn-primary w-full shadow-md mb-3"
+            className="btn btn-primary mb-3 w-full shadow-md"
             formAction={signIn}
           >
             Sign in to your account
@@ -104,7 +104,7 @@ const SignIn = async ({
           </div>
         </form>
       </div>
-      <div className="text-gray-500 text-sm">
+      <div className="text-sm text-gray-500">
         <span>{getCopyrightText()}</span>
       </div>
     </div>

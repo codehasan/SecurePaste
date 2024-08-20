@@ -99,8 +99,8 @@ const User = async ({ params }: UserProps) => {
                 inputMode="text"
                 placeholder="John Doe"
                 defaultValue={dbUser!.name}
-                min={4}
-                max={50}
+                minLength={4}
+                maxLength={50}
                 required
               />
             </MemoizedLabel>

@@ -26,8 +26,8 @@ const NewPaste = async () => {
               name="title"
               inputMode="text"
               placeholder="Untitled"
-              min={4}
-              max={100}
+              minLength={4}
+              maxLength={100}
               required
             />
           </MemoizedLabel>

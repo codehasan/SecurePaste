@@ -56,16 +56,16 @@ const UpdatePassword = ({
 
   return (
     <div
-      className={classNames(styles.base, 'flex flex-col items-center w-full')}
+      className={classNames(styles.base, 'flex w-full flex-col items-center')}
     >
-      <div id="logo-container" className="mt-16 mb-8">
+      <div id="logo-container" className="mb-8 mt-16">
         <Link href="/" rel="noopener noreferrer">
           <Logo className={styles.logo} width={50} height={50} />
         </Link>
       </div>
       <div id="signup-form" className={styles.container}>
         <h1
-          className={classNames(styles.header, 'text-xl p-1 pl-0 font-normal')}
+          className={classNames(styles.header, 'p-1 pl-0 text-xl font-normal')}
         >
           Update your password
         </h1>
@@ -83,17 +83,17 @@ const UpdatePassword = ({
           >
             <div className="relative">
               <input
-                className="input shadow-md w-full pr-10"
+                className="input w-full pr-10 shadow-md"
                 type={showPass ? 'text' : 'password'}
                 name="password"
                 placeholder="●●●●●●●●"
                 value={passwordStatus.value}
                 onChange={handlePassword}
-                min={8}
-                max={32}
+                minLength={8}
+                maxLength={32}
               />
               <div
-                className="flex justify-center items-center absolute right-0 top-0 bottom-0 mr-4 cursor-pointer"
+                className="absolute bottom-0 right-0 top-0 mr-4 flex cursor-pointer items-center justify-center"
                 onClick={() => setShowPass(!showPass)}
               >
                 {!showPass ? (
@@ -106,7 +106,7 @@ const UpdatePassword = ({
           </MemoizedLabel>
 
           {passwordStatus.value && (
-            <div className="text-sm mt-2 text-gray-500 grid grid-cols-1 sm:grid-cols-2">
+            <div className="mt-2 grid grid-cols-1 text-sm text-gray-500 sm:grid-cols-2">
               <PasswordRequirement
                 condition={passwordStatus.lowercase}
                 text="One lowercase character"
@@ -135,13 +135,13 @@ const UpdatePassword = ({
           )}
 
           <MemoizedLabel
-            className="mt-3 mb-2"
+            className="mb-2 mt-3"
             primaryText="Confirm Password"
             required
           >
             <div className="relative">
               <input
-                className={classNames('input shadow-md w-full pr-10', {
+                className={classNames('input w-full pr-10 shadow-md', {
                   'border-error':
                     confirmedPassword &&
                     confirmedPassword !== passwordStatus.value,
@@ -153,7 +153,7 @@ const UpdatePassword = ({
                 onChange={(e) => setConfirmedPassword(e.target.value)}
               />
               <div
-                className="flex justify-center items-center absolute right-0 top-0 bottom-0 mr-4 cursor-pointer"
+                className="absolute bottom-0 right-0 top-0 mr-4 flex cursor-pointer items-center justify-center"
                 onClick={() => setShowConfirmPass(!showConfirmPass)}
               >
                 {!showConfirmPass ? (
@@ -173,7 +173,7 @@ const UpdatePassword = ({
 
           <button
             className={classNames(
-              'btn btn-primary w-full shadow-md mt-6 mb-3',
+              'btn btn-primary mb-3 mt-6 w-full shadow-md',
               {
                 'btn-disabled':
                   !passwordStatus.value ||
@@ -198,7 +198,7 @@ const UpdatePassword = ({
           </div>
         </form>
       </div>
-      <div className="text-gray-500 text-sm">
+      <div className="text-sm text-gray-500">
         <span>{getCopyrightText()}</span>
       </div>
     </div>

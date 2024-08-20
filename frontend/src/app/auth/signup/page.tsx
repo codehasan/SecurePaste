@@ -125,7 +125,7 @@ const SignUp = ({
         <MemoizedUserAgreement ref={userAgreementRef} singleButton />
 
         {/* Logo */}
-        <div id="logo-container" className="mt-16 mb-8">
+        <div id="logo-container" className="mb-8 mt-16">
           <Link href="/" rel="noopener noreferrer">
             <Logo className={styles.logo} width={50} height={50} />
           </Link>
@@ -136,7 +136,7 @@ const SignUp = ({
           <h1
             className={classNames(
               styles.header,
-              'text-xl p-1 pl-0 font-normal'
+              'p-1 pl-0 text-xl font-normal'
             )}
           >
             Sign up for an account
@@ -144,7 +144,7 @@ const SignUp = ({
 
           {/* OAuth Providers */}
           <MemoizedOAuth />
-          <div className="divider text-gray-500 text-sm mt-6 mb-6">OR</div>
+          <div className="divider mb-6 mt-6 text-sm text-gray-500">OR</div>
 
           {searchParams?.message && (
             <Alert message={searchParams.message} type={Type.SUCCESS} />
@@ -158,14 +158,14 @@ const SignUp = ({
               required
             >
               <input
-                className="input shadow-md w-full"
+                className="input w-full shadow-md"
                 type="text"
                 name="name"
                 inputMode="text"
                 placeholder="John Doe"
                 defaultValue={searchParams.name ?? ''}
-                min={4}
-                max={50}
+                minLength={4}
+                maxLength={50}
                 required
               />
             </MemoizedLabel>
@@ -176,7 +176,7 @@ const SignUp = ({
               required
             >
               <input
-                className="input shadow-md w-full"
+                className="input w-full shadow-md"
                 type="email"
                 name="email"
                 inputMode="email"
@@ -193,20 +193,20 @@ const SignUp = ({
               required
             >
               <input
-                className="input shadow-md w-full"
+                className="input w-full shadow-md"
                 type="password"
                 name="password"
                 placeholder="●●●●●●●●"
                 value={passwordStatus.value}
                 onChange={handlePassword}
-                min={8}
-                max={32}
+                minLength={8}
+                maxLength={32}
                 required
               />
             </MemoizedLabel>
 
             {passwordStatus.value && (
-              <div className="text-sm mt-2 text-gray-500 grid grid-cols-1 sm:grid-cols-2">
+              <div className="mt-2 grid grid-cols-1 text-sm text-gray-500 sm:grid-cols-2">
                 <PasswordRequirement
                   condition={passwordStatus.lowercase}
                   text="One lowercase character"
@@ -235,9 +235,9 @@ const SignUp = ({
             )}
 
             {/* Accept Terms */}
-            <div className="label justify-start my-3">
+            <div className="label my-3 justify-start">
               <input
-                className="checkbox text-gray-700 mr-2"
+                className="checkbox mr-2 text-gray-700"
                 type="checkbox"
                 name="terms"
                 required
@@ -245,7 +245,7 @@ const SignUp = ({
               <span className="label-text">
                 By creating an account, I agree to SecurePaste&apos;s&nbsp;
                 <div
-                  className="ml-1 underline cursor-pointer inline"
+                  className="ml-1 inline cursor-pointer underline"
                   onClick={showTerms}
                 >
                   Terms of Service
@@ -255,7 +255,7 @@ const SignUp = ({
             </div>
 
             {/* Turnstile captcha */}
-            <div className="label justify-start mb-4">
+            <div className="label mb-4 justify-start">
               <div
                 className="cf-turnstile bg-transparent"
                 data-theme="light"
@@ -267,7 +267,7 @@ const SignUp = ({
               type="submit"
               className={classNames(
                 { 'btn-disabled': loading },
-                'btn btn-primary w-full shadow-md mb-3'
+                'btn btn-primary mb-3 w-full shadow-md'
               )}
             >
               {loading ? (
@@ -285,7 +285,7 @@ const SignUp = ({
             </div>
           </form>
         </div>
-        <div className="text-gray-500 text-sm">
+        <div className="text-sm text-gray-500">
           <span>{getCopyrightText()}</span>
         </div>
       </div>
