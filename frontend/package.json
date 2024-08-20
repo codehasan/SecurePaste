@@ -28,7 +28,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@prisma/extension-optimize": "^0.10.0",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -38,8 +37,8 @@
     "autoprefixer": "^10.4.19",
     "cssnano": "^7.0.3",
     "daisyui": "^4.12.2",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.4",
+    "eslint": "^9.9.0",
+    "eslint-config-next": "^14.2.5",
     "formdata-polyfill": "^4.0.10",
     "postcss": "^8",
     "postcss-preset-env": "^9.5.14",
