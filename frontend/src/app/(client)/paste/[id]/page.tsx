@@ -13,21 +13,21 @@ import HorizontalMenu from '@/icons/HorizontalMenu';
 import { getFormattedDate } from '@/lib/DateFormat';
 import { logError } from '@/lib/logging/client';
 import { getLinesCount, getSize } from '@/lib/PasteHelper';
-import { CommentData } from '@/utils/services/paste';
-import { toggleLike } from '@/utils/supabase/actions/pastes';
+import { createNewComment } from '@/utils/supabase/actions/comments';
+import { deletePaste, toggleLike } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useRef, useTransition } from 'react';
+import { FormEvent, useMemo, useRef, useState, useTransition } from 'react';
 import { BiDuplicate } from 'react-icons/bi';
 import { FaRegComment, FaRegThumbsUp, FaThumbsUp } from 'react-icons/fa';
+import { IoClose } from 'react-icons/io5';
 import { MdDeleteOutline, MdOutlinePrint, MdVerified } from 'react-icons/md';
 import { Prism } from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { v4 } from 'uuid';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
-import { createNewComment } from '@/utils/supabase/actions/comments';
+import { SiPastebin } from 'react-icons/si';
 
 const ViewPaste = () => {
   const pathname = usePathname();
@@ -37,12 +37,14 @@ const ViewPaste = () => {
     paste,
     rootComments,
     createLocalComment,
+    deleteLocalComment,
     toggleLocalPasteLike,
   } = usePaste();
   const { showToast } = useToast();
   const [pendingPasteLike, startPasteLikeTransition] = useTransition();
   const [pendingNewComment, startNewCommentTransition] = useTransition();
-  const codeViewerRef = useRef(null);
+  const [pendingPasteDeletion, startPasteDeletionTransition] = useTransition();
+  const pasteDeleteDialogRef = useRef<HTMLDialogElement>(null);
 
   const bodySize = useMemo(() => getSize(paste?.body || ''), [paste?.body]);
   const bodyLines = useMemo(
@@ -118,7 +120,38 @@ const ViewPaste = () => {
     }
   };
 
-  const onDeletePaste = () => {};
+  const onDeletePaste = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+    const confirmation = formData.get('confirmation') as string;
+
+    if (confirmation !== 'CONFIRM') {
+      pasteDeleteDialogRef.current?.close();
+      showToast('Invalid confirmation text', 'error');
+      return;
+    }
+
+    if (paste && authUser && paste.user.id === authUser.id) {
+      startPasteDeletionTransition(async () => {
+        try {
+          await deletePaste(paste.id);
+          router.push(`/user/${authUser.id}/pastes`);
+        } catch (e) {
+          if (e instanceof Error) {
+            showToast(e.message, 'error');
+          } else {
+            logError(`Unexpected new comment error: ${JSON.stringify(e)}`);
+            showToast('An unexpected error occured.', 'error');
+          }
+        }
+      });
+    } else {
+      pasteDeleteDialogRef.current?.close();
+      showToast('Something went wrong', 'error');
+    }
+  };
 
   const onNewComment = async (message: string) => {
     if (paste && authUser && message) {
@@ -308,7 +341,9 @@ const ViewPaste = () => {
                           <button
                             className="text-[#636c76]"
                             data-tooltip="Delete this paste"
-                            onClick={onDeletePaste}
+                            onClick={() =>
+                              pasteDeleteDialogRef.current?.showModal()
+                            }
                           >
                             <MdDeleteOutline className="size-4 font-medium text-[#d1242f]" />
                           </button>
@@ -382,6 +417,83 @@ const ViewPaste = () => {
             ) : (
               <div className="text-gray-700">No comments found!</div>
             )}
+
+            <dialog
+              id="paste-delete"
+              ref={pasteDeleteDialogRef}
+              className="modal modal-bottom sm:modal-middle"
+            >
+              <div className="modal-box bg-white">
+                <form method="dialog">
+                  <button
+                    disabled={pendingPasteDeletion}
+                    className={classNames(
+                      'btn btn-sm btn-circle btn-ghost absolute right-2 top-2',
+                      {
+                        'btn-disabled': pendingPasteDeletion,
+                      }
+                    )}
+                  >
+                    <IoClose className="size-5" />
+                  </button>
+                </form>
+
+                <div>
+                  <div className="flex flex-1 flex-col items-center justify-start gap-4 text-base">
+                    <div className="flex w-full flex-wrap items-center pr-8 text-lg font-medium">
+                      Delete paste
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="text-gray-700">
+                        This will permanently delete the paste (
+                        <span className="font-medium">{paste.id}</span>). Along
+                        with all available data relating this paste, including
+                        likes and comments.
+                      </div>
+
+                      <form
+                        className="flex w-full flex-col gap-2"
+                        onSubmit={onDeletePaste}
+                      >
+                        <span className="font-medium text-gray-700">
+                          To confirm, type "CONFIRM" in the box below
+                        </span>
+                        <input
+                          id="confirmation"
+                          name="confirmation"
+                          type="text"
+                          minLength={1}
+                          maxLength={7}
+                          className="input h-auto min-h-0 w-full px-2 py-1.5"
+                        />
+                        <button
+                          type="submit"
+                          disabled={pendingPasteDeletion}
+                          className={classNames(
+                            'btn btn-custom btn-error w-full',
+                            {
+                              'btn-disabled': pendingPasteDeletion,
+                            }
+                          )}
+                        >
+                          {pendingPasteDeletion ? (
+                            <span className="loading loading-spinner loading-md"></span>
+                          ) : (
+                            <span>Delete this paste</span>
+                          )}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {!pendingPasteDeletion && (
+                <form method="dialog" className="modal-backdrop">
+                  <button className="cursor-default">close</button>
+                </form>
+              )}
+            </dialog>
           </>
         ) : (
           <div className="flex h-full flex-col items-center gap-1 py-10">

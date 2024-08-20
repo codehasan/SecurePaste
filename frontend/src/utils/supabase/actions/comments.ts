@@ -75,7 +75,6 @@ export async function toggleLike(
   pasteId: string,
   addLike: boolean
 ) {
-  let start = performance.now();
   // 1. Validate the form data sent from the app
   const validation = IdVerificationSchema.safeParse(pasteId);
 
@@ -83,8 +82,6 @@ export async function toggleLike(
     logger.warn(JSON.stringify(validation.error));
     throw new Error(validation.error.issues[0].message);
   }
-
-  console.log(`Validation: ${(performance.now() - start).toFixed(2)} ms`);
 
   try {
     if (addLike) {

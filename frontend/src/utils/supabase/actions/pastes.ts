@@ -87,6 +87,41 @@ export async function createNewPaste(formData: FormData) {
   redirect(`/user/${userResponse.data.user!.id}/pastes`, RedirectType.push);
 }
 
+export async function deletePaste(pasteId: string) {
+  // 1. Validate the form data sent from the app
+  const validation = IdVerificationSchema.safeParse(pasteId);
+
+  if (!validation.success) {
+    logger.warn(JSON.stringify(validation.error));
+    throw new Error(validation.error.issues[0].message);
+  }
+
+  // 2. Verify if user is logged in
+  const supabase = createClient();
+  const userResponse = await supabase.auth.getUser();
+
+  if (userResponse.error) {
+    logger.error(JSON.stringify(userResponse.error));
+    throw new Error(getAuthErrorMessage(userResponse.error));
+  }
+
+  if (!userResponse.data.user) {
+    throw new Error('An unexpected error occurred.');
+  }
+
+  try {
+    await prisma.paste.delete({
+      where: {
+        id: pasteId,
+        userId: userResponse.data.user.id,
+      },
+    });
+  } catch (error) {
+    logger.error(JSON.stringify(error));
+    throw new Error('An unexpected error occurred.');
+  }
+}
+
 /**
  * @param userId - The id of user who liked the paste.
  * @param pasteId - The paste id where like should be toggled.
@@ -97,7 +132,8 @@ export async function toggleLike(
   pasteId: string,
   addLike: boolean
 ) {
-  let start = performance.now();
+  // let start = performance.now();
+
   // 1. Validate the form data sent from the app
   const validation = IdVerificationSchema.safeParse(pasteId);
 
@@ -106,7 +142,7 @@ export async function toggleLike(
     throw new Error(validation.error.issues[0].message);
   }
 
-  console.log(`Validation: ${(performance.now() - start).toFixed(2)} ms`);
+  // console.log(`Validation: ${(performance.now() - start).toFixed(2)} ms`);
 
   try {
     if (addLike) {
