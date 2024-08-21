@@ -1,3 +1,4 @@
+import { logError } from '@/lib/logging/client';
 import { useState, useTransition } from 'react';
 
 const useServerAction = <T extends (...args: any[]) => Promise<any>>(
@@ -19,7 +20,7 @@ const useServerAction = <T extends (...args: any[]) => Promise<any>>(
         if (e instanceof Error) {
           setError(e);
         } else {
-          console.error(`Unexpected server action error: ${JSON.stringify(e)}`);
+          logError(`Unexpected server action error: ${JSON.stringify(e)}`);
           setError(new Error('Oops! An unexpected error occured.'));
         }
 
