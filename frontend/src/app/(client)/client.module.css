@@ -22,10 +22,16 @@
   margin: 0 !important;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 640px) {
   .container {
     padding-left: 30px;
     padding-right: 30px;
-    min-width: 10px;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
   }
 }

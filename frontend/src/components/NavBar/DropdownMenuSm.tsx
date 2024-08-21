@@ -1,14 +1,14 @@
 'use client';
-import Image from 'next/image';
+import { useWallet } from '@/hooks/useWallet';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FiMenu } from 'react-icons/fi';
 import { IoMdClose } from 'react-icons/io';
 import { MdVerified } from 'react-icons/md';
 import { RiInbox2Line } from 'react-icons/ri';
-import DropdownProps from './DropdownProps';
 import Avatar from '../Avatar';
+import DropdownProps from './DropdownProps';
 
 const DropdownMenuSm = ({
   authUser,
@@ -16,31 +16,89 @@ const DropdownMenuSm = ({
   profileNavigations,
   pageNavigations,
 }: DropdownProps) => {
+  const { showWalletConnectDialog, showMyWalletDialog, isActive, account } =
+    useWallet();
   const [open, setOpen] = useState(false);
   const currentPath = usePathname();
 
-  const isActive = (path: string) => {
+  const isActivePath = (path: string) => {
     if (path === '/') return currentPath === path;
     return currentPath.startsWith(path);
   };
 
-  const handleToggle = () => {
-    setOpen(!open);
+  const closeMenu = () => {
+    setOpen(false);
   };
+
+  const openMenu = () => {
+    setOpen(true);
+  };
+
+  const navigations = useMemo(() => {
+    const items = profileNavigations.map((navigation) => {
+      return (
+        <Link
+          key={navigation.name}
+          className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-600"
+          href={navigation.path}
+          onClick={closeMenu}
+        >
+          {navigation.name}
+        </Link>
+      );
+    });
+
+    items.splice(
+      1,
+      0,
+      <li
+        className="block cursor-pointer px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-600"
+        key={'wallet'}
+      >
+        {isActive && account ? (
+          <div
+            tabIndex={0}
+            role="button"
+            className="block"
+            onClick={() => {
+              closeMenu();
+              showMyWalletDialog();
+            }}
+          >
+            My wallet
+          </div>
+        ) : (
+          <div
+            tabIndex={0}
+            role="button"
+            className="block"
+            onClick={() => {
+              closeMenu();
+              showWalletConnectDialog();
+            }}
+          >
+            Connect wallet
+          </div>
+        )}
+      </li>
+    );
+
+    return items;
+  }, [profileNavigations, account, isActive]);
 
   return (
     <>
       {open ? (
         <button
           className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600"
-          onClick={handleToggle}
+          onClick={closeMenu}
         >
           <IoMdClose className="size-6 text-inherit" />
         </button>
       ) : (
         <button
           className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600"
-          onClick={handleToggle}
+          onClick={openMenu}
         >
           <FiMenu className="size-6 text-inherit" />
         </button>
@@ -54,12 +112,12 @@ const DropdownMenuSm = ({
                 <Link
                   key={navigation.name}
                   className={
-                    isActive(navigation.path)
+                    isActivePath(navigation.path)
                       ? 'text-primary border-primary block border-l-4 bg-[rgb(228,242,254)] py-2 pl-3 pr-4 text-base font-medium'
                       : 'block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-400 hover:bg-gray-50 hover:text-gray-700'
                   }
                   href={navigation.path}
-                  onClick={handleToggle}
+                  onClick={closeMenu}
                 >
                   {navigation.name}
                 </Link>
@@ -86,25 +144,12 @@ const DropdownMenuSm = ({
               <Link
                 href="/notifications"
                 className="ml-auto rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50"
-                onClick={handleToggle}
+                onClick={closeMenu}
               >
                 <RiInbox2Line className="size-5" />
               </Link>
             </div>
-            <div className="mt-3">
-              {profileNavigations.map((navigation, index) => {
-                return (
-                  <Link
-                    key={navigation.name}
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-600"
-                    href={navigation.path}
-                    onClick={handleToggle}
-                  >
-                    {navigation.name}
-                  </Link>
-                );
-              })}
-            </div>
+            <div className="mt-3">{navigations}</div>
           </div>
         </div>
       )}

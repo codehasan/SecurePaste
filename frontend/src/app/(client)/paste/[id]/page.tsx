@@ -201,7 +201,7 @@ const ViewPaste = () => {
       <div className={classNames(codeStyles.container)}>
         {paste ? (
           <>
-            <div className="mb-4 mt-8 text-2xl font-semibold">
+            <div className="mb-4 mt-4 text-2xl font-semibold sm:mt-8">
               {paste.title}
             </div>
 

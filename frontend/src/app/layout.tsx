@@ -57,7 +57,7 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body className="bg-[#f8f8fa] h-full flex flex-col">{children}</body>
+      <body className="flex h-full flex-col bg-[#f8f8fa]">{children}</body>
     </html>
   );
 }
