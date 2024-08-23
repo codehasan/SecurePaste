@@ -22,7 +22,10 @@ const ProfileDropdownLg = ({
   const navigations = useMemo(() => {
     const items = profileNavigations.map((navigation) => {
       return (
-        <li key={navigation.name} className="text-sm hover:bg-gray-100">
+        <li
+          key={navigation.name}
+          className="text-sm hover:bg-gray-100 active:bg-gray-200"
+        >
           <Link
             className="block px-4 py-2"
             href={navigation.path}
@@ -37,7 +40,10 @@ const ProfileDropdownLg = ({
     items.splice(
       1,
       0,
-      <li className="text-sm hover:bg-gray-100" key={'wallet'}>
+      <li
+        className="text-sm hover:bg-gray-100 active:bg-gray-200"
+        key={'wallet'}
+      >
         {isActive && account ? (
           <div
             tabIndex={0}

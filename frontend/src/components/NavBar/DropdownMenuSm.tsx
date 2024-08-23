@@ -39,7 +39,7 @@ const DropdownMenuSm = ({
       return (
         <Link
           key={navigation.name}
-          className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-600"
+          className="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 active:bg-gray-100"
           href={navigation.path}
           onClick={closeMenu}
         >
@@ -52,7 +52,7 @@ const DropdownMenuSm = ({
       1,
       0,
       <li
-        className="block cursor-pointer px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-600"
+        className="block cursor-pointer px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-50 active:bg-gray-100"
         key={'wallet'}
       >
         {isActive && account ? (
@@ -90,14 +90,14 @@ const DropdownMenuSm = ({
     <>
       {open ? (
         <button
-          className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600"
+          className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 active:bg-gray-200"
           onClick={closeMenu}
         >
           <IoMdClose className="size-6 text-inherit" />
         </button>
       ) : (
         <button
-          className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-600"
+          className="inline-flex cursor-pointer justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 active:bg-gray-200"
           onClick={openMenu}
         >
           <FiMenu className="size-6 text-inherit" />
@@ -114,7 +114,7 @@ const DropdownMenuSm = ({
                   className={
                     isActivePath(navigation.path)
                       ? 'text-primary border-primary block border-l-4 bg-[rgb(228,242,254)] py-2 pl-3 pr-4 text-base font-medium'
-                      : 'block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-gray-400 hover:bg-gray-50 hover:text-gray-700'
+                      : 'block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50 active:bg-gray-100'
                   }
                   href={navigation.path}
                   onClick={closeMenu}
@@ -143,7 +143,7 @@ const DropdownMenuSm = ({
               </div>
               <Link
                 href="/notifications"
-                className="ml-auto rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50"
+                className="ml-auto rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50 active:bg-gray-100"
                 onClick={closeMenu}
               >
                 <RiInbox2Line className="size-5" />
