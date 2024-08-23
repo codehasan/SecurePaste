@@ -22,25 +22,28 @@ import { FormEvent, useMemo, useRef, useState, useTransition } from 'react';
 import { BiDuplicate } from 'react-icons/bi';
 import { FaRegComment, FaRegThumbsUp, FaThumbsUp } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
-import { MdDeleteOutline, MdOutlinePrint, MdVerified } from 'react-icons/md';
+import {
+  MdDeleteOutline,
+  MdOpenInNew,
+  MdOutlinePrint,
+  MdVerified,
+} from 'react-icons/md';
 import { Prism } from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
-import { SiPastebin } from 'react-icons/si';
 
 const ViewPaste = () => {
-  const pathname = usePathname();
   const router = useRouter();
   const {
     authUser,
     paste,
     rootComments,
     createLocalComment,
-    deleteLocalComment,
     toggleLocalPasteLike,
   } = usePaste();
   const { showToast } = useToast();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [pendingPasteLike, startPasteLikeTransition] = useTransition();
   const [pendingNewComment, startNewCommentTransition] = useTransition();
   const [pendingPasteDeletion, startPasteDeletionTransition] = useTransition();
@@ -51,6 +54,14 @@ const ViewPaste = () => {
     () => getLinesCount(paste?.body || ''),
     [paste?.body]
   );
+
+  const closeDropdown = () => {
+    setDropdownOpen(false);
+  };
+
+  const openDropdown = () => {
+    setDropdownOpen(true);
+  };
 
   const copyPasteBody = async () => {
     if (paste) {
@@ -99,24 +110,6 @@ const ViewPaste = () => {
         logError(`Unexpected download paste error: ${JSON.stringify(error)}`);
         showToast('Unable to download paste.', 'error');
       }
-    }
-  };
-
-  const onClonePaste = () => {
-    if (paste && authUser) {
-      router.push(pathname + '/clone');
-    }
-  };
-
-  const onPrintPaste = () => {
-    if (paste && authUser) {
-      router.push(pathname + '/print');
-    }
-  };
-
-  const onEditPaste = () => {
-    if (paste && authUser) {
-      router.push(pathname + '/edit');
     }
   };
 
@@ -301,74 +294,175 @@ const ViewPaste = () => {
                       </button>
                     </div>
 
-                    {paste.owner ? (
-                      <>
-                        <div
-                          className={classNames(
-                            styles.buttons,
-                            'text-[#24292f]'
-                          )}
+                    {authUser && (
+                      <div
+                        className={classNames(styles.buttons, 'text-[#24292f]')}
+                      >
+                        <Link
+                          className="text-[#636c76]"
+                          data-tooltip="Clone this paste"
+                          href="clone"
                         >
-                          <button
-                            className="text-[#636c76]"
-                            data-tooltip="Clone this paste"
-                            onClick={onClonePaste}
-                          >
-                            <BiDuplicate className="size-4 font-bold" />
-                          </button>
-                          <button
-                            className="text-[#636c76]"
-                            data-tooltip="Print this paste"
-                            onClick={onPrintPaste}
-                          >
-                            <MdOutlinePrint className="size-4 font-bold" />
-                          </button>
-                        </div>
+                          <BiDuplicate className="size-4 font-bold" />
+                        </Link>
+                        <Link
+                          className="text-[#636c76]"
+                          data-tooltip="Print this paste"
+                          href="print"
+                        >
+                          <MdOutlinePrint className="size-4 font-bold" />
+                        </Link>
+                      </div>
+                    )}
 
-                        <div
-                          className={classNames(
-                            styles.buttons,
-                            'text-[#24292f]'
-                          )}
+                    {paste.owner && (
+                      <div
+                        className={classNames(styles.buttons, 'text-[#24292f]')}
+                      >
+                        <Link
+                          className="text-[#636c76]"
+                          data-tooltip="Edit this paste"
+                          href="edit"
                         >
-                          <button
-                            className="text-[#636c76]"
-                            data-tooltip="Edit this paste"
-                            onClick={onEditPaste}
-                          >
-                            <Edit />
-                          </button>
-                          <button
-                            className="text-[#636c76]"
-                            data-tooltip="Delete this paste"
-                            onClick={() =>
-                              pasteDeleteDialogRef.current?.showModal()
-                            }
-                          >
-                            <MdDeleteOutline className="size-4 font-medium text-[#d1242f]" />
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className={classNames(styles.buttons)}>
+                          <Edit />
+                        </Link>
                         <button
+                          className="text-[#636c76]"
+                          data-tooltip="Delete this paste"
+                          onClick={() =>
+                            pasteDeleteDialogRef.current?.showModal()
+                          }
+                        >
+                          <MdDeleteOutline className="size-4 font-medium text-[#d1242f]" />
+                        </button>
+                      </div>
+                    )}
+
+                    {!authUser && (
+                      <div className={classNames(styles.buttons)}>
+                        <Link
                           className="!border-transparent text-[#636c76]"
                           data-tooltip="Print this paste"
-                          onClick={onPrintPaste}
+                          href="print"
                         >
                           <MdOutlinePrint className="size-5 font-bold" />
-                        </button>
+                        </Link>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="block min-[700px]:hidden">
-                  <div className={classNames(styles.buttons)}>
+                <div className="dropdown dropdown-end min-[700px]:hidden">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className={classNames(styles.buttons)}
+                    onClick={openDropdown}
+                  >
                     <button className="!border-transparent text-[#636c76]">
                       <HorizontalMenu />
                     </button>
                   </div>
+
+                  {dropdownOpen && (
+                    <ul className="dropdown-content z-[10] w-48 rounded-md border border-solid border-black border-opacity-10 bg-white px-0 py-2 text-gray-700 shadow-lg">
+                      <li>
+                        <div className="px-4 py-[6px] text-xs font-semibold text-gray-600">
+                          Raw paste content
+                        </div>
+                        <ul className="text-sm">
+                          <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                            <button
+                              className="flex w-full items-center justify-start gap-2 py-[6px]"
+                              onClick={() => {
+                                closeDropdown();
+                                copyPasteBody();
+                              }}
+                            >
+                              <Copy className="size-4 text-gray-500" />
+                              <span>Copy</span>
+                            </button>
+                          </li>
+                          <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                            <Link
+                              className="flex w-full items-center justify-start gap-2 py-[6px]"
+                              target="_blank"
+                              href={paste.bodyUrl}
+                            >
+                              <MdOpenInNew className="size-4 text-gray-500" />
+                              <span>View</span>
+                            </Link>
+                          </li>
+                          <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                            <button
+                              className="flex w-full items-center justify-start gap-2 py-[6px]"
+                              onClick={() => {
+                                closeDropdown();
+                                downloadPaste();
+                              }}
+                            >
+                              <Download className="size-4 text-gray-500" />
+                              <span>Download</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </li>
+
+                      <li className="my-2 h-px w-full bg-[#d0d7deb3]"></li>
+
+                      {authUser && (
+                        <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                          <Link
+                            href="clone"
+                            className="flex w-full items-center justify-start gap-2 py-[6px]"
+                          >
+                            <BiDuplicate className="size-4 text-gray-500" />
+                            <span>Clone</span>
+                          </Link>
+                        </li>
+                      )}
+                      <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                        <Link
+                          href="print"
+                          className="flex w-full items-center justify-start gap-2 py-[6px]"
+                        >
+                          <MdOutlinePrint className="size-4 text-gray-500" />
+                          <span>Print</span>
+                        </Link>
+                      </li>
+
+                      <li className="my-2 h-px w-full bg-[#d0d7deb3]"></li>
+
+                      <li>
+                        <div className="px-4 py-[6px] text-xs font-semibold text-gray-600">
+                          Owner action
+                        </div>
+                        <ul className="text-sm">
+                          <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                            <Link
+                              className="flex w-full items-center justify-start gap-2 py-[6px]"
+                              href="edit"
+                            >
+                              <Edit className="size-4 text-gray-500" />
+                              <span>Edit</span>
+                            </Link>
+                          </li>
+                          <li className="px-4 hover:bg-gray-100 active:bg-gray-200">
+                            <button
+                              className="flex w-full items-center justify-start gap-2 py-[6px] text-[#d1242a]"
+                              onClick={() => {
+                                closeDropdown();
+                                pasteDeleteDialogRef.current?.showModal();
+                              }}
+                            >
+                              <MdDeleteOutline className="size-4" />
+                              <span>Delete</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  )}
                 </div>
               </div>
 
@@ -421,7 +515,7 @@ const ViewPaste = () => {
             <dialog
               id="paste-delete"
               ref={pasteDeleteDialogRef}
-              className="modal modal-bottom sm:modal-middle"
+              className="modal modal-middle"
             >
               <div className="modal-box bg-white">
                 <form method="dialog">
