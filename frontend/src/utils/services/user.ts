@@ -24,7 +24,7 @@ export default async function getUser(supabase: SupabaseClient, id?: string) {
       });
     }
   } catch (error) {
-    console.error('Error fetching user:', JSON.stringify(error));
+    console.error('Error fetching user:', error);
   }
 
   return { authUser, dbUser };
@@ -38,7 +38,7 @@ export async function getUserInfoById(id: string) {
       },
     });
   } catch (error) {
-    console.error('Error fetching user by ID:', JSON.stringify(error));
+    console.error('Error fetching user by ID:', error);
     return null;
   }
 }
