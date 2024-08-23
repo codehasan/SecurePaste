@@ -1,17 +1,12 @@
 'use client';
 import { ToastProvider } from '@/hooks/useToast';
 import { WalletProvider } from '@/hooks/useWallet';
-import {
-  hooks as coinbaseHooks,
-  coinbaseWallet,
-} from '@/utils/wallet/coinbaseWallet';
-import {
-  metaMask,
-  hooks as metaMaskHooks,
-} from '@/utils/wallet/metamaskWallet';
+import { coinbaseHooks, coinbaseWallet } from '@/utils/wallet/coinbaseWallet';
+import { metaMask, metaMaskHooks } from '@/utils/wallet/metamaskWallet';
+import { trustWallet, trustWalletHooks } from '@/utils/wallet/trustWallet';
 import {
   walletConnectV2,
-  hooks as walletConnectV2Hooks,
+  walletConnectV2Hooks,
 } from '@/utils/wallet/walletConnect';
 import { Web3ReactProvider } from '@web3-react/core';
 import React from 'react';
@@ -24,6 +19,7 @@ const ClientProviders = ({ children }: { children: React.ReactNode }) => {
         [metaMask, metaMaskHooks],
         [walletConnectV2, walletConnectV2Hooks],
         [coinbaseWallet, coinbaseHooks],
+        [trustWallet, trustWalletHooks],
       ]}
     >
       <WalletProvider>

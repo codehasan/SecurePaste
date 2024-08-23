@@ -1,28 +1,25 @@
 'use client';
 import Coinbase from '@/icons/Coinbase';
 import MetaMaskIcon from '@/icons/MetaMask';
+import TrustWalletIcon from '@/icons/TrustWallet';
 import Select from '@/icons/Select';
 import WalletBlockIcon from '@/icons/WalletBlockIcon';
 import WalletConnect from '@/icons/WalletConnect';
 import { log, logError } from '@/lib/logging/client';
 import { getTrimmedAddress } from '@/lib/WalletUtils';
 import {
-  hooks as coinbaseHooks,
-  coinbaseWallet,
-} from '@/utils/wallet/coinbaseWallet';
-import {
-  metaMask,
-  hooks as metaMaskHooks,
-} from '@/utils/wallet/metamaskWallet';
-import {
-  getAlchemySepoliaUrl,
+  alchemySepoliaProvider,
+  infuraSepoliaProvider,
   SepoliaTestnet,
-} from '@/utils/wallet/wallet-utils';
+} from '@/utils/wallet/chains';
+import { coinbaseHooks, coinbaseWallet } from '@/utils/wallet/coinbaseWallet';
+import { metaMask, metaMaskHooks } from '@/utils/wallet/metamaskWallet';
+import { trustWallet, trustWalletHooks } from '@/utils/wallet/trustWallet';
 import {
   walletConnectV2,
-  hooks as walletConnectV2Hooks,
+  walletConnectV2Hooks,
 } from '@/utils/wallet/walletConnect';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { TrustWallet } from '@trustwallet/web3-react-trust-wallet';
 import { CoinbaseWallet } from '@web3-react/coinbase-wallet';
 import { useWeb3React, Web3ContextType } from '@web3-react/core';
 import { MetaMask } from '@web3-react/metamask';
@@ -50,6 +47,7 @@ type WalletState = {
   disconnectWallet: (connector: Connector) => Promise<void>;
   showWalletConnectDialog: () => void;
   showMyWalletDialog: () => void;
+  updateBalance: () => Promise<void>;
 } & Omit<Web3ContextType, 'accounts' | 'ENSNames' | 'ENSName'>;
 
 interface WalletProviderProps {
@@ -75,6 +73,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
   const { useIsActivating: useMetamaskLoading } = metaMaskHooks;
   const { useIsActivating: useWalletConnectLoading } = walletConnectV2Hooks;
   const { useIsActivating: useCoinbaseLoading } = coinbaseHooks;
+  const { useIsActivating: useTrustWalletLoading } = trustWalletHooks;
   const [balance, setBalance] = useState<BigNumberish | null>(null);
   const connectWalletDialogRef = useRef<HTMLDialogElement>(null);
   const myWalletDialogRef = useRef<HTMLDialogElement>(null);
@@ -82,6 +81,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
   const isMetamaskLoading = useMetamaskLoading();
   const isWalletConnectLoading = useWalletConnectLoading();
   const isCoinbaseLoading = useCoinbaseLoading();
+  const isTrustWalletLoading = useTrustWalletLoading();
 
   useEffect(() => {
     const connectWallets = async () => {
@@ -92,15 +92,21 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       }
 
       try {
+        await walletConnectV2.connectEagerly();
+      } catch (error) {
+        log('Failed to connect eagerly to WalletConnect', error);
+      }
+
+      try {
         await coinbaseWallet.connectEagerly();
       } catch {
         log('Failed to connect eagerly to Coinbase Wallet');
       }
 
       try {
-        await walletConnectV2.connectEagerly();
-      } catch (error) {
-        log('Failed to connect eagerly to WalletConnect', error);
+        await trustWallet.connectEagerly();
+      } catch {
+        log('Failed to connect eagerly to Trust Wallet');
       }
     };
 
@@ -117,7 +123,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
   }, [account, isActive]);
 
   const connectToWallet = async (
-    connector: MetaMask | CoinbaseWallet | WalletConnectV2
+    connector: MetaMask | CoinbaseWallet | WalletConnectV2 | TrustWallet
   ) => {
     try {
       if (connector instanceof WalletConnectV2) {
@@ -162,39 +168,26 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
     }
   };
 
-  const updateBalance = () => {
-    let testnet: JsonRpcProvider;
-
-    log('Balance update start', isActive);
-
-    if (isActive && account) {
-      log('Active account available', account);
-      if (provider) {
-        testnet = provider;
-        log('Wallet provider available', provider);
-      } else {
-        testnet = new JsonRpcProvider(getAlchemySepoliaUrl(), {
-          chainId: SepoliaTestnet.chainId,
-          name: SepoliaTestnet.chainName,
-        });
-        log('Custom provider created', testnet);
-      }
-
-      log('Callling provider');
-      testnet
-        .getBalance(account)
-        .then((value) => {
-          log('Balance updated', value);
-          setBalance(value.toBigInt());
-        })
-        .catch((error) => {
-          log('Error occured', error);
-          setBalance(null);
-        });
-    } else {
-      log('Active account unavailable', account);
-      setBalance(null);
+  const updateBalance = async () => {
+    if (!isActive || !account) {
+      return setBalance(null);
     }
+
+    try {
+      const balance = await alchemySepoliaProvider.getBalance(account);
+      return setBalance(balance.toBigInt());
+    } catch (e) {
+      console.error('Error alchemy balance:', e);
+
+      try {
+        const balance = await infuraSepoliaProvider.getBalance(account);
+        return setBalance(balance.toBigInt());
+      } catch (e) {
+        console.error('Error infura balance:', e);
+      }
+    }
+
+    setBalance(null);
   };
 
   return (
@@ -211,6 +204,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         disconnectWallet,
         showWalletConnectDialog,
         showMyWalletDialog,
+        updateBalance,
       }}
     >
       <>
@@ -258,15 +252,13 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
                           {SepoliaTestnet.nativeCurrency.symbol}
                         </span>
                       ) : (
-                        <button className="text-base" onClick={updateBalance}>
-                          Update balance
-                        </button>
+                        <span className="loading loading-spinner loading-md"></span>
                       )}
                     </div>
                   </div>
 
                   <button
-                    className="btn btn-error btn-custom w-full"
+                    className="btn btn-error btn-custom mt-2 w-full"
                     onClick={() => disconnectWallet(connector)}
                   >
                     Disconnect
@@ -320,8 +312,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
                           MetaMask
                         </span>
                         <span className="break-words text-start text-xs text-stone-500">
-                          Available on iOS, Android, Chrome, Firefox, Brave,
-                          Opera, and Edge
+                          Available on iOS, Android, Chrome, and Firefox
                         </span>
                       </div>
 
@@ -398,6 +389,32 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
                           </span>
 
                           {isCoinbaseLoading && (
+                            <span className="loading loading-spinner loading-md text-gray-700"></span>
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="relative flex w-full items-stretch justify-between bg-[rgb(249,249,249)] hover:bg-[rgba(34,34,34,0.07)]">
+                        <button
+                          className={classNames(
+                            'flex w-full flex-auto items-center justify-start p-[18px]',
+                            { 'btn-disabled': isActivating }
+                          )}
+                          onClick={() => connectToWallet(trustWallet)}
+                          disabled={isActivating}
+                        >
+                          <TrustWalletIcon
+                            className={classNames(
+                              styles.borderModal,
+                              styles.borderMedium,
+                              'size-10 rounded-xl'
+                            )}
+                          />
+                          <span className="grow px-2 text-start font-medium">
+                            Trust Wallet
+                          </span>
+
+                          {isTrustWalletLoading && (
                             <span className="loading loading-spinner loading-md text-gray-700"></span>
                           )}
                         </button>
