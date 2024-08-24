@@ -9,8 +9,7 @@ const config = {
     {
       files: '*.sol',
       options: {
-        parser: 'solidity-parse',
-        printWidth: 80,
+        printWidth: 100,
         tabWidth: 4,
         useTabs: false,
         singleQuote: false,
