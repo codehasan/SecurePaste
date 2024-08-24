@@ -17,7 +17,7 @@ import { createNewComment } from '@/utils/supabase/actions/comments';
 import { deletePaste, toggleLike } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useMemo, useRef, useState, useTransition } from 'react';
 import { BiDuplicate } from 'react-icons/bi';
 import { FaRegComment, FaRegThumbsUp, FaThumbsUp } from 'react-icons/fa';
@@ -48,7 +48,6 @@ const ViewPaste = () => {
   const [pendingNewComment, startNewCommentTransition] = useTransition();
   const [pendingPasteDeletion, startPasteDeletionTransition] = useTransition();
   const pasteDeleteDialogRef = useRef<HTMLDialogElement>(null);
-
   const bodySize = useMemo(() => getSize(paste?.body || ''), [paste?.body]);
   const bodyLines = useMemo(
     () => getLinesCount(paste?.body || ''),
@@ -199,17 +198,24 @@ const ViewPaste = () => {
             </div>
 
             <div className="mb-4 flex items-center">
-              <Avatar src={paste.user.avatar} parentClassName="size-10" />
+              <Link href={`/user/${paste.user.id}`}>
+                <Avatar src={paste.user.avatar} parentClassName="size-10" />
+              </Link>
 
               <div className="ml-3">
-                <div className="flex items-center gap-1 text-lg font-medium text-gray-800">
-                  <span>{paste.user.name}</span>
-                  {paste.user.verified && (
-                    <span className="text-primary tooltip" data-tip="Verified">
-                      <MdVerified data-tooltip="Verified" />
-                    </span>
-                  )}
-                </div>
+                <Link href={`/user/${paste.user.id}`}>
+                  <div className="flex items-center gap-1 text-lg font-medium text-gray-800">
+                    <span>{paste.user.name}</span>
+                    {paste.user.verified && (
+                      <span
+                        className="text-primary tooltip"
+                        data-tip="Verified"
+                      >
+                        <MdVerified data-tooltip="Verified" />
+                      </span>
+                    )}
+                  </div>
+                </Link>
                 <div className="text-sm text-gray-600">
                   <span>{bodyLines} lines</span>
                   <span className="px-1">·</span>
