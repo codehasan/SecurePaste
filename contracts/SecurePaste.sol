@@ -2,136 +2,171 @@
 pragma solidity ^0.8.20;
 
 contract SecurePaste {
-    event NewPaste(bytes24 indexed hash, address indexed owner);
-    event PasteDeleted(bytes24 indexed hash, address indexed owner);
-    event PasteUpdated(
-        bytes24 indexed prevHash,
-        bytes24 indexed newHash,
-        address indexed owner
-    );
+    event NewPaste(bytes32 indexed id, address indexed owner);
+    event PasteDeleted(bytes32 indexed id, address indexed owner);
+    event PasteUpdated(bytes32 indexed id, address indexed owner);
 
     enum PasteErrorCode {
-        USER_PASTE_LIMIT_REACHED,
-        TOTAL_PASTE_LIMIT_REACHED,
-        NO_HASH_FOUND,
-        NOT_OWNER,
-        HASH_ALREADY_EXISTS
+        INVALLID_PASTE_ID,
+        INVALID_PASTE_TITLE,
+        INVALID_IPFS_HASH,
+        INVALID_SYNTAX,
+        INVALID_CURRENT_TIME,
+        NO_PASTE_FOUND
     }
 
-    error PasteError(PasteErrorCode code, bytes24 hash, address sender);
+    error PasteCreateError(PasteErrorCode code, address sender);
+    error PasteError(PasteErrorCode code, bytes32 id, address sender);
 
-    // These limits are imposed based on Pinata free tier limits
-    uint8 private constant USER_PASTE_LIMIT = 10;
-    uint16 private constant TOTAL_PASTE_LIMIT = 500;
-    uint16 private totalPasteCount;
-
-    mapping(bytes24 => address) private pasteToOwner;
-    mapping(address => bytes24[10]) private ownerToPastes;
-    mapping(address => uint8) private ownerPasteCount;
-
-    modifier onlyPasteOwner(bytes24 _hash) {
-        if (pasteToOwner[_hash] != msg.sender)
-            revert PasteError(PasteErrorCode.NOT_OWNER, _hash, msg.sender);
-        _;
+    struct Paste {
+        bytes32 id;
+        string title;
+        string ipfsHash;
+        string syntax;
+        uint256 timestamp;
     }
 
-    function _createPaste(bytes24 _hash) private {
-        uint8 totalOwnerPastes = ownerPasteCount[msg.sender];
-        ownerToPastes[msg.sender][totalOwnerPastes] = _hash;
-        pasteToOwner[_hash] = msg.sender;
-        ownerPasteCount[msg.sender]++;
-        totalPasteCount++;
+    mapping(address => Paste[]) private ownerToPastes;
 
-        emit NewPaste(_hash, msg.sender);
+    function _createPaste(
+        bytes32 _id,
+        string calldata _title,
+        string calldata _ipfsHash,
+        string calldata _syntax
+    ) private {
+        ownerToPastes[msg.sender].push(
+            Paste({
+                id: _id,
+                title: _title,
+                ipfsHash: _ipfsHash,
+                syntax: _syntax,
+                timestamp: block.timestamp
+            })
+        );
+
+        emit NewPaste(_id, msg.sender);
     }
 
-    function _deletePaste(bytes24 _hash) private {
-        bytes24[10] storage ownerPastes = ownerToPastes[msg.sender];
-        uint8 totalOwnerPastes = ownerPasteCount[msg.sender];
+    function _deletePaste(bytes32 _id) private {
+        Paste[] storage ownerPastes = ownerToPastes[msg.sender];
+        uint256 len = ownerPastes.length;
 
-        for (uint8 i = 0; i < totalOwnerPastes; i++) {
-            if (ownerPastes[i] == _hash) {
-                if (totalOwnerPastes > 1)
-                    ownerPastes[i] = ownerPastes[totalOwnerPastes - 1];
-                pasteToOwner[_hash] = address(0);
-                ownerPasteCount[msg.sender]--;
-                totalPasteCount--;
+        for (uint8 i = 0; i < len; i++) {
+            if (ownerPastes[i].id == _id) {
+                if (i != len - 1) {
+                    ownerPastes[i] = ownerPastes[len - 1];
+                }
+                ownerPastes.pop();
 
-                emit PasteDeleted(_hash, msg.sender);
+                emit PasteDeleted(_id, msg.sender);
                 return;
             }
         }
-        revert PasteError(PasteErrorCode.NO_HASH_FOUND, _hash, msg.sender);
+        revert PasteError(PasteErrorCode.NO_PASTE_FOUND, _id, msg.sender);
     }
 
-    function _updatePaste(bytes24 _prevHash, bytes24 _newHash) private {
-        bytes24[10] storage ownerPastes = ownerToPastes[msg.sender];
-        uint8 totalOwnerPastes = ownerPasteCount[msg.sender];
+    function _updatePaste(
+        bytes32 _id,
+        string calldata _title,
+        string calldata _ipfsHash,
+        string calldata _syntax
+    ) private {
+        Paste[] storage pastes = ownerToPastes[msg.sender];
 
-        for (uint8 i = 0; i < totalOwnerPastes; i++) {
-            if (ownerPastes[i] == _prevHash) {
-                ownerPastes[i] = _newHash;
-                pasteToOwner[_prevHash] = address(0);
-                pasteToOwner[_newHash] = msg.sender;
+        for (uint8 i = 0; i < pastes.length; i++) {
+            if (pastes[i].id == _id) {
+                Paste storage paste = pastes[i];
 
-                emit PasteUpdated(_prevHash, _newHash, msg.sender);
+                paste.title = _title;
+                paste.ipfsHash = _ipfsHash;
+                paste.syntax = _syntax;
+
+                emit PasteUpdated(_id, msg.sender);
                 return;
             }
         }
-        revert PasteError(PasteErrorCode.NO_HASH_FOUND, _prevHash, msg.sender);
+        revert PasteError(PasteErrorCode.NO_PASTE_FOUND, _id, msg.sender);
     }
 
-    function createPaste(bytes24 _hash) external {
-        if (ownerPasteCount[msg.sender] == USER_PASTE_LIMIT)
-            revert PasteError(
-                PasteErrorCode.USER_PASTE_LIMIT_REACHED,
-                _hash,
-                msg.sender
-            );
-        if (totalPasteCount == TOTAL_PASTE_LIMIT)
-            revert PasteError(
-                PasteErrorCode.TOTAL_PASTE_LIMIT_REACHED,
-                _hash,
-                msg.sender
-            );
-        _createPaste(_hash);
+    function createPaste(
+        string calldata _title,
+        string calldata _ipfsHash,
+        string calldata _syntax,
+        uint256 _currentTimeMillis
+    ) external {
+        bytes memory titleBytes = bytes(_title);
+
+        if (titleBytes.length < 4 || titleBytes.length > 100) {
+            revert PasteCreateError(PasteErrorCode.INVALID_PASTE_TITLE, msg.sender);
+        }
+        if (bytes(_ipfsHash).length == 0) {
+            revert PasteCreateError(PasteErrorCode.INVALID_IPFS_HASH, msg.sender);
+        }
+        if (bytes(_syntax).length == 0) {
+            revert PasteCreateError(PasteErrorCode.INVALID_SYNTAX, msg.sender);
+        }
+        if (_currentTimeMillis == 0) {
+            revert PasteCreateError(PasteErrorCode.INVALID_CURRENT_TIME, msg.sender);
+        }
+
+        bytes32 id = keccak256(
+            abi.encodePacked(
+                _title,
+                _ipfsHash,
+                _syntax,
+                block.timestamp,
+                msg.sender,
+                _currentTimeMillis
+            )
+        );
+
+        _createPaste(id, _title, _ipfsHash, _syntax);
     }
 
-    function deletePaste(bytes24 _hash) external onlyPasteOwner(_hash) {
-        if (ownerPasteCount[msg.sender] == 0)
-            revert PasteError(PasteErrorCode.NO_HASH_FOUND, _hash, msg.sender);
-        _deletePaste(_hash);
+    function deletePaste(bytes32 _id) external {
+        if (_id == bytes32(0)) {
+            revert PasteError(PasteErrorCode.INVALLID_PASTE_ID, _id, msg.sender);
+        }
+
+        _deletePaste(_id);
     }
 
     function updatePaste(
-        bytes24 _prevHash,
-        bytes24 _newHash
-    ) external onlyPasteOwner(_prevHash) {
-        if (ownerPasteCount[msg.sender] == 0)
-            revert PasteError(
-                PasteErrorCode.NO_HASH_FOUND,
-                _prevHash,
-                msg.sender
-            );
-        if (pasteToOwner[_newHash] != address(0))
-            revert PasteError(
-                PasteErrorCode.HASH_ALREADY_EXISTS,
-                _newHash,
-                msg.sender
-            );
-        _updatePaste(_prevHash, _newHash);
+        bytes32 _id,
+        string calldata _title,
+        string calldata _ipfsHash,
+        string calldata _syntax
+    ) external {
+        bytes memory titleBytes = bytes(_title);
+
+        if (_id == bytes32(0)) {
+            revert PasteError(PasteErrorCode.INVALLID_PASTE_ID, _id, msg.sender);
+        }
+        if (titleBytes.length < 4 || titleBytes.length > 100) {
+            revert PasteError(PasteErrorCode.INVALID_PASTE_TITLE, _id, msg.sender);
+        }
+        if (bytes(_ipfsHash).length == 0) {
+            revert PasteError(PasteErrorCode.INVALID_IPFS_HASH, _id, msg.sender);
+        }
+        if (bytes(_syntax).length == 0) {
+            revert PasteError(PasteErrorCode.INVALID_SYNTAX, _id, msg.sender);
+        }
+
+        _updatePaste(_id, _title, _ipfsHash, _syntax);
     }
 
-    function getPastesByOwner(
-        address _owner
-    ) external view returns (bytes24[] memory) {
-        uint8 totalOwnerPastes = ownerPasteCount[_owner];
-        bytes24[] memory result = new bytes24[](totalOwnerPastes);
-        bytes24[10] storage ownerPastes = ownerToPastes[msg.sender];
+    function getPastes() external view returns (Paste[] memory) {
+        return ownerToPastes[msg.sender];
+    }
 
-        for (uint8 i = 0; i < totalOwnerPastes; i++) {
-            result[i] = ownerPastes[i];
+    function getPaste(bytes32 _id) external view returns (Paste memory) {
+        Paste[] storage ownerPastes = ownerToPastes[msg.sender];
+
+        for (uint8 i = 0; i < ownerPastes.length; i++) {
+            if (ownerPastes[i].id == _id) {
+                return ownerPastes[i];
+            }
         }
-        return result;
+        revert PasteError(PasteErrorCode.NO_PASTE_FOUND, _id, msg.sender);
     }
 }
