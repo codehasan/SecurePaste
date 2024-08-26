@@ -27,7 +27,7 @@ contract SecurePaste is Ownable {
     struct Paste {
         bytes32 id;
         string title;
-        bytes32 ipfsHash;
+        string ipfsHash;
         string syntax;
         uint256 timestamp;
     }
@@ -43,7 +43,7 @@ contract SecurePaste is Ownable {
     function _createPaste(
         bytes32 _id,
         string calldata _title,
-        bytes32 _ipfsHash,
+        string calldata _ipfsHash,
         string calldata _syntax
     ) private {
         ownerToPastes[msg.sender].push(
@@ -81,7 +81,7 @@ contract SecurePaste is Ownable {
     function _updatePaste(
         bytes32 _id,
         string calldata _title,
-        bytes32 _ipfsHash,
+        string calldata _ipfsHash,
         string calldata _syntax
     ) private {
         uint256 index = pasteIndex[_id];
@@ -97,9 +97,9 @@ contract SecurePaste is Ownable {
 
     function createPaste(
         string calldata _title,
-        bytes32 _ipfsHash,
+        string calldata _ipfsHash,
         string calldata _syntax,
-        uint256 _currentTimeMillis
+        uint256 _currentTimeSeconds
     ) external {
         Paste[] storage pastes = ownerToPastes[msg.sender];
 
@@ -117,17 +117,17 @@ contract SecurePaste is Ownable {
         if (titleBytes.length < 4 || titleBytes.length > 100)
             revert PasteCreateError(PasteErrorCode.INVALID_PASTE_TITLE, msg.sender);
 
-        if (_ipfsHash == bytes32(0))
+        if (bytes(_ipfsHash).length == 0)
             revert PasteCreateError(PasteErrorCode.INVALID_IPFS_HASH, msg.sender);
 
         if (bytes(_syntax).length == 0)
             revert PasteCreateError(PasteErrorCode.INVALID_SYNTAX, msg.sender);
 
-        if (_currentTimeMillis == 0 || _currentTimeMillis > block.timestamp)
+        if (_currentTimeSeconds == 0 || _currentTimeSeconds > block.timestamp)
             revert PasteCreateError(PasteErrorCode.INVALID_CURRENT_TIME, msg.sender);
 
         bytes32 id = keccak256(
-            abi.encode(_title, _ipfsHash, _syntax, block.timestamp, msg.sender, _currentTimeMillis)
+            abi.encode(_title, _ipfsHash, _syntax, block.timestamp, msg.sender, _currentTimeSeconds)
         );
 
         _createPaste(id, _title, _ipfsHash, _syntax);
@@ -148,7 +148,7 @@ contract SecurePaste is Ownable {
     function updatePaste(
         bytes32 _id,
         string calldata _title,
-        bytes32 _ipfsHash,
+        string calldata _ipfsHash,
         string calldata _syntax
     ) external {
         bytes memory titleBytes = bytes(_title);
@@ -161,7 +161,7 @@ contract SecurePaste is Ownable {
             revert PasteError(PasteErrorCode.INVALID_PASTE_TITLE, _id, msg.sender);
         }
 
-        if (_ipfsHash == bytes32(0)) {
+        if (bytes(_ipfsHash).length == 0) {
             revert PasteError(PasteErrorCode.INVALID_IPFS_HASH, _id, msg.sender);
         }
 
