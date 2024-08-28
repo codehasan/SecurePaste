@@ -4,9 +4,9 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SecurePaste is Ownable {
-    event NewPaste(bytes32 indexed id, address indexed owner);
-    event PasteDeleted(bytes32 indexed id, address indexed owner);
-    event PasteUpdated(bytes32 indexed id, address indexed owner);
+    event NewPaste(bytes32 indexed id, address indexed sender);
+    event PasteDeleted(bytes32 indexed id, address indexed sender);
+    event PasteUpdated(bytes32 indexed id, address indexed sender);
     event NewPasteCooldownUpdated(uint256 oldTime, uint256 newTime);
     event UserPasteLimitUpdated(uint256 oldLimit, uint256 newLimit);
 
@@ -209,17 +209,17 @@ contract SecurePaste is Ownable {
         return ownerToPastes[msg.sender][index - 1];
     }
 
-    function setPasteLimit(uint256 newLimit) external onlyOwner {
+    function setUserPasteLimit(uint256 _newLimit) external onlyOwner {
         uint256 oldLimit = userPasteLimit;
-        userPasteLimit = newLimit;
+        userPasteLimit = _newLimit;
 
-        emit UserPasteLimitUpdated(oldLimit, newLimit);
+        emit UserPasteLimitUpdated(oldLimit, _newLimit);
     }
 
-    function setNewPasteCooldown(uint256 newTime) external onlyOwner {
+    function setNewPasteCooldown(uint256 _newTime) external onlyOwner {
         uint256 oldTime = newPasteCooldown;
-        newPasteCooldown = newTime;
+        newPasteCooldown = _newTime;
 
-        emit NewPasteCooldownUpdated(oldTime, newTime);
+        emit NewPasteCooldownUpdated(oldTime, _newTime);
     }
 }
