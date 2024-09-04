@@ -6,14 +6,35 @@ import TagInput from '@/components/TagInput/TagInput';
 import { createNewPaste } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
 import styles from '../client.module.css';
+import { FormEvent } from 'react';
+import { getTags } from '@/lib/ArrayHelper';
 
 const NewPaste = async () => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const data = {
+      title: formData.get('title') as string,
+      syntax: formData.get('syntax') as string,
+      body: formData.get('body') as string,
+      visibility: formData.get('visibility') as string,
+      tags: formData.get('tags') as string,
+    };
+
+    if (data.visibility === 'private') {
+    } else {
+    }
+  };
+
   return (
     <div className="size-full">
       <div className={classNames(styles.container)}>
         <div className="my-8 text-2xl font-semibold">New paste</div>
 
-        <form className="w-full" action={createNewPaste}>
+        <form className="w-full" onSubmit={handleSubmit}>
           <MemoizedLabel
             primaryText="Paste Name"
             topRight="4 character minimum"
