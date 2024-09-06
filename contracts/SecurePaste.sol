@@ -36,7 +36,7 @@ contract SecurePaste is Ownable {
     uint256 private userPasteLimit = 100;
 
     mapping(address => Paste[]) private ownerToPastes;
-    mapping(bytes32 => uint256) private pasteIndex;
+    mapping(address => mapping(bytes32 => uint256)) private pasteIndex;
 
     constructor() Ownable(msg.sender) {}
 
@@ -47,33 +47,27 @@ contract SecurePaste is Ownable {
         string calldata _syntax
     ) private {
         ownerToPastes[msg.sender].push(
-            Paste({
-                id: _id,
-                title: _title,
-                ipfsHash: _ipfsHash,
-                syntax: _syntax,
-                timestamp: block.timestamp
-            })
+            Paste({id: _id, title: _title, ipfsHash: _ipfsHash, syntax: _syntax, timestamp: block.timestamp})
         );
-        pasteIndex[_id] = ownerToPastes[msg.sender].length;
+        pasteIndex[msg.sender][_id] = ownerToPastes[msg.sender].length;
 
         emit NewPaste(_id, msg.sender);
     }
 
     function _deletePaste(bytes32 _id) private {
         Paste[] storage pastes = ownerToPastes[msg.sender];
-        uint256 index = pasteIndex[_id];
+        uint256 index = pasteIndex[msg.sender][_id];
         uint256 arrayIndex = index - 1;
         uint256 lastIndex = pastes.length - 1;
 
         if (arrayIndex != lastIndex) {
             Paste storage lastPaste = pastes[lastIndex];
             pastes[arrayIndex] = lastPaste;
-            pasteIndex[lastPaste.id] = index;
+            pasteIndex[msg.sender][lastPaste.id] = index;
         }
 
         pastes.pop();
-        delete pasteIndex[_id];
+        delete pasteIndex[msg.sender][_id];
 
         emit PasteDeleted(_id, msg.sender);
     }
@@ -84,7 +78,7 @@ contract SecurePaste is Ownable {
         string calldata _ipfsHash,
         string calldata _syntax
     ) private {
-        uint256 index = pasteIndex[_id];
+        uint256 index = pasteIndex[msg.sender][_id];
         uint256 arrayIndex = index - 1;
         Paste storage paste = ownerToPastes[msg.sender][arrayIndex];
 
@@ -103,10 +97,7 @@ contract SecurePaste is Ownable {
     ) external {
         Paste[] storage pastes = ownerToPastes[msg.sender];
 
-        if (
-            pastes.length > 0 &&
-            pastes[pastes.length - 1].timestamp + newPasteCooldown > block.timestamp
-        ) {
+        if (pastes.length > 0 && pastes[pastes.length - 1].timestamp + newPasteCooldown > block.timestamp) {
             revert PasteCreateError(PasteErrorCode.UNFINISHED_NEW_PASTE_COOLDOWN, msg.sender);
         }
 
@@ -117,14 +108,11 @@ contract SecurePaste is Ownable {
         if (titleBytes.length < 4 || titleBytes.length > 100)
             revert PasteCreateError(PasteErrorCode.INVALID_PASTE_TITLE, msg.sender);
 
-        if (bytes(_ipfsHash).length == 0)
-            revert PasteCreateError(PasteErrorCode.INVALID_IPFS_HASH, msg.sender);
+        if (bytes(_ipfsHash).length == 0) revert PasteCreateError(PasteErrorCode.INVALID_IPFS_HASH, msg.sender);
 
-        if (bytes(_syntax).length == 0)
-            revert PasteCreateError(PasteErrorCode.INVALID_SYNTAX, msg.sender);
+        if (bytes(_syntax).length == 0) revert PasteCreateError(PasteErrorCode.INVALID_SYNTAX, msg.sender);
 
-        if (_currentTimeSeconds == 0 || _currentTimeSeconds > block.timestamp)
-            revert PasteCreateError(PasteErrorCode.INVALID_CURRENT_TIME, msg.sender);
+        if (_currentTimeSeconds == 0) revert PasteCreateError(PasteErrorCode.INVALID_CURRENT_TIME, msg.sender);
 
         bytes32 id = keccak256(
             abi.encode(_title, _ipfsHash, _syntax, block.timestamp, msg.sender, _currentTimeSeconds)
@@ -138,7 +126,7 @@ contract SecurePaste is Ownable {
             revert PasteError(PasteErrorCode.INVALLID_PASTE_ID, _id, msg.sender);
         }
 
-        if (pasteIndex[_id] == 0) {
+        if (pasteIndex[msg.sender][_id] == 0) {
             revert PasteError(PasteErrorCode.NO_PASTE_FOUND, _id, msg.sender);
         }
 
@@ -153,7 +141,7 @@ contract SecurePaste is Ownable {
     ) external {
         bytes memory titleBytes = bytes(_title);
 
-        if (pasteIndex[_id] == 0) {
+        if (pasteIndex[msg.sender][_id] == 0) {
             revert PasteError(PasteErrorCode.NO_PASTE_FOUND, _id, msg.sender);
         }
 
@@ -200,7 +188,7 @@ contract SecurePaste is Ownable {
             revert PasteError(PasteErrorCode.INVALLID_PASTE_ID, _id, msg.sender);
         }
 
-        uint256 index = pasteIndex[_id];
+        uint256 index = pasteIndex[msg.sender][_id];
 
         if (index == 0) {
             revert PasteError(PasteErrorCode.NO_PASTE_FOUND, _id, msg.sender);
