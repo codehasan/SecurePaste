@@ -238,7 +238,7 @@ describe('SecurePaste', () => {
         securePaste.connect(wallet3).deletePaste(wallet2Pastes[0].id)
       )
         .to.be.revertedWithCustomError(securePaste, 'PasteError')
-        .withArgs(5);
+        .withArgs(5, wallet2Pastes[0].id, wallet3.address);
     });
 
     it('Should only let the paste owner retrieve their paste', async () => {
@@ -246,7 +246,7 @@ describe('SecurePaste', () => {
 
       await expect(securePaste.connect(wallet3).getPaste(wallet2Pastes[0].id))
         .to.be.revertedWithCustomError(securePaste, 'PasteError')
-        .withArgs(5);
+        .withArgs(5, wallet2Pastes[0].id, wallet3.address);
     });
 
     it('Should only let the paste owner update their paste', async () => {
@@ -263,7 +263,7 @@ describe('SecurePaste', () => {
           )
       )
         .to.be.revertedWithCustomError(securePaste, 'PasteError')
-        .withArgs(5);
+        .withArgs(5, wallet2Pastes[0].id, wallet3.address);
     });
   });
 });
