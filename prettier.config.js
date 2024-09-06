@@ -9,7 +9,7 @@ const config = {
     {
       files: '*.sol',
       options: {
-        printWidth: 100,
+        printWidth: 120,
         tabWidth: 4,
         useTabs: false,
         singleQuote: false,
