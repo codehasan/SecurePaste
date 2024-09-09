@@ -6,14 +6,16 @@ export const NewPasteSchema = z
       .string()
       .min(4, { message: 'Paste name must be at least 4 characters long.' })
       .max(100, { message: 'Paste name must not exceed 100 characters.' }),
-    syntax: z.string().min(1, { message: 'Syntax is required.' }),
+    syntax: z
+      .string()
+      .min(1, { message: 'Syntax is required.' })
+      .max(30, { message: 'Syntax must not exceed 30 characters.' }),
     body: z
       .string()
-      .min(4, { message: 'Paste name must be at least 4 characters long.' })
+      .min(4, { message: 'Paste body must be at least 4 characters long.' })
       .max(524_288, {
-        message: 'Paste name must not exceed 524,288 characters',
+        message: 'Paste body must not exceed 524,288 characters',
       }),
-    visibility: z.string().min(1, { message: 'Encryption is required.' }),
     tags: z
       .array(z.string())
       .max(10, { message: 'At most 10 tags are allowed.' }),
