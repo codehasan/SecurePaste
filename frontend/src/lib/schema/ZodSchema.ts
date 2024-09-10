@@ -22,6 +22,25 @@ export const NewPasteSchema = z
   })
   .strict();
 
+export const NewPrivatePasteSchema = z
+  .object({
+    title: z
+      .string()
+      .min(4, { message: 'Paste name must be at least 4 characters long.' })
+      .max(100, { message: 'Paste name must not exceed 100 characters.' }),
+    syntax: z
+      .string()
+      .min(1, { message: 'Syntax is required.' })
+      .max(30, { message: 'Syntax must not exceed 30 characters.' }),
+    body: z
+      .string()
+      .min(4, { message: 'Paste body must be at least 4 characters long.' })
+      .max(524_288, {
+        message: 'Paste body must not exceed 524,288 characters',
+      }),
+  })
+  .strict();
+
 export const NewCommentSchema = z
   .object({
     parentId: z.string().nullable(),
