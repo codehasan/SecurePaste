@@ -24,7 +24,7 @@ type SecurePasteContract = SecurePaste &
 
 const PASTE_CREATE_PAGE = '/paste';
 
-export async function createNewPaste(
+export async function createNewPrivatePaste(
   title: string,
   body: string,
   syntax: string,
@@ -59,7 +59,7 @@ export async function createNewPaste(
       return;
     }
 
-    const result = await createNewPasteInternat(title, cid, syntax, web3);
+    const result = await createNewPasteInternal(title, cid, syntax, web3);
 
     if (!result) {
       router.push(
@@ -85,7 +85,7 @@ async function uploadFile(account: string, body: string) {
   return null;
 }
 
-async function createNewPasteInternat(
+async function createNewPasteInternal(
   title: string,
   cid: string,
   syntax: string,

@@ -1,4 +1,5 @@
-'use server';
+'use client';
+
 import CodeEditor from '@/components/CodeEditor/CodeEditor';
 import { langs } from '@/components/CodeView/languages';
 import { MemoizedLabel } from '@/components/Label';
@@ -6,10 +7,14 @@ import TagInput from '@/components/TagInput/TagInput';
 import { createNewPaste } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
 import styles from '../client.module.css';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 import { getTags } from '@/lib/ArrayHelper';
+import { createNewPrivatePaste } from '@/utils/contract/paste';
+import { useWeb3React } from '@web3-react/core';
 
 const NewPaste = async () => {
+  const [isPublic, setIsPublic] = useState(true);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -21,11 +26,18 @@ const NewPaste = async () => {
       syntax: formData.get('syntax') as string,
       body: formData.get('body') as string,
       visibility: formData.get('visibility') as string,
-      tags: formData.get('tags') as string,
+      tags: getTags((formData.get('tags') as string) || ''),
     };
 
     if (data.visibility === 'private') {
+      await createNewPrivatePaste(
+        data.title,
+        data.body,
+        data.syntax,
+        useWeb3React()
+      );
     } else {
+      await createNewPaste(data.title, data.body, data.syntax, data.tags);
     }
   };
 
@@ -61,7 +73,7 @@ const NewPaste = async () => {
             required
           >
             <CodeEditor
-              className="min-h-80 w-full bg-white"
+              className="font-code min-h-80 w-full bg-white"
               name="body"
               inputMode="text"
               minLength={4}
@@ -97,6 +109,8 @@ const NewPaste = async () => {
             <select
               className="select w-full cursor-pointer select-text bg-white"
               name="visibility"
+              onChange={(e) => setIsPublic(e.target.value === 'public')}
+              value={isPublic ? 'public' : 'private'}
               required
             >
               <option value="public">Public</option>
@@ -104,17 +118,18 @@ const NewPaste = async () => {
             </select>
           </MemoizedLabel>
 
-          <MemoizedLabel
-            primaryText="Tags"
-            topRight="10 tags maximum"
-            className="mt-2"
-            largeText
-          >
-            <TagInput />
-          </MemoizedLabel>
-
-          <div className="flex w-full justify-end">
-            <button className="btn btn-primary btn-wide m-6 shadow-md">
+          {isPublic && (
+            <MemoizedLabel
+              primaryText="Tags"
+              topRight="10 tags maximum"
+              className="mt-2"
+              largeText
+            >
+              <TagInput />
+            </MemoizedLabel>
+          )}
+          <div className="flex w-full justify-start">
+            <button className="btn btn-primary btn-wide my-6 shadow-md">
               Create new paste
             </button>
           </div>
