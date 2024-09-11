@@ -1,9 +1,9 @@
 import classNames from 'classnames';
 import { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Fira_Code, Inter } from 'next/font/google';
 import './globals.css';
 
-const globalFont = Inter({
+const interFont = Inter({
   weight: ['400', '500', '600', '700'],
   style: ['normal'],
   subsets: ['latin'],
@@ -11,6 +11,17 @@ const globalFont = Inter({
   preload: false,
   fallback: ['Arial', 'sans-serif'],
   adjustFontFallback: true,
+});
+
+const firaSansFont = Fira_Code({
+  weight: ['400'],
+  style: ['normal'],
+  subsets: ['latin'],
+  display: 'swap',
+  preload: false,
+  fallback: ['Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', 'monospace'],
+  adjustFontFallback: true,
+  variable: '--font-fira-code',
 });
 
 const defaultUrl = process.env.VERCEL_URL
@@ -49,7 +60,7 @@ interface LayoutProps {
 
 export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
-    <html lang="en" className={classNames(globalFont.className, 'h-full')}>
+    <html lang="en" className={classNames(firaSansFont.variable, 'h-full')}>
       <head>
         <link rel="language" href="en-US" />
         <meta
@@ -57,7 +68,14 @@ export default function RootLayout({ children }: Readonly<LayoutProps>) {
           content="WQZCBn-K9y3CEu6gf72DlgWLp3gmaevThCnvgGb3SdE"
         />
       </head>
-      <body className="flex h-full flex-col bg-[#f8f8fa]">{children}</body>
+      <body
+        className={classNames(
+          interFont.className,
+          'flex h-full flex-col bg-[#f8f8fa]'
+        )}
+      >
+        {children}
+      </body>
     </html>
   );
 }

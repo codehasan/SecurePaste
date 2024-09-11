@@ -75,6 +75,10 @@ input:focus-within {
   body {
     @apply size-full;
   }
+
+  code {
+    font-family: var(--font-fira-code) !important;
+  }
 }
 
 @layer utilities {
@@ -90,5 +94,9 @@ input:focus-within {
 
   .h-fill {
     min-height: calc(100vh - 4rem);
+  }
+
+  .font-code {
+    font-family: var(--font-fira-code);
   }
 }

@@ -13,6 +13,7 @@ import HorizontalMenu from '@/icons/HorizontalMenu';
 import { getFormattedDate } from '@/lib/DateFormat';
 import { logError } from '@/lib/logging/client';
 import { getLinesCount, getSize } from '@/lib/PasteHelper';
+import OneLightModified from '@/lib/prism-themes/OneLightModified';
 import { createNewComment } from '@/utils/supabase/actions/comments';
 import { deletePaste, toggleLike } from '@/utils/supabase/actions/pastes';
 import classNames from 'classnames';
@@ -29,7 +30,6 @@ import {
   MdVerified,
 } from 'react-icons/md';
 import { Prism } from 'react-syntax-highlighter';
-import { coy } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
 
@@ -198,7 +198,10 @@ const ViewPaste = () => {
             </div>
 
             <div className="mb-4 flex items-center">
-              <Link href={`/user/${paste.user.id}`}>
+              <Link
+                href={`/user/${paste.user.id}`}
+                className="flex items-center justify-center"
+              >
                 <Avatar src={paste.user.avatar} parentClassName="size-10" />
               </Link>
 
@@ -480,9 +483,7 @@ const ViewPaste = () => {
               >
                 <Prism
                   language={paste.syntax}
-                  style={coy}
-                  customStyle={{ background: 'transparent' }}
-                  useInlineStyles
+                  style={OneLightModified}
                   showLineNumbers
                 >
                   {paste.body}
