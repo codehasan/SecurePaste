@@ -142,7 +142,7 @@ const DropdownMenuSm = ({
                 </div>
               </div>
               <Link
-                href="/notifications"
+                href={`/user/${authUser.id}/notifications`}
                 className="ml-auto rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50 active:bg-gray-100"
                 onClick={closeMenu}
               >

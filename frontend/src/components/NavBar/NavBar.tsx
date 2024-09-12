@@ -104,7 +104,7 @@ const NavBar = async () => {
                   </Link>
 
                   <Link
-                    href="/notifications"
+                    href={`/user/${authUser!.id}/notifications`}
                     className="ml-3 rounded-md border border-solid border-gray-400 p-1 text-gray-500 hover:bg-gray-50"
                   >
                     <RiInbox2Line className="size-5" />
