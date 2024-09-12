@@ -12,7 +12,39 @@ const UserPastes = async ({ params }: UserProps) => {
   const { authUser, dbUser } = await getUser(supabase);
   const isValidUser = Boolean(authUser && dbUser);
 
-  return <div>Pastes</div>;
+  return (
+    <div className="size-full">
+      <div className={classNames(styles.container)}>
+        <div
+          role="tablist"
+          className="tabs tabs-boxed mt-2 grid-cols-2 !bg-transparent lg:mt-4"
+        >
+          <input
+            type="radio"
+            name="my_tabs_1"
+            role="tab"
+            className="tab !rounded-md"
+            aria-label="Public"
+          />
+          <div role="tabpanel" className="tab-content p-10">
+            Public Pastes
+          </div>
+
+          <input
+            type="radio"
+            name="my_tabs_1"
+            role="tab"
+            className="tab bg-base-300 !rounded-md"
+            aria-label="Private"
+            defaultChecked
+          />
+          <div role="tabpanel" className="tab-content p-10">
+            Private Pastes
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default UserPastes;
