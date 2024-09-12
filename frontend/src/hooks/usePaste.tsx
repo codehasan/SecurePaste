@@ -1,6 +1,6 @@
 'use client';
+
 import { CommentData, PasteData } from '@/utils/services/paste';
-import { User as PrismaUser } from '@prisma/client';
 import { User } from '@supabase/supabase-js';
 import React, {
   ReactNode,

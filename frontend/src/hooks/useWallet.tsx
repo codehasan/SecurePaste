@@ -1,8 +1,8 @@
 'use client';
 import Coinbase from '@/icons/Coinbase';
 import MetaMaskIcon from '@/icons/MetaMask';
-import TrustWalletIcon from '@/icons/TrustWallet';
 import Select from '@/icons/Select';
+import TrustWalletIcon from '@/icons/TrustWallet';
 import WalletBlockIcon from '@/icons/WalletBlockIcon';
 import WalletConnect from '@/icons/WalletConnect';
 import { log, logError } from '@/lib/logging/client';
