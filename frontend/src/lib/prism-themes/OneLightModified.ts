@@ -2,7 +2,6 @@ import { CSSProperties } from 'react';
 
 export default {
   'code[class*="language-"]': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'hsl(210, 8%, 20%)',
     fontFamily:
       '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace',
@@ -22,7 +21,6 @@ export default {
     hyphens: 'none',
   },
   'pre[class*="language-"]': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'hsl(210, 8%, 20%)',
     fontFamily:
       '"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace',
@@ -46,27 +44,21 @@ export default {
     borderRadius: '0.3em',
   },
   'code[class*="language-"]::-moz-selection': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'inherit',
   },
   'code[class*="language-"] *::-moz-selection': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'inherit',
   },
   'pre[class*="language-"] *::-moz-selection': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'inherit',
   },
   'code[class*="language-"]::selection': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'inherit',
   },
   'code[class*="language-"] *::selection': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'inherit',
   },
   'pre[class*="language-"] *::selection': {
-    background: 'hsl(136, 0%, 100%)',
     color: 'inherit',
   },
   ':not(pre) > code[class*="language-"]': {
