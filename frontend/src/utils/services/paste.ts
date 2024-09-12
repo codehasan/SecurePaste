@@ -1,4 +1,5 @@
 'use server';
+
 import { sort } from '@/lib/CommentSort';
 import logger from '@/lib/logging/server';
 import {
@@ -51,11 +52,13 @@ export const getPasteById = async (id: string) => {
     const { data, error } = await supabase.auth.getUser();
 
     if (error) {
+      logger.error(error);
       logger.error(`Supabase user error: ${JSON.stringify(error)}`);
     } else if (data?.user) {
       authUser = data.user;
     }
   } catch (unexpectedError) {
+    logger.error(unexpectedError);
     logger.error(`Unexpected user error: ${JSON.stringify(unexpectedError)}`);
   }
 
@@ -149,8 +152,42 @@ export const getPasteById = async (id: string) => {
       };
     }
   } catch (err) {
+    logger.error(err);
     logger.error(`Unexpected error: ${JSON.stringify(err)}`);
   }
 
   return { authUser, data };
+};
+
+export const getAllPublicPastes = async () => {
+  try {
+    return await prisma.paste.findMany({
+      orderBy: [
+        {
+          likes: {
+            _count: 'desc',
+          },
+        },
+        {
+          createdAt: 'desc',
+        },
+      ],
+      select: {
+        id: true,
+        bodyOverview: true,
+        title: true,
+        syntax: true,
+        createdAt: true,
+        _count: { select: { likes: true, comments: true } },
+        user: {
+          select: UserDataSelect,
+        },
+      },
+    });
+  } catch (err) {
+    logger.error(err);
+    logger.error(`Unexpected error: ${JSON.stringify(err)}`);
+  }
+
+  return null;
 };
