@@ -1,67 +1,126 @@
-import CodeMockup from '@/icons/CodeMockup';
+import Avatar from '@/components/Avatar';
+import { getFormattedDate } from '@/lib/DateFormat';
+import { getAllPublicPastes } from '@/utils/services/paste';
 import classNames from 'classnames';
+import Link from 'next/link';
 import { FaComment, FaThumbsUp } from 'react-icons/fa';
-import { Prism } from 'react-syntax-highlighter';
-import { coldarkCold } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { MdVerified } from 'react-icons/md';
 import styles from './client.module.css';
+import { Prism } from 'react-syntax-highlighter';
+import OneLightModified from '@/lib/prism-themes/OneLightModified';
+import Image from 'next/image';
 
-export default function Home() {
+export default async function Home() {
+  const pastes = await getAllPublicPastes();
+
   return (
     <div className="size-full">
       <div className={classNames(styles.container)}>
-        <div className="size-full mt-8 sm:mt-12">
-          {Array.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').map(
-            (_value, index) => {
+        {pastes ? (
+          <div className="size-full">
+            {pastes.map((paste, index) => {
               return (
-                <div
-                  className="card p-8 bg-gray-100 cursor-pointer mb-8 hover:shadow-sm"
+                <Link
+                  href={`/paste/${paste.id}`}
+                  className="mt-8 flex w-full flex-col items-center"
                   key={index}
                 >
-                  <div className="card-title">
-                    How to prevent reentrancy attack in solidity smart contract
-                  </div>
-
                   <div
                     className={classNames(
-                      styles.codeMockup,
-                      'bg-white pt-4 pb-2 px-2 mt-4 rounded-md relative'
+                      styles.pasteView,
+                      'w-full cursor-pointer'
                     )}
                   >
-                    <div className="ml-2 mb-4">
-                      <CodeMockup />
-                    </div>
-                    <Prism
-                      language="solidity"
-                      style={coldarkCold}
-                      customStyle={{ background: 'transparent' }}
-                      useInlineStyles
-                      showLineNumbers
+                    <div
+                      className={classNames(
+                        styles.pasteBody,
+                        'flex items-center'
+                      )}
                     >
-                      {`//SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.20;
+                      <Link
+                        href={`/user/${paste.user.id}`}
+                        className="flex items-center justify-center"
+                      >
+                        <Avatar
+                          src={paste.user.avatar}
+                          parentClassName="size-7"
+                        />
+                      </Link>
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-...`}
-                    </Prism>
+                      <div className="ml-2">
+                        <Link href={`/user/${paste.user.id}`}>
+                          <div className="flex items-center gap-1 text-sm font-medium text-gray-800">
+                            <span>{paste.user.name}</span>
+                            {paste.user.verified && (
+                              <span className="text-primary">
+                                <MdVerified data-tooltip="Verified" />
+                              </span>
+                            )}
+                          </div>
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div
+                      className={classNames(
+                        styles.pasteBody,
+                        'card-title items-start justify-start'
+                      )}
+                    >
+                      {paste.title}
+                    </div>
+
+                    <div
+                      className={classNames(
+                        styles.pasteOverview,
+                        'relative overflow-hidden rounded-md bg-[#fafafa]'
+                      )}
+                    >
+                      <Prism language={paste.syntax} style={OneLightModified}>
+                        {paste.bodyOverview}
+                      </Prism>
+                    </div>
+
+                    <div
+                      className={classNames(
+                        styles.pasteBody,
+                        'flex w-full items-center gap-4 text-sm text-gray-500'
+                      )}
+                    >
+                      <div>{getFormattedDate(paste.createdAt)}</div>
+                      <div className="flex items-center gap-1">
+                        <FaThumbsUp />
+                        <span>{paste._count.likes}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <FaComment />
+                        <span>{paste._count.comments}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex gap-4 mt-4 text-gray-600 text-sm">
-                    <div>Jul 24, 2024</div>
-                    <div className="flex gap-1 items-center">
-                      <FaThumbsUp />
-                      <span>2.5k</span>
-                    </div>
-                    <div className="flex gap-1 items-center">
-                      <FaComment />
-                      <span>98</span>
-                    </div>
-                  </div>
-                </div>
+                  {index < pastes.length - 1 && (
+                    <div
+                      id="divider"
+                      className="mt-8 h-0 w-full border-b border-solid border-b-[#f2f2f2]"
+                    ></div>
+                  )}
+                </Link>
               );
-            }
-          )}
-        </div>
+            })}
+          </div>
+        ) : (
+          <div className="h-fill flex flex-col items-center justify-center gap-4">
+            <Image
+              width="200"
+              height="200"
+              src="/img/content-unavailable.png"
+              alt="Unavailable"
+              className="size-28"
+            />
+            <span className="text-gray-700">No pastes found</span>
+          </div>
+        )}
       </div>
     </div>
   );
