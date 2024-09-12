@@ -1,103 +1,87 @@
-'use client';
-import { logError } from '@/lib/logging/client';
-import axios from 'axios';
-import { getErrorMessage } from '../axios/error';
-import { CommentData } from './paste';
+'use server';
 
-export const createNewComment = async ({
-  pasteId,
-  message,
-  parentId,
-}: {
-  pasteId: string;
-  message: string;
-  parentId: string | null;
-}) => {
+import logger from '@/lib/logging/server';
+import prisma from '../prisma/db';
+
+export const getUserComments = async (id: string) => {
   try {
-    const response = await axios.post(
-      `/api/paste/${pasteId}/comments`,
-      {
-        pasteId,
-        message,
-        parentId,
+    const comments = await prisma.comment.findMany({
+      where: {
+        userId: id,
       },
-      { timeout: 10_000 }
-    );
-
-    return response.data as CommentData;
-  } catch (error) {
-    logError(JSON.stringify(error));
-    throw getErrorMessage(error);
-  }
-};
-
-export const updateComment = async ({
-  pasteId,
-  message,
-  id,
-}: {
-  pasteId: string;
-  message: string;
-  id: string;
-}) => {
-  try {
-    const response = await axios.put(
-      `/api/paste/${pasteId}/comments/${id}`,
-      {
-        pasteId,
-        message,
-        id,
+      orderBy: [
+        {
+          likes: {
+            _count: 'desc',
+          },
+        },
+        {
+          createdAt: 'desc',
+        },
+      ],
+      select: {
+        message: true,
+        createdAt: true,
+        parent: {
+          select: {
+            message: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                verified: true,
+                avatar: true,
+              },
+            },
+            _count: {
+              select: {
+                likes: true,
+              },
+            },
+          },
+        },
+        paste: {
+          select: {
+            id: true,
+            title: true,
+            createdAt: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                verified: true,
+                avatar: true,
+              },
+            },
+            _count: {
+              select: {
+                likes: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            verified: true,
+            avatar: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
-      { timeout: 10_000 }
-    );
+    });
 
-    return response.data as CommentData;
-  } catch (error) {
-    logError(JSON.stringify(error));
-    throw getErrorMessage(error);
+    const set = new Set(comments.map((comment) => comment.parent));
+  } catch (err) {
+    logger.error(err);
+    logger.error(`Unexpected error: ${JSON.stringify(err)}`);
   }
-};
 
-export const deleteComment = async ({
-  pasteId,
-  id,
-}: {
-  pasteId: string;
-  id: string;
-}) => {
-  try {
-    const response = await axios.delete(
-      `/api/paste/${pasteId}/comments/${id}`,
-      {
-        timeout: 10_000,
-      }
-    );
-
-    return response.data as CommentData;
-  } catch (error) {
-    logError(JSON.stringify(error));
-    throw getErrorMessage(error);
-  }
-};
-
-export const toggleCommentLike = async ({
-  pasteId,
-  id,
-}: {
-  pasteId: string;
-  id: string;
-}) => {
-  try {
-    const response = await axios.post(
-      `/api/paste/${pasteId}/comments/${id}/toggleLike`,
-      {
-        timeout: 10_000,
-      }
-    );
-
-    return response.data as { addLike: boolean };
-  } catch (error) {
-    logError(JSON.stringify(error));
-    throw getErrorMessage(error);
-  }
+  return null;
 };
