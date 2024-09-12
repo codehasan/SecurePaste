@@ -1,6 +1,6 @@
 'use server';
 
-import { getLines, getTags } from '@/lib/ArrayHelper';
+import { getLines } from '@/lib/ArrayHelper';
 import logger from '@/lib/logging/server';
 import { push } from '@/lib/RedirectHelper';
 import { IdVerificationSchema, NewPasteSchema } from '@/lib/schema/ZodSchema';
@@ -10,16 +10,20 @@ import { v4 } from 'uuid';
 import { getAuthErrorMessage } from '../errors';
 import { createClient } from '../server';
 
-export async function createNewPaste(formData: FormData) {
+export async function createNewPaste(
+  title: string,
+  body: string,
+  syntax: string,
+  tags: string[]
+) {
   const pathname = '/paste';
 
   // 1. Validate the form data sent from the app
   const data = {
-    title: formData.get('title') as string,
-    syntax: formData.get('syntax') as string,
-    body: formData.get('body') as string,
-    visibility: formData.get('visibility') as string,
-    tags: getTags((formData.get('tags') as string) || ''),
+    title,
+    syntax,
+    body,
+    tags,
   };
 
   const validation = NewPasteSchema.safeParse(data);
