@@ -1,11 +1,10 @@
 import styles from '@/app/(client)/client.module.css';
 import Avatar from '@/components/Avatar';
-import { getFormattedDate } from '@/lib/DateFormat';
+import { getTimePassed } from '@/lib/DateFormat';
 import { getUserComments } from '@/utils/services/comment';
 import classNames from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaComment, FaThumbsUp } from 'react-icons/fa';
 import { MdVerified } from 'react-icons/md';
 
 interface UserProps {
@@ -51,9 +50,7 @@ const UserComments = async ({ params }: UserProps) => {
                           </div>
                         </Link>
                         <div className="text-xs text-gray-600">
-                          <span>
-                            {getFormattedDate(comment.paste.createdAt)}
-                          </span>
+                          <span>{getTimePassed(comment.paste.createdAt)}</span>
                           <span className="px-1">·</span>
                           <span>{comment.paste._count.likes} likes</span>
                         </div>
@@ -90,7 +87,7 @@ const UserComments = async ({ params }: UserProps) => {
                             </Link>
                             <div className="text-xs text-gray-600">
                               <span>
-                                {getFormattedDate(comment.parent.createdAt)}
+                                {getTimePassed(comment.parent.createdAt)}
                               </span>
                               <span className="px-1">·</span>
                               <span>{comment.parent._count.likes} likes</span>
@@ -130,7 +127,7 @@ const UserComments = async ({ params }: UserProps) => {
                             </div>
                           </Link>
                           <div className="text-xs text-gray-600">
-                            <span>{getFormattedDate(comment.createdAt)}</span>
+                            <span>{getTimePassed(comment.createdAt)}</span>
                             <span className="px-1">·</span>
                             <span>{comment._count.likes} likes</span>
                           </div>
