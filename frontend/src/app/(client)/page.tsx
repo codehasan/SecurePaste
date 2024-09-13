@@ -9,9 +9,17 @@ import styles from './client.module.css';
 import { Prism } from 'react-syntax-highlighter';
 import OneLightModified from '@/lib/prism-themes/OneLightModified';
 import Image from 'next/image';
+import { createClient } from '@/utils/supabase/server';
 
 export default async function Home() {
   const pastes = await getAllPublicPastes();
+
+  const supabase = createClient();
+  let { data, error } = await supabase.rpc('paste_search', {
+    topic: 'Deez Nuts',
+  });
+  if (error) console.error(error);
+  else console.log(data);
 
   return (
     <div className="size-full">
