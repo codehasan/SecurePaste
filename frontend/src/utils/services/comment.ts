@@ -20,10 +20,12 @@ export const getUserComments = async (id: string) => {
         },
       ],
       select: {
+        id: true,
         message: true,
         createdAt: true,
         parent: {
           select: {
+            id: true,
             message: true,
             createdAt: true,
             user: {
@@ -77,7 +79,12 @@ export const getUserComments = async (id: string) => {
       },
     });
 
-    const set = new Set(comments.map((comment) => comment.parent));
+    const parentComments = new Set(
+      comments.map((comment) => comment.parent?.id).filter(Boolean)
+    );
+    return comments.filter((comment) => {
+      return !parentComments.has(comment.id);
+    });
   } catch (err) {
     logger.error(err);
     logger.error(`Unexpected error: ${JSON.stringify(err)}`);
