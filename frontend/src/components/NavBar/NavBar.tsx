@@ -1,17 +1,16 @@
 import Logo from '@/icons/Logo';
 import TextLogo from '@/icons/TextLogo';
-import { createClient } from '@/utils/supabase/server';
 import getUser from '@/utils/services/user';
+import { createClient } from '@/utils/supabase/server';
 import classNames from 'classnames';
-import { headers } from 'next/headers';
 import Link from 'next/link';
 import { FiPlus } from 'react-icons/fi';
-import { IoSearch } from 'react-icons/io5';
 import { RiInbox2Line } from 'react-icons/ri';
-import styles from './NavBar.module.css';
-import ProfileDropdownLg from './ProfileDropdownLg';
 import DropdownMenuSm from './DropdownMenuSm';
+import styles from './NavBar.module.css';
 import NavLinksLg from './NavLinksLg';
+import ProfileDropdownLg from './ProfileDropdownLg';
+import SearchBox from './SearchBox';
 
 const NavBar = async () => {
   const supabase = createClient();
@@ -60,19 +59,7 @@ const NavBar = async () => {
           </div>
 
           <div className="flex shrink grow basis-0 justify-center px-2 lg:ml-6 lg:justify-end">
-            <div className="relative w-full max-w-lg lg:max-w-80">
-              <div className="pointer-events-none absolute bottom-0 left-0 top-0 flex items-center pl-3">
-                <IoSearch className="size-5 fill-gray-500" />
-              </div>
-              <input
-                id="search"
-                name="search"
-                type="search"
-                className="focus:ring-primary w-full rounded-md bg-transparent py-1.5 pl-10 pr-3 text-gray-900 placeholder-gray-500 ring-1 ring-gray-400 focus:ring-2 sm:text-sm sm:leading-6"
-                placeholder="Search"
-                autoComplete="off"
-              />
-            </div>
+            <SearchBox />
           </div>
 
           <div className="flex items-center lg:hidden">
