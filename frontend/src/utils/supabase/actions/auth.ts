@@ -1,6 +1,7 @@
 'use server';
 
 import logger from '@/lib/logging/server';
+import { constructUrl } from '@/lib/RedirectHelper';
 import {
   ForgotPasswordSchema,
   PasswordResetSchema,
@@ -21,10 +22,13 @@ export async function resendSignUpConfirmation(formData: FormData) {
     },
   };
   const validation = ResendVerificationSchema.safeParse(data);
+  const pathname = '/auth/verify_account';
 
   if (!validation.success) {
     redirect(
-      `/auth/verify_account?error=${validation.error.issues[0].message}`
+      constructUrl(pathname, {
+        error: validation.error.issues[0].message,
+      })
     );
   }
 
@@ -35,13 +39,19 @@ export async function resendSignUpConfirmation(formData: FormData) {
   });
 
   if (error) {
-    logger.error(JSON.stringify(error));
-    redirect(`/auth/verify_account?error=${getAuthErrorMessage(error)}`);
+    logger.error(error);
+    redirect(
+      constructUrl(pathname, {
+        error: getAuthErrorMessage(error),
+      })
+    );
   }
 
-  revalidatePath('/auth/verify_account', 'page');
+  revalidatePath(pathname, 'page');
   redirect(
-    "/auth/verify_account?message=Check your inbox for confirmation email. If you can't find it, check the spam or junk folder."
+    constructUrl(pathname, {
+      message: 'Check your inbox for confirmation email.',
+    })
   );
 }
 
@@ -54,9 +64,14 @@ export async function signIn(formData: FormData) {
     },
   };
   const validation = SignInSchema.safeParse(data);
+  const pathname = '/auth/signin';
 
   if (!validation.success) {
-    redirect(`/auth/signin?error=${validation.error.issues[0].message}`);
+    redirect(
+      constructUrl(pathname, {
+        error: validation.error.issues[0].message,
+      })
+    );
   }
 
   const supabase = createClient();
@@ -64,7 +79,11 @@ export async function signIn(formData: FormData) {
 
   if (error) {
     logger.error(JSON.stringify(error));
-    redirect(`/auth/signin?error=${getAuthErrorMessage(error)}`);
+    redirect(
+      constructUrl(pathname, {
+        error: getAuthErrorMessage(error),
+      })
+    );
   }
 
   revalidatePath('/', 'layout');
@@ -88,7 +107,11 @@ async function signOutInternal(scope: 'global' | 'local' | 'others') {
   const { error } = await supabase.auth.signOut({ scope });
 
   if (error) {
-    redirect(`/auth/signout?error=${getAuthErrorMessage(error)}`);
+    redirect(
+      constructUrl('/auth/signout', {
+        error: getAuthErrorMessage(error),
+      })
+    );
   }
 
   revalidatePath('/', 'layout');
@@ -101,10 +124,13 @@ export async function sendPasswordReset(formData: FormData) {
     captchaToken: formData.get('cf-turnstile-response') as string,
   };
   const validation = ForgotPasswordSchema.safeParse(data);
+  const pathname = '/auth/forgot_password';
 
   if (!validation.success) {
     redirect(
-      `/auth/forgot_password?error=${validation.error.issues[0].message}`
+      constructUrl(pathname, {
+        error: validation.error.issues[0].message,
+      })
     );
   }
 
@@ -114,11 +140,20 @@ export async function sendPasswordReset(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/auth/forgot_password?error=${getAuthErrorMessage(error)}`);
+    redirect(
+      constructUrl(pathname, {
+        error: getAuthErrorMessage(error),
+      })
+    );
   }
 
-  revalidatePath('/auth/forgot_password', 'page');
-  redirect(`/auth/forgot_password?success=true&email=${data.email}`);
+  revalidatePath(pathname, 'page');
+  redirect(
+    constructUrl(pathname, {
+      success: 'true',
+      email: data.email,
+    })
+  );
 }
 
 export async function verifyRecoveryOtp(formData: FormData) {
@@ -127,10 +162,15 @@ export async function verifyRecoveryOtp(formData: FormData) {
     token: formData.get('otp') as string,
   };
   const validation = TokenVerificationSchema.safeParse(data);
+  const pathname = '/auth/forgot_password';
 
   if (!validation.success) {
     redirect(
-      `/auth/forgot_password?success=true&email=${data.email}&error=${validation.error.issues[0].message}`
+      constructUrl(pathname, {
+        success: 'true',
+        email: data.email,
+        error: validation.error.issues[0].message,
+      })
     );
   }
 
@@ -146,7 +186,11 @@ export async function verifyRecoveryOtp(formData: FormData) {
 
   if (error) {
     redirect(
-      `/auth/forgot_password?success=true&email=${data.email}&error=${getAuthErrorMessage(error)}`
+      constructUrl(pathname, {
+        success: 'true',
+        email: data.email,
+        error: getAuthErrorMessage(error),
+      })
     );
   }
 
@@ -155,15 +199,24 @@ export async function verifyRecoveryOtp(formData: FormData) {
 
     if (sessionError) {
       redirect(
-        `/auth/forgot_password?success=true&email=${data.email}&error=${getAuthErrorMessage(sessionError)}`
+        constructUrl(pathname, {
+          success: 'true',
+          email: data.email,
+          error: getAuthErrorMessage(sessionError),
+        })
       );
     }
 
+    revalidatePath('/', 'layout');
     redirect('/auth/update_password');
   }
 
   redirect(
-    `/auth/forgot_password?success=true&email=${data.email}&error=An unknown error occurred. Please try again later.`
+    constructUrl(pathname, {
+      success: 'true',
+      email: data.email,
+      error: 'An unknown error occurred. Please try again later.',
+    })
   );
 }
 
@@ -173,10 +226,13 @@ export async function updatePassword(formData: FormData) {
     confirmPassword: formData.get('confirm_password') as string,
   };
   const validation = PasswordResetSchema.safeParse(data);
+  const pathname = '/auth/update_password';
 
   if (!validation.success) {
     redirect(
-      `/auth/update_password?error=${validation.error.issues[0].message}`
+      constructUrl(pathname, {
+        error: validation.error.issues[0].message,
+      })
     );
   }
 
@@ -187,7 +243,9 @@ export async function updatePassword(formData: FormData) {
 
   if (!user) {
     redirect(
-      `/auth/update_password?error=An unexpected error occurred. Please try again later.`
+      constructUrl(pathname, {
+        error: 'An unexpected error occurred. Please try again later.',
+      })
     );
   }
 
