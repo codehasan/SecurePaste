@@ -5,7 +5,6 @@ import logger from '@/lib/logging/server';
 import { push } from '@/lib/RedirectHelper';
 import { IdVerificationSchema, NewPasteSchema } from '@/lib/schema/ZodSchema';
 import prisma from '@/utils/prisma/db';
-import { redirect, RedirectType } from 'next/navigation';
 import { v4 } from 'uuid';
 import { getAuthErrorMessage } from '../errors';
 import { createClient } from '../server';
@@ -71,7 +70,7 @@ export async function createNewPaste(
 
   const bodyUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${storageResponse.data!.fullPath}`;
   try {
-    await prisma.paste.create({
+    const newPaste = await prisma.paste.create({
       data: {
         title: data.title,
         bodyOverview: getLines(data.body, 5),
@@ -81,14 +80,14 @@ export async function createNewPaste(
         userId: userResponse.data.user!.id,
       },
     });
+
+    return newPaste.id;
   } catch (e) {
     logger.error(JSON.stringify(e));
     push(pathname, {
       error: 'Unable to create your paste.',
     });
   }
-
-  redirect(`/user/${userResponse.data.user!.id}/pastes`, RedirectType.push);
 }
 
 export async function deletePaste(pasteId: string) {

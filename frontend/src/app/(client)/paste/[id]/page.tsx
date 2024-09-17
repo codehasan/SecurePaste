@@ -1,4 +1,5 @@
 'use client';
+
 import Avatar from '@/components/Avatar';
 import { getNameFromCode } from '@/components/CodeView/languages';
 import CommentForm from '@/components/CommentList/CommentForm';

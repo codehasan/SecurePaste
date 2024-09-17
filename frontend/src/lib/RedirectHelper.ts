@@ -1,4 +1,5 @@
 'use server';
+
 import { redirect, RedirectType } from 'next/navigation';
 
 export const push = (pathname: string, params: Record<string, string> = {}) => {

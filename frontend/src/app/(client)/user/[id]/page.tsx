@@ -1,15 +1,14 @@
+import Avatar from '@/components/Avatar';
 import CodeEditor from '@/components/CodeEditor/CodeEditor';
 import { MemoizedLabel } from '@/components/Label';
 import { getFormattedDate, getTimePassed } from '@/lib/DateFormat';
-import { createClient } from '@/utils/supabase/server';
 import getUser from '@/utils/services/user';
+import { createClient } from '@/utils/supabase/server';
 import classNames from 'classnames';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FaImage } from 'react-icons/fa6';
 import { MdVerified } from 'react-icons/md';
 import styles from '../../client.module.css';
-import Avatar from '@/components/Avatar';
 
 interface UserProps {
   params: { id: string };

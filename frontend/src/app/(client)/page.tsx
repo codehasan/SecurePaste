@@ -1,25 +1,17 @@
 import Avatar from '@/components/Avatar';
 import { getFormattedDate } from '@/lib/DateFormat';
+import OneLightModified from '@/lib/prism-themes/OneLightModified';
 import { getAllPublicPastes } from '@/utils/services/paste';
 import classNames from 'classnames';
+import Image from 'next/image';
 import Link from 'next/link';
 import { FaComment, FaThumbsUp } from 'react-icons/fa';
 import { MdVerified } from 'react-icons/md';
-import styles from './client.module.css';
 import { Prism } from 'react-syntax-highlighter';
-import OneLightModified from '@/lib/prism-themes/OneLightModified';
-import Image from 'next/image';
-import { createClient } from '@/utils/supabase/server';
+import styles from './client.module.css';
 
 export default async function Home() {
   const pastes = await getAllPublicPastes();
-
-  const supabase = createClient();
-  let { data, error } = await supabase.rpc('paste_search', {
-    topic: 'Deez Nuts',
-  });
-  if (error) console.error(error);
-  else console.log(data);
 
   return (
     <div className="size-full">
@@ -81,7 +73,7 @@ export default async function Home() {
                     <div
                       className={classNames(
                         styles.pasteOverview,
-                        'relative overflow-hidden rounded-md bg-[#fafafa]'
+                        'relative overflow-hidden rounded-md border border-solid border-black border-opacity-10 bg-[#fafafa]'
                       )}
                     >
                       <Prism language={paste.syntax} style={OneLightModified}>
