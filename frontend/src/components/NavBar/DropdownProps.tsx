@@ -1,9 +1,9 @@
-import { User as PrismaUser } from '@prisma/client';
+import { UserData } from '@/utils/services/user';
 import { User } from '@supabase/supabase-js';
 
 export default interface DropdownProps {
   authUser: User;
-  dbUser: PrismaUser;
+  dbUser: UserData;
   profileNavigations: {
     name: string;
     path: string;
