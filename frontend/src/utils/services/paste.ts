@@ -14,7 +14,7 @@ import axios from 'axios';
 import prisma from '../prisma/db';
 import { createClient } from '../supabase/server';
 
-export type UserData = Omit<PrismaUser, 'bio'>;
+export type UserData = Omit<PrismaUser, 'bio' | 'createdAt' | 'updatedAt'>;
 
 export type CommentData = Omit<Comment, 'userId' | 'pasteId'> & {
   user: UserData;

@@ -11,9 +11,11 @@ import { FormEvent, useState } from 'react';
 import { getTags } from '@/lib/ArrayHelper';
 import { createNewPrivatePaste } from '@/utils/contract/paste';
 import { useWeb3React } from '@web3-react/core';
+import { useRouter } from 'next/navigation';
 
 const NewPaste = async () => {
   const [isPublic, setIsPublic] = useState(true);
+  const router = useRouter();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,7 +39,16 @@ const NewPaste = async () => {
         useWeb3React()
       );
     } else {
-      await createNewPaste(data.title, data.body, data.syntax, data.tags);
+      const id = await createNewPaste(
+        data.title,
+        data.body,
+        data.syntax,
+        data.tags
+      );
+
+      if (id) {
+        router.push(`/paste/${id}`);
+      }
     }
   };
 
