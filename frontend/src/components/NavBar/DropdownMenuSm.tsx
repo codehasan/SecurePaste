@@ -1,4 +1,5 @@
 'use client';
+
 import { useWallet } from '@/hooks/useWallet';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

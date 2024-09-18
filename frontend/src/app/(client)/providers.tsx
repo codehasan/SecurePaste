@@ -1,4 +1,5 @@
 'use client';
+
 import { ToastProvider } from '@/hooks/useToast';
 import { WalletProvider } from '@/hooks/useWallet';
 import { coinbaseHooks, coinbaseWallet } from '@/utils/wallet/coinbaseWallet';
