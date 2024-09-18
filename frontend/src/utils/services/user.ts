@@ -47,8 +47,8 @@ export async function getUserInfoById(supabase: SupabaseClient, id: string) {
 
     if (error) {
       console.error('Error fetching user by ID:', error);
-    } else {
-      return data as UserData;
+    } else if (data) {
+      return (data as UserData[])[0];
     }
   } catch (error) {
     console.error('Unexpected error fetching user by ID:', error);
