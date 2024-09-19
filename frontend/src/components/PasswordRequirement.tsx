@@ -13,7 +13,7 @@ const component: React.FC<PasswordRequirementProps> = ({ condition, text }) => {
         {
           'bg-success bg-opacity-10 text-gray-600': condition,
         },
-        'mt-1 mr-1 px-2 pb-1 rounded-md'
+        'mr-1 mt-1 rounded-md px-2 pb-1'
       )}
     >
       <span
@@ -21,7 +21,7 @@ const component: React.FC<PasswordRequirementProps> = ({ condition, text }) => {
           {
             'text-success': condition,
           },
-          'mr-1 text-xl'
+          'mr-1 text-sm'
         )}
       >
         ●
