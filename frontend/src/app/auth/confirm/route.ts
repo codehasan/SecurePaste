@@ -1,5 +1,5 @@
 import logger from '@/lib/logging/server';
-import prisma from '@/utils/prisma/db';
+import { constructUrl } from '@/lib/RedirectHelper';
 import { getAuthErrorMessage } from '@/utils/supabase/errors';
 import { createClient } from '@/utils/supabase/server';
 import { type EmailOtpType } from '@supabase/supabase-js';
@@ -11,52 +11,63 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const token_hash = searchParams.get('token_hash');
     const type = searchParams.get('type') as EmailOtpType | null;
-    const next = searchParams.get('next') || '/';
 
-    if (token_hash && type) {
+    if (token_hash && type && type === 'signup') {
       const supabase = createClient();
-      const { error } = await supabase.auth.verifyOtp({
+      const { error: verifyError } = await supabase.auth.verifyOtp({
         type,
         token_hash,
       });
 
-      if (!error) {
-        const {
-          data: { user },
-        } = await supabase.auth.updateUser({
-          data: {
-            email_verified: true,
-          },
-        });
+      if (verifyError) {
+        logger.error(`Verify user error: ${verifyError}`);
 
-        if (!user) {
-          return NextResponse.redirect(
-            new URL(
-              `/error?${encodeURI('next=/auth/verify_account&nextText=Verify Account&message=An unexpected error occurred. Please try again later.')}`,
-              request.url
-            )
-          );
-        }
-
-        if (next === '/') {
-          revalidatePath('/', 'layout');
-        } else {
-          revalidatePath(next, 'page');
-        }
-        return NextResponse.redirect(new URL(next, request.url));
+        return NextResponse.redirect(
+          new URL(
+            constructUrl('/error', {
+              next: '/auth/verify_account',
+              nextText: 'Try Again',
+              message: getAuthErrorMessage(verifyError),
+            }),
+            request.url
+          )
+        );
       }
 
-      const errorUrl = new URL('/error', request.url);
-      errorUrl.searchParams.append('message', getAuthErrorMessage(error));
+      const { error } = await supabase.auth.updateUser({
+        data: {
+          email_verified: true,
+        },
+      });
 
-      return NextResponse.redirect(errorUrl);
+      if (error) {
+        logger.error(`User update error: ${error}`);
+
+        return NextResponse.redirect(
+          new URL(
+            constructUrl('/error', {
+              next: '/auth/verify_account',
+              nextText: 'Try Again',
+              message: getAuthErrorMessage(error),
+            }),
+            request.url
+          )
+        );
+      }
+
+      revalidatePath('/', 'layout');
+      return NextResponse.redirect(new URL('/', request.url));
     }
   } catch (e) {
-    logger.error(`Unexpected error: ${JSON.stringify(e)}`);
+    logger.error(`Unexpected error: ${e}`);
 
     return NextResponse.redirect(
       new URL(
-        `/error?${encodeURI('next=/auth/verify_account&nextText=Verify Account&message=An unexpected error occurred. Please try again later.')}`,
+        constructUrl('/error', {
+          next: '/auth/verify_account',
+          nextText: 'Try Again',
+          message: 'An unexpected error occurred. Please try again later.',
+        }),
         request.url
       )
     );
