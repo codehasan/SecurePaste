@@ -33,8 +33,13 @@ import {
 import { Prism } from 'react-syntax-highlighter';
 import codeStyles from '../../client.module.css';
 import styles from './page.module.css';
+import Image from 'next/image';
 
-const ViewPaste = () => {
+interface PasteProps {
+  params: { id: string };
+}
+
+const ViewPaste = ({ params }: PasteProps) => {
   const router = useRouter();
   const {
     authUser,
@@ -598,11 +603,17 @@ const ViewPaste = () => {
             </dialog>
           </>
         ) : (
-          <div className="flex h-full flex-col items-center gap-1 py-10">
-            <div className="text-2xl font-bold">Not Found</div>
+          <div className="h-fill flex flex-col items-center justify-center gap-4">
+            <Image
+              width="200"
+              height="200"
+              src="/img/content-unavailable.png"
+              alt="Unavailable"
+              className="size-28"
+            />
             <span className="text-gray-700">
-              This paste is no longer available. It has either been removed by
-              its creator, or removed by one of the SecurePaste staff.
+              No paste found with the id{' '}
+              <span className="font-medium">{params.id}</span>!
             </span>
           </div>
         )}
