@@ -17,11 +17,6 @@ export default async function getUser(supabase: SupabaseClient, id?: string) {
   let authUser: User | null = await getAuthUser(supabase);
   let dbUser: PromiseReturnType<typeof getUserInfoById> | null = null;
 
-  // Retry to get authentication info
-  if (!authUser) {
-    authUser = await getAuthUser(supabase);
-  }
-
   if (id) {
     dbUser = await getUserInfoById(supabase, id);
   } else if (authUser) {
