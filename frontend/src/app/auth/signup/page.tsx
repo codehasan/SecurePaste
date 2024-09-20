@@ -1,32 +1,25 @@
 'use client';
+
 import Alert, { Type } from '@/components/Alert';
 import { MemoizedLabel } from '@/components/Label';
+import { PasswordRequirement } from '@/components/PasswordRequirement';
 import Logo from '@/icons/Logo';
 import { validateForm } from '@/lib/SignupFormValidation';
+import { getCopyrightText } from '@/lib/copyright';
 import { logError } from '@/lib/logging/client';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { ChangeEvent, FormEvent, useCallback, useRef, useState } from 'react';
-import { PasswordRequirement } from '../../../components/PasswordRequirement';
+import styles from '../auth.module.css';
 import { MemoizedOAuth } from './OAuthProvider';
 import { MemoizedUserAgreement } from './UserAgreement';
+import { signUp } from '@/utils/supabase/actions/auth';
 
-import { getCopyrightText } from '@/lib/copyright';
-import styles from '../auth.module.css';
-
-const SignUp = ({
-  searchParams,
-}: {
-  searchParams: {
-    message: string;
-    name: string;
-    email: string;
-  };
-}) => {
+const SignUp = () => {
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [passwordStatus, setPasswordStatus] = useState({
     value: '',
     lowercase: false,
@@ -38,7 +31,6 @@ const SignUp = ({
   });
   const [loading, setLoading] = useState(false);
   const userAgreementRef = useRef<HTMLDialogElement>(null);
-  const router = useRouter();
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -60,23 +52,18 @@ const SignUp = ({
     }
 
     try {
-      await axios.post(
-        '/api/auth/signup',
-        {
-          name: formValues.name,
-          email: formValues.email,
-          password: formValues.password,
-          captchaToken: formValues.captchaToken,
-        },
-        { timeout: 10_000 }
+      await signUp(
+        formValues.name,
+        formValues.email,
+        formValues.password,
+        formValues.captchaToken
       );
 
-      router.push(
-        "/auth/signup?message=Please check your inbox and follow the instructions to verify your account. If you don't see it, be sure to check your spam or junk folder."
+      setMessage(
+        'Check your inbox and follow the instructions to verify your account.'
       );
-      router.refresh();
     } catch (error) {
-      logError(JSON.stringify(error));
+      logError(error);
 
       const data = (error as AxiosError).response?.data as {
         error: string;
@@ -146,9 +133,7 @@ const SignUp = ({
           <MemoizedOAuth />
           <div className="divider mb-6 mt-6 text-sm text-gray-500">OR</div>
 
-          {searchParams?.message && (
-            <Alert message={searchParams.message} type={Type.SUCCESS} />
-          )}
+          {message && <Alert message={message} type={Type.SUCCESS} />}
           {error && <Alert message={error} type={Type.ERROR} />}
 
           <form onSubmit={onSubmit} className="mt-2">
@@ -163,7 +148,6 @@ const SignUp = ({
                 name="name"
                 inputMode="text"
                 placeholder="John Doe"
-                defaultValue={searchParams.name ?? ''}
                 minLength={4}
                 maxLength={50}
                 required
@@ -181,7 +165,6 @@ const SignUp = ({
                 name="email"
                 inputMode="email"
                 placeholder="your@email.com"
-                defaultValue={searchParams.email ?? ''}
                 required
               />
             </MemoizedLabel>
