@@ -7,12 +7,99 @@ import {
   PasswordResetSchema,
   ResendVerificationSchema,
   SignInSchema,
+  SignUpSchema,
   TokenVerificationSchema,
 } from '@/lib/schema/ZodSchema';
+import prisma from '@/utils/prisma/db';
 import { getAuthErrorMessage } from '@/utils/supabase/errors';
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+
+export async function signInGitHub() {
+  const supabase = createClient();
+  const {
+    data: { url },
+    error,
+  } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      scopes: 'read:user user:email',
+      redirectTo: process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}/auth/OAuth2`
+        : 'http://localhost:3000/auth/OAuth2',
+    },
+  });
+
+  if (error) {
+    redirect(
+      constructUrl('/error', {
+        error: getAuthErrorMessage(error),
+      })
+    );
+  } else if (url) {
+    redirect(url);
+  }
+}
+
+export async function signUp(
+  name: string,
+  email: string,
+  password: string,
+  captchaToken: string
+) {
+  try {
+    const validation = SignUpSchema.safeParse({
+      name,
+      email,
+      password,
+      captchaToken,
+    });
+
+    if (!validation.success) {
+      throw new Error(validation.error.issues[0].message);
+    }
+
+    const supabase = createClient();
+    const {
+      error,
+      data: { user },
+    } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        captchaToken,
+      },
+    });
+
+    if (error) {
+      logger.error(`Auth error: ${error}`);
+      throw new Error(getAuthErrorMessage(error));
+    }
+
+    if (!user) {
+      logger.error('No user returned from Supabase after signup.');
+      throw new Error('An internal error occurred. Please try again later.');
+    }
+
+    try {
+      await prisma.user.create({
+        data: {
+          id: user.id,
+          name,
+        },
+      });
+    } catch (e) {
+      logger.error(`Prisma user create error: ${e}`);
+      throw new Error('An internal error occured. Please try again later.');
+    }
+
+    return user.id;
+  } catch (error) {
+    logger.error(`Unexpected signup error: ${error}`);
+    throw new Error('An unexpected error occured. Please try again later.');
+  }
+}
 
 export async function resendSignUpConfirmation(formData: FormData) {
   const data = {
