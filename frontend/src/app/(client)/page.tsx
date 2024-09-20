@@ -37,18 +37,13 @@ export default async function Home() {
                         'flex items-center'
                       )}
                     >
-                      <Link
-                        href={`/user/${paste.user.id}`}
-                        className="flex items-center justify-center"
-                      >
+                      <div className="flex items-center justify-center">
                         <Avatar
                           src={paste.user.avatar}
                           parentClassName="size-7"
                         />
-                      </Link>
 
-                      <div className="ml-2">
-                        <Link href={`/user/${paste.user.id}`}>
+                        <div className="ml-2">
                           <div className="flex items-center gap-1 text-sm font-medium text-gray-800">
                             <span>{paste.user.name}</span>
                             {paste.user.verified && (
@@ -57,7 +52,7 @@ export default async function Home() {
                               </span>
                             )}
                           </div>
-                        </Link>
+                        </div>
                       </div>
                     </div>
 
