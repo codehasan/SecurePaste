@@ -14,7 +14,6 @@ const SearchBox = () => {
 
     if (event.key === 'Enter') {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-      target.value = '';
     }
   };
 
