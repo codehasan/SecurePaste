@@ -191,3 +191,31 @@ export const getAllPublicPastes = async () => {
 
   return null;
 };
+
+export const getAllPublicUserPastes = async (id: string) => {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.rpc('get_user_pastes', {
+      user_id: id,
+    });
+
+    if (error) {
+      logger.error(`Get user paste error: ${error}`);
+    }
+
+    return data as {
+      id: string;
+      bodyoverview: string;
+      title: string;
+      syntax: string;
+      createdat: string;
+      likes_count: number;
+      comments_count: number;
+    }[];
+  } catch (err) {
+    logger.error(err);
+    logger.error(`Unexpected error: ${JSON.stringify(err)}`);
+  }
+
+  return null;
+};
