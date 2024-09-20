@@ -2,20 +2,23 @@ const dateFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'medium',
 });
 
-export const getTimePassed = (date: string | undefined | Date) => {
+export const getTimePassed = (
+  date: string | undefined | Date,
+  short?: boolean
+) => {
   if (!date) {
     return 'No data';
   }
 
   if (date instanceof Date) {
-    getTimePassedFromDate(date);
+    getTimePassedFromDate(date, short);
   }
-  return getTimePassedFromDate(new Date(date));
+  return getTimePassedFromDate(new Date(date), short);
 };
 
-const getTimePassedFromDate = (past: Date) => {
+const getTimePassedFromDate = (date: Date, short?: boolean) => {
   const now = new Date();
-  const diffInMilliseconds = now.getTime() - past.getTime();
+  const diffInMilliseconds = now.getTime() - date.getTime();
   const diffInMinutes = Math.floor(diffInMilliseconds / 60000);
   const diffInHours = Math.floor(diffInMinutes / 60);
   const diffInDays = Math.floor(diffInHours / 24);
@@ -23,21 +26,21 @@ const getTimePassedFromDate = (past: Date) => {
   const diffInYears = Math.floor(diffInDays / 365);
 
   if (diffInYears > 0) {
-    return `${diffInYears} years ago`;
+    return `${diffInYears}${short ? 'y' : ' years ago'}`;
   }
   if (diffInMonths > 0) {
-    return `${diffInMonths} months ago`;
+    return `${diffInMonths}${short ? 'm' : ' months ago'}`;
   }
   if (diffInDays > 0) {
-    return `${diffInDays} days ago`;
+    return `${diffInDays}${short ? 'd' : ' days ago'}`;
   }
   if (diffInHours > 0) {
-    return `${diffInHours} hours ago`;
+    return `${diffInHours}${short ? 'h' : ' hours ago'}`;
   }
   if (diffInMinutes > 0) {
-    return `${diffInMinutes} minutes ago`;
+    return `${diffInMinutes}${short ? 'min' : ' minutes ago'}`;
   }
-  return '0 minutes ago';
+  return `0${short ? 'min' : ' minutes ago'}`;
 };
 
 export const getFormattedDate = (date: string | Date | undefined) => {
