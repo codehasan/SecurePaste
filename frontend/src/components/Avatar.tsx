@@ -1,4 +1,7 @@
+'use client';
+
 import Image, { ImageProps } from 'next/image';
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 interface AvatarProps {
@@ -15,6 +18,8 @@ const Avatar = ({
   alt,
   ...props
 }: AvatarProps & Omit<ImageProps, 'src' | 'alt' | 'width' | 'height'>) => {
+  const [error, setError] = useState(false);
+
   return (
     <div className="avatar">
       <div
@@ -26,14 +31,26 @@ const Avatar = ({
         )}
         onClick={onClick}
       >
-        <Image
-          className="rounded-full border border-solid border-black border-opacity-5"
-          src={src || '/img/avatar.svg'}
-          alt={alt || 'Avatar'}
-          width={40}
-          height={40}
-          {...props}
-        />
+        {error ? (
+          <Image
+            className="rounded-full border border-solid border-black border-opacity-5"
+            src="/img/avatar.svg"
+            alt={alt || 'Avatar'}
+            width={40}
+            height={40}
+            {...props}
+          />
+        ) : (
+          <Image
+            className="rounded-full border border-solid border-black border-opacity-5"
+            src={src || '/img/avatar.svg'}
+            alt={alt || 'Avatar'}
+            onError={() => setError(true)}
+            width={40}
+            height={40}
+            {...props}
+          />
+        )}
       </div>
     </div>
   );
