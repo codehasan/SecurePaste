@@ -137,3 +137,11 @@ export const TokenVerificationSchema = z
 export const IdVerificationSchema = z
   .string()
   .min(0, { message: 'ID is required.' });
+
+export const UpdateUserSchema = z.object({
+  name: z
+    .string()
+    .min(4, { message: 'Name must be at least 4 characters long.' })
+    .max(50, { message: 'Name must not exceed 50 characters.' }),
+  bio: z.string().max(150, { message: 'Name must not exceed 50 characters.' }),
+});
