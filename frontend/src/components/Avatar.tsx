@@ -33,7 +33,7 @@ const Avatar = ({
       >
         {error ? (
           <Image
-            className="rounded-full border border-solid border-black border-opacity-5"
+            className="rounded-full border border-solid border-black border-opacity-5 object-cover object-center"
             src="/img/avatar.svg"
             alt={alt || 'Avatar'}
             width={40}
@@ -42,7 +42,7 @@ const Avatar = ({
           />
         ) : (
           <Image
-            className="rounded-full border border-solid border-black border-opacity-5"
+            className="rounded-full border border-solid border-black border-opacity-5 object-cover object-center"
             src={src || '/img/avatar.svg'}
             alt={alt || 'Avatar'}
             onError={() => setError(true)}
