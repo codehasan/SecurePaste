@@ -24,15 +24,19 @@ export default function UploadProfile({ text, className }: UploadProfileProps) {
       const file = event.target.files[0];
 
       try {
-        await setProfilePicture(file);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        await setProfilePicture(formData);
       } catch (error) {
-        const path = await constructUrl('/error', {
-          message:
-            error instanceof Error
-              ? error.message
-              : 'An unexpected error occurred!',
-        });
-        router.push(path);
+        router.push(
+          constructUrl('/error', {
+            message:
+              error instanceof Error
+                ? error.message
+                : 'An unexpected error occurred!',
+          })
+        );
       }
     }
   };
