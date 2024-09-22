@@ -68,6 +68,9 @@ export async function signUp(
       password,
       options: {
         captchaToken,
+        emailRedirectTo: process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}/auth/confirm`
+          : 'http://localhost:3000/auth/confirm',
         data: {
           full_name: name,
         },
@@ -99,7 +102,7 @@ export async function resendSignUpConfirmation(formData: FormData) {
     },
   };
   const validation = ResendVerificationSchema.safeParse(data);
-  const pathname = '/auth/verify_account';
+  const pathname = '/auth/confirm_account';
 
   if (!validation.success) {
     redirect(
@@ -111,8 +114,14 @@ export async function resendSignUpConfirmation(formData: FormData) {
 
   const supabase = createClient();
   const { error } = await supabase.auth.resend({
-    ...data,
+    email: data.email,
     type: 'signup',
+    options: {
+      captchaToken: data.options.captchaToken,
+      emailRedirectTo: process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}/auth/confirm`
+        : 'http://localhost:3000/auth/confirm',
+    },
   });
 
   if (error) {
@@ -127,7 +136,7 @@ export async function resendSignUpConfirmation(formData: FormData) {
   revalidatePath(pathname, 'page');
   redirect(
     constructUrl(pathname, {
-      message: 'Check your inbox for confirmation email.',
+      message: 'Check your inbox or spam folder for confirmation email.',
     })
   );
 }
