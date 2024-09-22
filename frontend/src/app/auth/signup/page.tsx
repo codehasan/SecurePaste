@@ -60,7 +60,7 @@ const SignUp = () => {
       );
 
       setMessage(
-        'Check your inbox and follow the instructions to verify your account.'
+        'Check your inbox and follow the instructions to confirm your account.'
       );
     } catch (error) {
       logError(error);
