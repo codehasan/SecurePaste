@@ -1,8 +1,8 @@
 import Avatar from '@/components/Avatar';
 import { MemoizedLabel } from '@/components/Label';
 import { getFormattedDate } from '@/lib/DateFormat';
+import logger from '@/lib/logging/server';
 import OneLightModified from '@/lib/prism-themes/OneLightModified';
-import { getAllPublicUserPastes } from '@/utils/services/paste';
 import getUser from '@/utils/services/user';
 import { updateUserInfo } from '@/utils/supabase/actions/user';
 import { createClient } from '@/utils/supabase/server';
@@ -22,8 +22,25 @@ interface UserProps {
 const User = async ({ params }: UserProps) => {
   const supabase = createClient();
   const { authUser, dbUser } = await getUser(supabase, params.id);
-  const pastes = await getAllPublicUserPastes(params.id);
   const owner = authUser ? authUser.id === params.id : false;
+
+  const { data, error } = await supabase.rpc('get_user_pastes', {
+    user_id: params.id,
+  });
+
+  if (error) {
+    logger.error(`Get user paste error: ${error}`);
+  }
+
+  const pastes = data as {
+    id: string;
+    bodyoverview: string;
+    title: string;
+    syntax: string;
+    createdat: string;
+    likes_count: number;
+    comments_count: number;
+  }[];
 
   return (
     <div className="size-full">
@@ -154,7 +171,7 @@ const User = async ({ params }: UserProps) => {
               <div className="text-lg font-medium">Pastes</div>
               <div className="divider mb-1 mt-1"></div>
 
-              {pastes ? (
+              {pastes && !error ? (
                 <div className="size-full">
                   {pastes.map((paste, index) => {
                     return (
