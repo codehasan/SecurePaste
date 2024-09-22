@@ -53,13 +53,11 @@ export const getPasteById = async (id: string) => {
 
     if (error) {
       logger.error(error);
-      logger.error(`Supabase user error: ${JSON.stringify(error)}`);
     } else if (data?.user) {
       authUser = data.user;
     }
-  } catch (unexpectedError) {
-    logger.error(unexpectedError);
-    logger.error(`Unexpected user error: ${JSON.stringify(unexpectedError)}`);
+  } catch (error) {
+    logger.error(error);
   }
 
   try {
@@ -79,9 +77,21 @@ export const getPasteById = async (id: string) => {
           select: UserDataSelect,
         },
         comments: {
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy: [
+            {
+              user: {
+                verified: 'desc',
+              },
+            },
+            {
+              likes: {
+                _count: 'desc',
+              },
+            },
+            {
+              createdAt: 'desc',
+            },
+          ],
           select: {
             id: true,
             message: true,
@@ -157,65 +167,4 @@ export const getPasteById = async (id: string) => {
   }
 
   return { authUser, data };
-};
-
-export const getAllPublicPastes = async () => {
-  try {
-    return await prisma.paste.findMany({
-      orderBy: [
-        {
-          likes: {
-            _count: 'desc',
-          },
-        },
-        {
-          createdAt: 'desc',
-        },
-      ],
-      select: {
-        id: true,
-        bodyOverview: true,
-        title: true,
-        syntax: true,
-        createdAt: true,
-        _count: { select: { likes: true, comments: true } },
-        user: {
-          select: UserDataSelect,
-        },
-      },
-    });
-  } catch (err) {
-    logger.error(err);
-    logger.error(`Unexpected error: ${JSON.stringify(err)}`);
-  }
-
-  return null;
-};
-
-export const getAllPublicUserPastes = async (id: string) => {
-  try {
-    const supabase = createClient();
-    const { data, error } = await supabase.rpc('get_user_pastes', {
-      user_id: id,
-    });
-
-    if (error) {
-      logger.error(`Get user paste error: ${error}`);
-    }
-
-    return data as {
-      id: string;
-      bodyoverview: string;
-      title: string;
-      syntax: string;
-      createdat: string;
-      likes_count: number;
-      comments_count: number;
-    }[];
-  } catch (err) {
-    logger.error(err);
-    logger.error(`Unexpected error: ${JSON.stringify(err)}`);
-  }
-
-  return null;
 };
