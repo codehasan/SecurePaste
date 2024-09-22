@@ -26,7 +26,7 @@ interface AlertProps {
 }
 
 export const getIconFromType = (type: Type) => {
-  const classes = 'h-6 w-6 shrink-0';
+  const classes = 'h-6 w-6 shrink-0 hidden sm:block';
 
   if (type === Type.ERROR) {
     return (
@@ -75,7 +75,8 @@ const Alert: React.FC<AlertProps> = ({ ...props }) => {
       role="alert"
       className={classNames(
         getAlertClassNameFromType(props.type),
-        props.className
+        props.className,
+        'gap !gap-x-2 !gap-y-1 !rounded-lg !p-2'
       )}
     >
       {getIconFromType(props.type)}
