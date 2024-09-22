@@ -11,7 +11,7 @@ import { MdVerified } from 'react-icons/md';
 import { Prism } from 'react-syntax-highlighter';
 import styles from '../client.module.css';
 
-interface PasteData {
+export interface PasteData {
   id: string;
   bodyoverview: string;
   title: string;

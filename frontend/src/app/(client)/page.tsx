@@ -1,7 +1,8 @@
 import Avatar from '@/components/Avatar';
 import { getFormattedDate } from '@/lib/DateFormat';
+import logger from '@/lib/logging/server';
 import OneLightModified from '@/lib/prism-themes/OneLightModified';
-import { getAllPublicPastes } from '@/utils/services/paste';
+import { createClient } from '@/utils/supabase/server';
 import classNames from 'classnames';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,9 +10,17 @@ import { FaComment, FaThumbsUp } from 'react-icons/fa';
 import { MdVerified } from 'react-icons/md';
 import { Prism } from 'react-syntax-highlighter';
 import styles from './client.module.css';
+import { PasteData } from './search/page';
 
 export default async function Home() {
-  const pastes = await getAllPublicPastes();
+  const supabase = createClient();
+
+  const { data, error } = await supabase.rpc('get_pastes', {}, { get: true });
+  const pastes = data as PasteData[];
+
+  if (error) {
+    logger.error(`Get pastes error: ${error}`);
+  }
 
   return (
     <div className="size-full">
@@ -39,14 +48,14 @@ export default async function Home() {
                     >
                       <div className="flex items-center justify-center">
                         <Avatar
-                          src={paste.user.avatar}
+                          src={paste.user_avatar}
                           parentClassName="size-7"
                         />
 
                         <div className="ml-2">
                           <div className="flex items-center gap-1 text-sm font-medium text-gray-800">
-                            <span>{paste.user.name}</span>
-                            {paste.user.verified && (
+                            <span>{paste.user_name}</span>
+                            {paste.user_verified && (
                               <span className="text-primary">
                                 <MdVerified data-tooltip="Verified" />
                               </span>
@@ -72,7 +81,7 @@ export default async function Home() {
                       )}
                     >
                       <Prism language={paste.syntax} style={OneLightModified}>
-                        {paste.bodyOverview}
+                        {paste.bodyoverview}
                       </Prism>
                     </div>
 
@@ -82,14 +91,14 @@ export default async function Home() {
                         'flex w-full items-center gap-4 text-sm text-gray-500'
                       )}
                     >
-                      <div>{getFormattedDate(paste.createdAt)}</div>
+                      <div>{getFormattedDate(paste.createdat)}</div>
                       <div className="flex items-center gap-1">
                         <FaThumbsUp />
-                        <span>{paste._count.likes}</span>
+                        <span>{paste.likes_count}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <FaComment />
-                        <span>{paste._count.comments}</span>
+                        <span>{paste.comments_count}</span>
                       </div>
                     </div>
                   </div>
