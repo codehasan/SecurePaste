@@ -7,9 +7,15 @@ import prisma from '../prisma/db';
 import { getAuthErrorMessage } from '../supabase/errors';
 import { createClient } from '../supabase/server';
 
-export async function setProfilePicture(imageFile: File) {
+export async function setProfilePicture(formData: FormData) {
+  const imageFile: File | null = formData.get('file') as unknown as File;
+
+  if (!imageFile || imageFile.size <= 0) {
+    throw new Error('Please upload a valid image file.');
+  }
+
   if (imageFile.size > 524_288) {
-    throw new Error("Image size can't be greater than 512 KB");
+    throw new Error("Image size can't be greater than 512 KB.");
   }
 
   const isPng = await isPngFile(imageFile);
