@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(
           new URL(
             constructUrl('/error', {
-              next: '/auth/verify_account',
+              next: '/auth/confirm_account',
               nextText: 'Try Again',
               message: getAuthErrorMessage(verifyError),
             }),
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(
           new URL(
             constructUrl('/error', {
-              next: '/auth/verify_account',
+              next: '/auth/confirm_account',
               nextText: 'Try Again',
               message: getAuthErrorMessage(error),
             }),
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         constructUrl('/error', {
-          next: '/auth/verify_account',
+          next: '/auth/confirm_account',
           nextText: 'Try Again',
           message: 'An unexpected error occurred. Please try again later.',
         }),

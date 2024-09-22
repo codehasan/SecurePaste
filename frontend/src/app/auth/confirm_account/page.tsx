@@ -35,7 +35,7 @@ const VerifyAccount = async ({
         <h1
           className={classNames(styles.header, 'p-1 pl-0 text-xl font-normal')}
         >
-          Verify your account
+          Confirm your account
         </h1>
 
         {searchParams?.message && (
@@ -49,7 +49,7 @@ const VerifyAccount = async ({
         <form action={resendSignUpConfirmation} className="mt-2">
           <div>
             Enter your email address below, and we&apos;ll send you a
-            confirmation link to verify your account.
+            confirmation link to confirm your account.
           </div>
 
           <MemoizedLabel className="mt-3" primaryText="Email address" required>
