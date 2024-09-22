@@ -10,7 +10,6 @@ import {
   SignUpSchema,
   TokenVerificationSchema,
 } from '@/lib/schema/ZodSchema';
-import prisma from '@/utils/prisma/db';
 import { getAuthErrorMessage } from '@/utils/supabase/errors';
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
@@ -69,6 +68,9 @@ export async function signUp(
       password,
       options: {
         captchaToken,
+        data: {
+          full_name: name,
+        },
       },
     });
 
@@ -80,18 +82,6 @@ export async function signUp(
     if (!user) {
       logger.error('No user returned from Supabase after signup.');
       throw new Error('An internal error occurred. Please try again later.');
-    }
-
-    try {
-      await prisma.user.create({
-        data: {
-          id: user.id,
-          name,
-        },
-      });
-    } catch (e) {
-      logger.error(`Prisma user create error: ${e}`);
-      throw new Error('An internal error occured. Please try again later.');
     }
 
     return user.id;
