@@ -108,7 +108,7 @@ const NavBar = async () => {
                   <Link href="/auth/signin" className="ml-2">
                     <button className="btn btn-custom">Login</button>
                   </Link>
-                  <Link href="/auth/signin" className="ml-2">
+                  <Link href="/auth/signup" className="ml-2">
                     <button className="btn btn-custom btn-primary">
                       Create account
                     </button>
